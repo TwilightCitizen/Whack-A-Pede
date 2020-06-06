@@ -13,9 +13,9 @@ MDV4910-O, C202006-01
 
     <application
         android:allowBackup="true"
-        android:icon="@mipmap/ic_launcher"
+        android:icon="@drawable/icon_whack_a_pede_placeholder"
         android:label="@string/app_name"
-        android:roundIcon="@mipmap/ic_launcher_round"
+        android:roundIcon="@drawable/icon_whack_a_pede_placeholder"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
 
