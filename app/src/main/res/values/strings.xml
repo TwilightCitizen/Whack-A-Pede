@@ -1,3 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<!--
+Whack-A-Pede
+David A. Clark, Jr.
+Integrated Product Development
+MDV4910-O, C202006-01
+-->
+
 <resources>
     <string name="app_name">Whack-A-Pede</string>
     <string name="action_settings">Settings</string>

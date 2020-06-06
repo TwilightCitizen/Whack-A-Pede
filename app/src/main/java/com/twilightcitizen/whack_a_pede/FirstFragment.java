@@ -1,3 +1,10 @@
+/*
+Whack-A-Pede
+David A. Clark, Jr.
+Integrated Product Development
+MDV4910-O, C202006-01
+*/
+
 package com.twilightcitizen.whack_a_pede;
 
 import android.os.Bundle;

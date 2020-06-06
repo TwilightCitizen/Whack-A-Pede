@@ -1,7 +1,18 @@
-<menu xmlns:android="http://schemas.android.com/apk/res/android"
+<?xml version="1.0" encoding="utf-8"?>
+
+<!--
+Whack-A-Pede
+David A. Clark, Jr.
+Integrated Product Development
+MDV4910-O, C202006-01
+-->
+
+<menu
+    xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     tools:context="com.twilightcitizen.whack_a_pede.MainActivity">
+
     <item
         android:id="@+id/action_settings"
         android:orderInCategory="100"
