@@ -9,4 +9,5 @@ MDV4910-O, C202006-01
 
 <resources>
     <string name="app_name">Whack-A-Pede</string>
+    <string name="avatar">Player or Guest Avatar</string>
 </resources>
