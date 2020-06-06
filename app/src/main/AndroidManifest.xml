@@ -20,7 +20,7 @@ MDV4910-O, C202006-01
         android:theme="@style/AppTheme">
 
         <activity
-            android:name=".MainActivity"
+            android:name=".activities.GameActivity"
             android:label="@string/app_name"
             android:theme="@style/AppTheme.NoActionBar">
 
