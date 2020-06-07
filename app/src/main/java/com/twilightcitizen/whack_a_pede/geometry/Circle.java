@@ -16,7 +16,7 @@ OpenGL ES 2.0 for Android by Kevin Brothaler.
 public class Circle {
     // The center of the circle positioned in 3D cartesian coordinate space.
     public final Point center;
-    // The outer edge of the circle as measured from the center.
+    // The distance between the outer edge of the circle and its the center.
     public final float radius;
 
     // Set the circle center and radius at creation.
