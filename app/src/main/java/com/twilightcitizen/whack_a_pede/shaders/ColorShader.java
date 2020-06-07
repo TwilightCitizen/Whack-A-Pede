@@ -1,3 +1,10 @@
+/*
+Whack-A-Pede
+David A. Clark, Jr.
+Integrated Product Development
+MDV4910-O, C202006-01
+*/
+
 package com.twilightcitizen.whack_a_pede.shaders;
 
 import android.content.Context;
@@ -11,7 +18,8 @@ ColorShader is a derivative ShaderProgram that links ColorVertexShader and Color
 extracting and exposing the locations of the color and matrix uniforms and the position attribute
 used within it by OpenGL on the graphics hardware.  Instances of this program can be used within
 a renderer to place vertices at their specified position, transformed uniformly by the provided
-matrix and colored uniformly throughout.
+matrix and colored uniformly throughout.  This borrows from OpenGL ES 2.0 for Android by Kevin
+Brothaler with much refactoring for better succinctness and slight performance enhancements.
 */
 public class ColorShader extends ShaderProgram {
     // Uniforms and attributes within the GLSL source to convert to hardware locations.
