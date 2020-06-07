@@ -17,16 +17,6 @@ from OpenGL ES 2.0 for Android by Kevin Brothaler with much refactoring for bett
 and slight performance enhancements.
 */
 public class ShaderProgram {
-    /*
-    TODO: Move Into ColorShader
-
-    protected static final String U_MATRIX = "u_Matrix";
-    protected static final String U_COLOR = "u_Color";
-
-    protected static final String A_POSITION = "a_Position";
-    protected static final String A_COLOR = "a_Color";
-    */
-
     // Tag for filtering any debug message logged.
     private static final String TAG = "ShaderProgram";
 
