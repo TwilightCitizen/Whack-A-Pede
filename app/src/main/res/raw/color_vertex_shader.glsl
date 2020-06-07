@@ -16,7 +16,7 @@ ColorVertexShader is an OpenGL shader program written in GLSL for execution on t
 It accepts a matrix to apply uniformly against the positions of all vertices to update their final
 position for perspective, rotation, translation, and other adjustments.  This will be linked to
 ColorFragmentShader into total program pipeline by OpenGL which will receive this program's results.
-This borrows from that shown in OpenGL ES 2.0 for Android by Kevin Brothaler.
+This borrows from OpenGL ES 2.0 for Android by Kevin Brothaler.
 */
 void main() {
     // Multiply the uniform matrix against the position to change it.

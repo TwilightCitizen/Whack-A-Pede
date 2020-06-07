@@ -19,8 +19,8 @@ is complete and the application is working and released.  The standard debug log
 the actual logging of any messages, and it is called at the location where messages should be
 logged rather than from within LoggerUtil via static methods that check this instead.  This
 strategy helps to boost performance during debugging somewhat by voiding the needless creation
-of an additional stack frame just to consolidate all logging functionality here.  This strategy
-borrows from that shown in OpenGL ES 2.0 for Android by Kevin Brothaler.
+of an additional stack frame just to consolidate all logging functionality here.  This borrows from
+OpenGL ES 2.0 for Android by Kevin Brothaler.
 */
 public class LoggerUtil {
     public static final boolean ON = true;
