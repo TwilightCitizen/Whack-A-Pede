@@ -23,5 +23,5 @@ of an additional stack frame just to consolidate all logging functionality here.
 OpenGL ES 2.0 for Android by Kevin Brothaler.
 */
 public class LoggerUtil {
-    public static final boolean ON = true;
+    public static final boolean DEBUGGING = true;
 }
