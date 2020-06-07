@@ -19,11 +19,11 @@ a three-dimensional space, two-dimensional graphics can be achieved by normalizi
 dimension for all vertices, effectively ignoring it.
 */
 public class Point {
+    // The X, Y, and Z cartesian space coordinates.
     public final float x, y, z;
 
+    // Set the X, Y, and Z cartesian space coordinates at creation.
     public Point( float x, float y, float z ) {
-        this.x = x;
-        this.y = y;
-        this.z = z;
+        this.x = x; this.y = y; this.z = z;
     }
 }
