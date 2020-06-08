@@ -11,6 +11,7 @@ import android.content.Context;
 import android.opengl.GLSurfaceView;
 
 import com.twilightcitizen.whack_a_pede.models.GrassPatch;
+import com.twilightcitizen.whack_a_pede.models.HoleDirt;
 import com.twilightcitizen.whack_a_pede.models.Lawn;
 import com.twilightcitizen.whack_a_pede.models.Segment;
 import com.twilightcitizen.whack_a_pede.shaders.ColorShader;
@@ -65,6 +66,7 @@ public class GameRenderer implements GLSurfaceView.Renderer {
 
     // Some game models to place in scene.
     private Lawn lawn;
+    private HoleDirt holeDirt;
     private GrassPatch grassPatch;
     private Segment segment;
 
@@ -88,6 +90,7 @@ public class GameRenderer implements GLSurfaceView.Renderer {
 
         // Instantiate game models and ColorShader program for drawing them.
         lawn = new Lawn( lawnNormalHeight, lawnNormalWidth );
+        holeDirt = new HoleDirt( cellNormalRadius, 32 );
         grassPatch = new GrassPatch( cellNormalHeight );
         segment = new Segment( cellNormalRadius, 32 );
         colorShader = new ColorShader( context );
@@ -144,6 +147,20 @@ public class GameRenderer implements GLSurfaceView.Renderer {
         colorShader.setUniforms( modelViewMatrix, 0.0f, 0.5f, 0.0f, 1.0f );
         lawn.bindData( colorShader );
         lawn.draw();
+
+        positionModelInScene(
+            -lawnNormalWidth / 2.0f + cellNormalWidth,
+            lawnNormalHeight / 2.0f - cellNormalHeight,
+            0.0f
+        );
+
+        colorShader.setUniforms(
+            modelViewMatrix,
+            (float) 0x8B / 0xFF, (float) 0x45 / 0xFF, (float) 0x13 / 0xFF, 1.0f
+        );
+
+        holeDirt.bindData( colorShader );
+        holeDirt.draw();
 
         positionModelInScene( cellNormalWidth / 2.0f, cellNormalHeight / 2.0f, 0.0f );
         colorShader.setUniforms( modelViewMatrix, 0.0f, 0.0f, 1.0f, 1.0f );
