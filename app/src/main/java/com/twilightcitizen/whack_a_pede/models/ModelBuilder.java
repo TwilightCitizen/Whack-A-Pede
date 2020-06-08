@@ -8,6 +8,7 @@ MDV4910-O, C202006-01
 package com.twilightcitizen.whack_a_pede.models;
 
 import com.twilightcitizen.whack_a_pede.geometry.Circle;
+import com.twilightcitizen.whack_a_pede.geometry.Square;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -61,6 +62,7 @@ public class ModelBuilder {
     // When the ModelBuilder is built, it returns its Generated Data.
     public GeneratedData build() { return new GeneratedData( vertexData, drawList ); }
 
+    // Size of Circle in vertices.
     public static int sizeOfCircleInVertices( int numPoints ) { return numPoints + 2; }
 
     /*
@@ -102,5 +104,53 @@ public class ModelBuilder {
 
         // Only a single command is needed to draw the circle as a triangle fan.
         drawList.add( () -> glDrawArrays( GL_TRIANGLE_FAN, startVertex, numVertices ) );
+    }
+
+    // Size of Square in vertices.
+    public static final int sizeOfSquareInVertices = 6;
+
+    /*
+    Given a Square, generate data that specifies how to draw a fan triangles from its center to
+    compose a square.
+
+    TODO: Look at pushing out of ModelBuilder into Square somehow.
+    */
+    public void appendSquare( Square square ) {
+        // Find the starting vertex and the half length.
+        final int startVertex = offset / FLOATS_PER_VERTEX;
+        final float halfLength = square.length / 2.0f;
+
+        /*
+        First vertex requires the 3d position of the square center, which all triangles in the
+        fan will share in common.
+        */
+        vertexData[ offset++ ] = square.center.x;
+        vertexData[ offset++ ] = square.center.y;
+        vertexData[ offset++ ] = square.center.z;
+
+        //  Subsequent vertices fan around counterclockwise from bottom left.
+        vertexData[ offset++ ] = square.center.x - halfLength;
+        vertexData[ offset++ ] = square.center.y - halfLength;
+        vertexData[ offset++ ] = square.center.z;
+
+        vertexData[ offset++ ] = square.center.x + halfLength;
+        vertexData[ offset++ ] = square.center.y - halfLength;
+        vertexData[ offset++ ] = square.center.z;
+
+        vertexData[ offset++ ] = square.center.x + halfLength;
+        vertexData[ offset++ ] = square.center.y + halfLength;
+        vertexData[ offset++ ] = square.center.z;
+
+        vertexData[ offset++ ] = square.center.x - halfLength;
+        vertexData[ offset++ ] = square.center.y + halfLength;
+        vertexData[ offset++ ] = square.center.z;
+
+        // Repeat last outer vertex of the fan to close it.
+        vertexData[ offset++ ] = square.center.x - halfLength;
+        vertexData[ offset++ ] = square.center.y - halfLength;
+        vertexData[ offset++ ] = square.center.z;
+
+        // Only a single command is needed to draw the square as a triangle fan.
+        drawList.add( () -> glDrawArrays( GL_TRIANGLE_FAN, startVertex, sizeOfSquareInVertices ) );
     }
 }
