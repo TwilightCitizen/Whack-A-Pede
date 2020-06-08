@@ -207,19 +207,22 @@ public class ModelBuilder {
 
     // Size of SquareWithHole in vertices.
     public static int sizeOfSquareWithHoleInVertices( int numPointsQuarter ) {
-        return ( numPointsQuarter + 2 ); // * 4;
+        return ( numPointsQuarter + 2 ) * 4;
     }
 
     /*
     Given a SquareWithHole, generate data that specifies how to draw four fans of triangles, one
-    from each corner of the square toward points
+    from each corner of the square toward points circumscribing a quarter circle radiating from
+    its center point to the midpoints of the corner's perpendicular sides.
 
     TODO: Look at pushing out of ModelBuilder into Square somehow.
+
+    TODO: Too long.  Refactor, moving common code blocks to another function.
     */
     public void appendSquareWithHole( SquareWithHole squareWithHole, int numPointsQuarter ) {
         // Find the starting vertex, number of vertices, and half length.
         final int startVertex = offset / FLOATS_PER_VERTEX;
-        final int numVertices = sizeOfSquareWithHoleInVertices( numPointsQuarter );
+        final int numVerticesQuarter = sizeOfSquareWithHoleInVertices( numPointsQuarter ) / 4;
         // Half length also serves as the radius for the circle hole within the square.
         final float halfLength = squareWithHole.length / 2.0f;
 
@@ -248,7 +251,103 @@ public class ModelBuilder {
             vertexData[ offset++ ] = squareWithHole.center.z;
         }
 
-        // Add the command to draw the top left quarter of the square with hole.
-        drawList.add( () -> glDrawArrays( GL_TRIANGLE_FAN, startVertex, numVertices ) );
+        // Add the command to draw the top right quarter of the square with hole.
+        drawList.add( () -> glDrawArrays( GL_TRIANGLE_FAN, startVertex, numVerticesQuarter ) );
+
+        // Next vertex is the bottom right corner.
+        vertexData[ offset++ ] = squareWithHole.center.x + halfLength;
+        vertexData[ offset++ ] = squareWithHole.center.y - halfLength;
+        vertexData[ offset++ ] = squareWithHole.center.z;
+
+        /*
+        The next set of vertices circumscribe the arc of a circle filling the square from the
+        middle of its right edge to the middle of its bottom edge.
+        */
+        for( int i = 0; i <= numPointsQuarter; i++ ) {
+            /*
+            Get the angle in radians that, multiplied by numPointsQuarter, circumscribes a quarter
+            circle.
+            */
+            float angle = ( (float) i / (float) ( numPointsQuarter * 4 ) ) * ( (float) Math.PI * 2.0f );
+
+            angle -= (float) Math.PI * 0.5f;
+
+            /*
+            Use trigonometry to find the X and Y coordinates of the end of the triangle's
+            hypotenuse opposite its origin at the circle center cast at the given angle.
+            */
+            vertexData[ offset++ ] = squareWithHole.center.x + halfLength * (float) Math.cos( angle );
+            vertexData[ offset++ ] = squareWithHole.center.y + halfLength * (float) Math.sin( angle );
+            vertexData[ offset++ ] = squareWithHole.center.z;
+        }
+
+        // Add the command to draw the bottom right quarter of the square with hole.
+        drawList.add( () -> glDrawArrays(
+            GL_TRIANGLE_FAN, startVertex + numVerticesQuarter, numVerticesQuarter
+        ) );
+
+        // Next vertex is the bottom left corner.
+        vertexData[ offset++ ] = squareWithHole.center.x - halfLength;
+        vertexData[ offset++ ] = squareWithHole.center.y - halfLength;
+        vertexData[ offset++ ] = squareWithHole.center.z;
+
+        /*
+        The next set of vertices circumscribe the arc of a circle filling the square from the
+        middle of its bottom edge to the middle of its left edge.
+        */
+        for( int i = 0; i <= numPointsQuarter; i++ ) {
+            /*
+            Get the angle in radians that, multiplied by numPointsQuarter, circumscribes a quarter
+            circle.
+            */
+            float angle = ( (float) i / (float) ( numPointsQuarter * 4 ) ) * ( (float) Math.PI * 2.0f );
+
+            angle -= (float) Math.PI * 1.0f;
+
+            /*
+            Use trigonometry to find the X and Y coordinates of the end of the triangle's
+            hypotenuse opposite its origin at the circle center cast at the given angle.
+            */
+            vertexData[ offset++ ] = squareWithHole.center.x + halfLength * (float) Math.cos( angle );
+            vertexData[ offset++ ] = squareWithHole.center.y + halfLength * (float) Math.sin( angle );
+            vertexData[ offset++ ] = squareWithHole.center.z;
+        }
+
+        // Add the command to draw the bottom left quarter of the square with hole.
+        drawList.add( () -> glDrawArrays(
+            GL_TRIANGLE_FAN, startVertex + numVerticesQuarter * 2, numVerticesQuarter
+        ) );
+
+        // Next vertex is the top left corner.
+        vertexData[ offset++ ] = squareWithHole.center.x - halfLength;
+        vertexData[ offset++ ] = squareWithHole.center.y + halfLength;
+        vertexData[ offset++ ] = squareWithHole.center.z;
+
+        /*
+        The next set of vertices circumscribe the arc of a circle filling the square from the
+        middle of its bottom edge to the middle of its left edge.
+        */
+        for( int i = 0; i <= numPointsQuarter; i++ ) {
+            /*
+            Get the angle in radians that, multiplied by numPointsQuarter, circumscribes a quarter
+            circle.
+            */
+            float angle = ( (float) i / (float) ( numPointsQuarter * 4 ) ) * ( (float) Math.PI * 2.0f );
+
+            angle -= (float) Math.PI * 1.5f;
+
+            /*
+            Use trigonometry to find the X and Y coordinates of the end of the triangle's
+            hypotenuse opposite its origin at the circle center cast at the given angle.
+            */
+            vertexData[ offset++ ] = squareWithHole.center.x + halfLength * (float) Math.cos( angle );
+            vertexData[ offset++ ] = squareWithHole.center.y + halfLength * (float) Math.sin( angle );
+            vertexData[ offset++ ] = squareWithHole.center.z;
+        }
+
+        // Add the command to draw the bottom left quarter of the square with hole.
+        drawList.add( () -> glDrawArrays(
+            GL_TRIANGLE_FAN, startVertex + numVerticesQuarter * 3, numVerticesQuarter
+        ) );
     }
 }
