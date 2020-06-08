@@ -91,8 +91,12 @@ public class ModelBuilder {
             // Get the angle in radians that, multiplied by numPoints, circumscribes the circle.
             float angle = ( (float) i / (float) numPoints ) * ( (float) Math.PI * 2.0f );
 
+            /*
+            Use trigonometry to find the X and Y coordinates of the end of the triangle's
+            hypotenuse opposite its origin at the circle center cast at the given angel.
+            */
             vertexData[ offset++ ] = circle.center.x + circle.radius * (float) Math.cos( angle );
-            vertexData[ offset++ ] = circle.center.y + circle.radius * (float) Math.sin( angle );;
+            vertexData[ offset++ ] = circle.center.y + circle.radius * (float) Math.sin( angle );
             vertexData[ offset++ ] = circle.center.z;
         }
 
