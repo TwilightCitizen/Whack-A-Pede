@@ -45,9 +45,9 @@ public class ColorShader extends ShaderProgram {
     }
 
     // Set the matrix and color uniforms with those provided.
-    public void setUniforms( float[] matrix, float r, float g, float b ) {
+    public void setUniforms( float[] matrix, float r, float g, float b, float a ) {
         glUniformMatrix4fv( uMatrixLocation, 1, false, matrix, 0 );
-        glUniform4f( uColorLocation, r, g, b, 1.0f );
+        glUniform4f( uColorLocation, r, g, b, a );
     }
 
     /*
