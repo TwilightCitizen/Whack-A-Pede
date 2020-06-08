@@ -10,6 +10,7 @@ package com.twilightcitizen.whack_a_pede.models;
 import com.twilightcitizen.whack_a_pede.geometry.Circle;
 import com.twilightcitizen.whack_a_pede.geometry.Rectangle;
 import com.twilightcitizen.whack_a_pede.geometry.Square;
+import com.twilightcitizen.whack_a_pede.geometry.SquareWithHole;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -96,7 +97,7 @@ public class ModelBuilder {
 
             /*
             Use trigonometry to find the X and Y coordinates of the end of the triangle's
-            hypotenuse opposite its origin at the circle center cast at the given angel.
+            hypotenuse opposite its origin at the circle center cast at the given angle.
             */
             vertexData[ offset++ ] = circle.center.x + circle.radius * (float) Math.cos( angle );
             vertexData[ offset++ ] = circle.center.y + circle.radius * (float) Math.sin( angle );
@@ -164,7 +165,7 @@ public class ModelBuilder {
 
     TODO: Look at pushing out of ModelBuilder into Square somehow.
     */
-    public void appendSquare( Rectangle rectangle ) {
+    public void appendRectangle( Rectangle rectangle ) {
         // Find the starting vertex adn the half height and width.
         final int startVertex = offset / FLOATS_PER_VERTEX;
         final float halfHeight = rectangle.height / 2.0f;
@@ -200,7 +201,54 @@ public class ModelBuilder {
         vertexData[ offset++ ] = rectangle.center.y - halfHeight;
         vertexData[ offset++ ] = rectangle.center.z;
 
-        // Only a single command is needed to draw the square as a triangle fan.
+        // Only a single command is needed to draw the rectangle as a triangle fan.
         drawList.add( () -> glDrawArrays( GL_TRIANGLE_FAN, startVertex, sizeOfRectangleInVertices ) );
+    }
+
+    // Size of SquareWithHole in vertices.
+    public static int sizeOfSquareWithHoleInVertices( int numPointsQuarter ) {
+        return ( numPointsQuarter + 2 ); // * 4;
+    }
+
+    /*
+    Given a SquareWithHole, generate data that specifies how to draw four fans of triangles, one
+    from each corner of the square toward points
+
+    TODO: Look at pushing out of ModelBuilder into Square somehow.
+    */
+    public void appendSquareWithHole( SquareWithHole squareWithHole, int numPointsQuarter ) {
+        // Find the starting vertex, number of vertices, and half length.
+        final int startVertex = offset / FLOATS_PER_VERTEX;
+        final int numVertices = sizeOfSquareWithHoleInVertices( numPointsQuarter );
+        // Half length also serves as the radius for the circle hole within the square.
+        final float halfLength = squareWithHole.length / 2.0f;
+
+        // First vertex is the top right corner.
+        vertexData[ offset++ ] = squareWithHole.center.x + halfLength;
+        vertexData[ offset++ ] = squareWithHole.center.y + halfLength;
+        vertexData[ offset++ ] = squareWithHole.center.z;
+
+        /*
+        The next set of vertices circumscribe the arc of a circle filling the square from the
+        middle of its top edge to the middle of its right edge.
+        */
+        for( int i = 0; i <= numPointsQuarter; i++ ) {
+            /*
+            Get the angle in radians that, multiplied by numPointsQuarter, circumscribes a quarter
+            circle.
+            */
+            float angle = ( (float) i / (float) ( numPointsQuarter * 4 ) ) * ( (float) Math.PI * 2.0f );
+
+            /*
+            Use trigonometry to find the X and Y coordinates of the end of the triangle's
+            hypotenuse opposite its origin at the circle center cast at the given angle.
+            */
+            vertexData[ offset++ ] = squareWithHole.center.x + halfLength * (float) Math.cos( angle );
+            vertexData[ offset++ ] = squareWithHole.center.y + halfLength * (float) Math.sin( angle );
+            vertexData[ offset++ ] = squareWithHole.center.z;
+        }
+
+        // Add the command to draw the top left quarter of the square with hole.
+        drawList.add( () -> glDrawArrays( GL_TRIANGLE_FAN, startVertex, numVertices ) );
     }
 }

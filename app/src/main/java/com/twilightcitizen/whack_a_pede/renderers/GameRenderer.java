@@ -10,6 +10,7 @@ package com.twilightcitizen.whack_a_pede.renderers;
 import android.content.Context;
 import android.opengl.GLSurfaceView;
 
+import com.twilightcitizen.whack_a_pede.models.GrassHole;
 import com.twilightcitizen.whack_a_pede.models.GrassPatch;
 import com.twilightcitizen.whack_a_pede.models.HoleDirt;
 import com.twilightcitizen.whack_a_pede.models.Lawn;
@@ -45,8 +46,8 @@ public class GameRenderer implements GLSurfaceView.Renderer {
     /*
     The Whack-A-Pede Lawn assumes a square cellular construction, 7 cells across the X axis by 11
     cells across the Y axis.  This accommodates a grid of 3 holes across the X axis by 5 holes across
-    the Y axis with cells set around and in between each for turns.  If the height of the Lawn should
-    fill the height of the whole viewport with a normalized height of 2, then the width should fill
+    the Y axis with turns set on, around, and  between each.  If the height of the Lawn should fill
+    the height of the whole viewport with a normalized height of 2, then the width should fill
     2 x ( 7 / 11 ), or approximately 1.27 where the 27 repeats.
     */
     private static final float lawnCellsXAxis = 7.0f;
@@ -64,10 +65,58 @@ public class GameRenderer implements GLSurfaceView.Renderer {
     private static final float cellNormalWidth = lawnNormalWidth / lawnCellsXAxis;
     private static final float cellNormalRadius = cellNormalHeight / 2.0f;
 
+    /*
+    Lines along the X and Y axes where the grid of Holes on the Lawn will be placed.
+    */
+
+    private static final float[] holesX = new float[] {
+        0.0f - cellNormalWidth * 2.0f,
+        0.0f,
+        0.0f + cellNormalWidth * 2.0f
+    };
+
+    private static final float[] holesY = new float[] {
+        0.0f - cellNormalHeight * 4.0f,
+        0.0f - cellNormalHeight * 2.0f,
+        0.0f,
+        0.0f + cellNormalHeight * 2.0f,
+        0.0f + cellNormalHeight * 4.0f
+    };
+
+    /*
+    Lines along the X and Y axes where the grid of Turns on the Lawn will be placed.
+    */
+
+    private static final float[] turnsX = new float[] {
+        0.0f - cellNormalWidth * 3.0f,
+        0.0f - cellNormalWidth * 2.0f,
+        0.0f - cellNormalWidth * 1.0f,
+        0.0f,
+        0.0f + cellNormalWidth * 1.0f,
+        0.0f + cellNormalWidth * 2.0f,
+        0.0f + cellNormalWidth * 3.0f
+    };
+
+    private static final float[] turnsY = new float[] {
+        0.0f - cellNormalHeight * 5.0f,
+        0.0f - cellNormalHeight * 4.0f,
+        0.0f - cellNormalHeight * 3.0f,
+        0.0f - cellNormalHeight * 2.0f,
+        0.0f - cellNormalHeight * 1.0f,
+        0.0f,
+        0.0f + cellNormalHeight * 1.0f,
+        0.0f + cellNormalHeight * 2.0f,
+        0.0f + cellNormalHeight * 3.0f,
+        0.0f + cellNormalHeight * 4.0f,
+        0.0f + cellNormalHeight * 5.0f
+
+    };
+
     // Some game models to place in scene.
     private Lawn lawn;
     private HoleDirt holeDirt;
     private GrassPatch grassPatch;
+    private GrassHole grassHole;
     private Segment segment;
 
     // ColorShader program for drawing game models in scene with solid colors to screen.
@@ -92,6 +141,7 @@ public class GameRenderer implements GLSurfaceView.Renderer {
         lawn = new Lawn( lawnNormalHeight, lawnNormalWidth );
         holeDirt = new HoleDirt( cellNormalRadius, 32 );
         grassPatch = new GrassPatch( cellNormalHeight );
+        grassHole = new GrassHole( cellNormalHeight, 8 );
         segment = new Segment( cellNormalRadius, 32 );
         colorShader = new ColorShader( context );
     }
@@ -143,34 +193,53 @@ public class GameRenderer implements GLSurfaceView.Renderer {
         orthographically projected and rotated view, binding the model's data it and drawing it.
         */
 
+        positionLawnInScene();
+        positionHoleDirtInScene();
+        //positionSegmentInScene();
+        //positionGrassPatchInScene();
+        positionGrassHoleInScene();
+    }
+
+    private void positionGrassHoleInScene() {
         positionModelInScene( 0.0f, 0.0f, 0.0f );
-        colorShader.setUniforms( modelViewMatrix, 0.0f, 0.5f, 0.0f, 1.0f );
-        lawn.bindData( colorShader );
-        lawn.draw();
+        colorShader.setUniforms( modelViewMatrix, 0.0f, 0.0f, 0.0f, 1.0f );
+        grassHole.bindData( colorShader );
+        grassHole.draw();
+    }
 
-        positionModelInScene(
-            -lawnNormalWidth / 2.0f + cellNormalWidth,
-            lawnNormalHeight / 2.0f - cellNormalHeight,
-            0.0f
-        );
-
-        colorShader.setUniforms(
-            modelViewMatrix,
-            (float) 0x8B / 0xFF, (float) 0x45 / 0xFF, (float) 0x13 / 0xFF, 1.0f
-        );
-
-        holeDirt.bindData( colorShader );
-        holeDirt.draw();
-
-        positionModelInScene( cellNormalWidth / 2.0f, cellNormalHeight / 2.0f, 0.0f );
-        colorShader.setUniforms( modelViewMatrix, 0.0f, 0.0f, 1.0f, 1.0f );
-        segment.bindData( colorShader );
-        segment.draw();
-
+    private void positionGrassPatchInScene() {
         positionModelInScene( 0.0f, 0.0f, 0.0f );
         colorShader.setUniforms( modelViewMatrix, 0.0f, 0.5f, 0.0f, 0.8f );
         grassPatch.bindData( colorShader );
         grassPatch.draw();
+    }
+
+    private void positionSegmentInScene() {
+        positionModelInScene( cellNormalWidth / 2.0f, cellNormalHeight / 2.0f, 0.0f );
+        colorShader.setUniforms( modelViewMatrix, 0.0f, 0.0f, 1.0f, 1.0f );
+        segment.bindData( colorShader );
+        segment.draw();
+    }
+
+    private void positionHoleDirtInScene() {
+        for( float holeX : holesX ) for( float holeY : holesY ) {
+            positionModelInScene( holeX, holeY,  0.0f );
+
+            colorShader.setUniforms(
+                modelViewMatrix,
+                ( float ) 0x8B / 0xFF, ( float ) 0x45 / 0xFF, ( float ) 0x13 / 0xFF, 1.0f
+            );
+
+            holeDirt.bindData( colorShader );
+            holeDirt.draw();
+        }
+    }
+
+    private void positionLawnInScene() {
+        positionModelInScene( 0.0f, 0.0f, 0.0f );
+        colorShader.setUniforms( modelViewMatrix, 0.0f, 0.5f, 0.0f, 1.0f );
+        lawn.bindData( colorShader );
+        lawn.draw();
     }
 
     // Position a model in the scene at specific X, Y, and Z cartesian space coordinates.
