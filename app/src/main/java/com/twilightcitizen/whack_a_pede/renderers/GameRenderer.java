@@ -184,7 +184,7 @@ public class GameRenderer implements GLSurfaceView.Renderer {
 
     // Repeatedly called to draw frames to the GLSurfaceView.  Parameter gl is ignored.
     @Override public void onDrawFrame( GL10 gl ) {
-        // Clear the screen with the clear color.
+        // Clear the whole screen with the clear color.
         glClear( GL_COLOR_BUFFER_BIT );
 
         // Use the stencil buffer to confine all models in scene to the lawn.
@@ -204,9 +204,21 @@ public class GameRenderer implements GLSurfaceView.Renderer {
         positionSegmentInScene();
         //positionGrassPatchesInScene();
 
+        // Anything drawn after this point will not be confined to the lawn.
         glDisable( GL_STENCIL_TEST );
     }
 
+    /*
+    Confining the scene to the Lawn prevents OpenGL from drawing anything outside of it, clipping
+    or discarding fragments that would have been drawn otherwise.  The stencil buffer is another
+    buffer on the graphics hardware where scene models can be drawn, but rather than displaying
+    these on screen, these can be used to modify other models drawn to the color buffer which are
+    are eventually sent to the screen.  This tells OpenGL that for whatever models are drawn, put
+    a 2 (arbitrary) for that pixel in the stencil buffer.  Then, for every model drawn to the color
+    buffer afterward, check its pixels against the ones in the stencil buffer.  If they are equal to
+    2, then keep them. Otherwise, discard them.  This was adapted from research provided by New
+    Castle Univeristy at https://research.ncl.ac.uk/game/mastersdegree/graphicsforgames/.
+    */
     private void confineSceneToLawn() {
         glEnable(GL_STENCIL_TEST);
         glColorMask(false , false , false , false);
