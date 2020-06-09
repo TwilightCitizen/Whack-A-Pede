@@ -3,7 +3,6 @@ package com.twilightcitizen.whack_a_pede.models;
 import com.twilightcitizen.whack_a_pede.data.VertexArray;
 import com.twilightcitizen.whack_a_pede.geometry.Point;
 import com.twilightcitizen.whack_a_pede.geometry.Rectangle;
-import com.twilightcitizen.whack_a_pede.geometry.Square;
 import com.twilightcitizen.whack_a_pede.shaders.ColorShader;
 
 /*

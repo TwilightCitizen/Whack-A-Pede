@@ -36,13 +36,6 @@ public class GameRenderer implements GLSurfaceView.Renderer {
     // Context will be required by shader programs that read in GLSL resource files.
     private Context context;
 
-    // Model matrix for manipulating models without respect to the entire scene.
-    private final float[] modelMatrix = new float[ 16 ];
-    // View matrix for orthographic projection of scene from normalized to device coordinates.
-    private final float[] viewMatrix = new float[ 16 ];
-    // Matrix for entire scene, orthographically projected with all models placed in it.
-    private final float[] modelViewMatrix = new float[ 16 ];
-
     /*
     The Whack-A-Pede Lawn assumes a square cellular construction, 7 cells across the X axis by 11
     cells across the Y axis.  This accommodates a grid of 3 holes across the X axis by 5 holes across
@@ -64,6 +57,9 @@ public class GameRenderer implements GLSurfaceView.Renderer {
     private static final float cellNormalHeight = lawnNormalHeight / lawnCellsYAxis;
     private static final float cellNormalWidth = lawnNormalWidth / lawnCellsXAxis;
     private static final float cellNormalRadius = cellNormalHeight / 2.0f;
+
+    private static final float holeNormalRadius = cellNormalRadius;
+    private static final float segmentNormalRadius = cellNormalRadius * 0.8f;
 
     /*
     Lines along the X and Y axes where the grid of Holes on the Lawn will be placed.
@@ -109,8 +105,14 @@ public class GameRenderer implements GLSurfaceView.Renderer {
         0.0f + cellNormalHeight * 3.0f,
         0.0f + cellNormalHeight * 4.0f,
         0.0f + cellNormalHeight * 5.0f
-
     };
+
+    // Model matrix for manipulating models without respect to the entire scene.
+    private final float[] modelMatrix = new float[ 16 ];
+    // View matrix for orthographic projection of scene from normalized to device coordinates.
+    private final float[] viewMatrix = new float[ 16 ];
+    // Matrix for entire scene, orthographically projected with all models placed in it.
+    private final float[] modelViewMatrix = new float[ 16 ];
 
     // Some game models to place in scene.
     private Lawn lawn;
@@ -139,10 +141,10 @@ public class GameRenderer implements GLSurfaceView.Renderer {
 
         // Instantiate game models and ColorShader program for drawing them.
         lawn = new Lawn( lawnNormalHeight, lawnNormalWidth );
-        holeDirt = new HoleDirt( cellNormalRadius, 32 );
+        holeDirt = new HoleDirt( holeNormalRadius, 32 );
         grassPatch = new GrassPatch( cellNormalHeight );
         grassHole = new GrassHole( cellNormalHeight, 8 );
-        segment = new Segment( cellNormalRadius, 32 );
+        segment = new Segment( segmentNormalRadius, 32 );
         colorShader = new ColorShader( context );
     }
 
@@ -172,11 +174,11 @@ public class GameRenderer implements GLSurfaceView.Renderer {
         */
         if( width > height ) {
             // Landscape orientation.
-            orthoM( viewMatrix, 0, -aspectRatio, aspectRatio, -1f, 1f, -1f, 1f );
+            orthoM( viewMatrix, 0, -aspectRatio, aspectRatio, -1.0f, 1.0f, -1.0f, 1.0f );
             rotateM( viewMatrix, 0, 90.0f, 0.0f, 0.0f, 1.0f );
         } else {
             // Portrait orientation or square device.
-            orthoM( viewMatrix, 0, -1f, 1f, -aspectRatio, aspectRatio, -1f, 1f );
+            orthoM( viewMatrix, 0, -1.0f, 1.0f, -aspectRatio, aspectRatio, -1.0f, 1.0f );
         }
     }
 
@@ -184,6 +186,9 @@ public class GameRenderer implements GLSurfaceView.Renderer {
     @Override public void onDrawFrame( GL10 gl ) {
         // Clear the screen with the clear color.
         glClear( GL_COLOR_BUFFER_BIT );
+
+        // Use the stencil buffer to confine all models in scene to the lawn.
+        confineSceneToLawn();
 
         // Use the ColorShader program to draw models into the scene.
         colorShader.use();
@@ -195,19 +200,35 @@ public class GameRenderer implements GLSurfaceView.Renderer {
 
         positionLawnInScene();
         positionHoleDirtInScene();
-        //positionSegmentInScene();
-        //positionGrassPatchInScene();
-        positionGrassHoleInScene();
+        positionGrassHolesInScene();
+        positionSegmentInScene();
+        //positionGrassPatchesInScene();
+
+        glDisable( GL_STENCIL_TEST );
     }
 
-    private void positionGrassHoleInScene() {
-        positionModelInScene( 0.0f, 0.0f, 0.0f );
-        colorShader.setUniforms( modelViewMatrix, 0.0f, 0.0f, 0.0f, 1.0f );
-        grassHole.bindData( colorShader );
-        grassHole.draw();
+    private void confineSceneToLawn() {
+        glEnable(GL_STENCIL_TEST);
+        glColorMask(false , false , false , false);
+        glStencilFunc(GL_ALWAYS , 2, ~0);
+        glStencilOp(GL_REPLACE , GL_REPLACE , GL_REPLACE);
+        positionLawnInScene();
+        glColorMask(true, true, true, true);
+        glStencilFunc(GL_EQUAL , 2, ~0);
+        glStencilOp(GL_KEEP, GL_KEEP, GL_KEEP);
     }
 
-    private void positionGrassPatchInScene() {
+    private void positionGrassHolesInScene() {
+        for( float holeX : holesX ) for( float holeY : holesY ) {
+            positionModelInScene( holeX, holeY,  0.0f );
+            colorShader.setUniforms( modelViewMatrix,0.0f, 0.5f, 0.0f, 0.8f );
+            grassHole.bindData( colorShader );
+            grassHole.draw();
+        }
+    }
+
+    private void positionGrassPatchesInScene() {
+        // TODO: Apply between and around all holes.
         positionModelInScene( 0.0f, 0.0f, 0.0f );
         colorShader.setUniforms( modelViewMatrix, 0.0f, 0.5f, 0.0f, 0.8f );
         grassPatch.bindData( colorShader );
@@ -215,7 +236,7 @@ public class GameRenderer implements GLSurfaceView.Renderer {
     }
 
     private void positionSegmentInScene() {
-        positionModelInScene( cellNormalWidth / 2.0f, cellNormalHeight / 2.0f, 0.0f );
+        positionModelInScene( 0.0f, 1.0f, 0.0f );
         colorShader.setUniforms( modelViewMatrix, 0.0f, 0.0f, 1.0f, 1.0f );
         segment.bindData( colorShader );
         segment.draw();
@@ -227,7 +248,7 @@ public class GameRenderer implements GLSurfaceView.Renderer {
 
             colorShader.setUniforms(
                 modelViewMatrix,
-                ( float ) 0x8B / 0xFF, ( float ) 0x45 / 0xFF, ( float ) 0x13 / 0xFF, 1.0f
+                ( float ) 0x52 / 0xFF, ( float ) 0x41 / 0xFF, ( float ) 0x00 / 0xFF, 1.0f
             );
 
             holeDirt.bindData( colorShader );
