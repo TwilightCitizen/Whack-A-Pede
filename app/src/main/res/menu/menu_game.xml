@@ -12,4 +12,16 @@ MDV4910-O, C202006-01
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     tools:context="com.twilightcitizen.whack_a_pede.activities.GameActivity">
+
+    <item
+        android:id="@+id/action_play_pause"
+        android:title="@string/playpause"
+        android:icon="@drawable/icon_play"
+        app:showAsAction="ifRoom" />
+
+    <item
+        android:id="@+id/action_sign_in_out"
+        android:title="@string/signinout"
+        android:icon="@drawable/icon_account"
+        app:showAsAction="never" />
 </menu>

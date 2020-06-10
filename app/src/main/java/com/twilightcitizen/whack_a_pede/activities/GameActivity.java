@@ -7,9 +7,11 @@ MDV4910-O, C202006-01
 
 package com.twilightcitizen.whack_a_pede.activities;
 
+import android.annotation.SuppressLint;
 import android.os.Bundle;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.view.menu.MenuBuilder;
 import androidx.appcompat.widget.Toolbar;
 
 import android.view.Menu;
@@ -38,8 +40,12 @@ public class GameActivity extends AppCompatActivity {
     }
 
     // Inflate any options available to the entire application.
+    @SuppressLint( "RestrictedApi" )
     @Override public boolean onCreateOptionsMenu( Menu menu ) {
         getMenuInflater().inflate( R.menu.menu_game, menu );
+
+        if( menu instanceof MenuBuilder )
+            ( (MenuBuilder) menu ).setOptionalIconsVisible( true );
 
         return true;
     }

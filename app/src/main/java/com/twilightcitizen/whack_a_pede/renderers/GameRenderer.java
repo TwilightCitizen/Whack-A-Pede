@@ -217,7 +217,7 @@ public class GameRenderer implements GLSurfaceView.Renderer {
     a 2 (arbitrary) for that pixel in the stencil buffer.  Then, for every model drawn to the color
     buffer afterward, check its pixels against the ones in the stencil buffer.  If they are equal to
     2, then keep them. Otherwise, discard them.  This was adapted from research provided by New
-    Castle Univeristy at https://research.ncl.ac.uk/game/mastersdegree/graphicsforgames/.
+    Castle University at https://research.ncl.ac.uk/game/mastersdegree/graphicsforgames/.
     */
     private void confineSceneToLawn() {
         glEnable(GL_STENCIL_TEST);

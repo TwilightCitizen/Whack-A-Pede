@@ -13,6 +13,7 @@ MDV4910-O, C202006-01
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:keepScreenOn="true"
     tools:context=".fragments.GameFragment">
 
     <androidx.constraintlayout.widget.ConstraintLayout
