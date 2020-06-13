@@ -7,16 +7,23 @@ MDV4910-O, C202006-01
 
 package com.twilightcitizen.whack_a_pede.fragments;
 
-import android.app.AlertDialog;
-import android.content.DialogInterface;
+import android.annotation.SuppressLint;
 import android.opengl.GLSurfaceView;
 import android.os.Bundle;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.FrameLayout;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.appcompat.view.menu.MenuBuilder;
 import androidx.fragment.app.Fragment;
+import androidx.navigation.NavController;
+import androidx.navigation.fragment.NavHostFragment;
 
 import com.twilightcitizen.whack_a_pede.R;
 import com.twilightcitizen.whack_a_pede.renderers.GameRenderer;
@@ -33,10 +40,17 @@ public class GameFragment extends Fragment {
     // Flag prevents pausing or resuming non-existent renderer.
     private boolean rendererSet = false;
 
+    private Menu menu;
+
+    @Override public void onCreate( @Nullable Bundle savedInstanceState ) {
+        super.onCreate( savedInstanceState );
+        setHasOptionsMenu( true );
+    }
+
     /*
-    At creation, find the frame for the Lawn within the layout, create the GLSurfaceView to go
-    into it, set it up with a renderer, and then add it to the frame, returning the modified view.
-    */
+        At creation, find the frame for the Lawn within the layout, create the GLSurfaceView to go
+        into it, set it up with a renderer, and then add it to the frame, returning the modified view.
+        */
     @Override public View onCreateView(
         LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState
     ) {
@@ -74,5 +88,32 @@ public class GameFragment extends Fragment {
 
         // Resume the SurfaceView when GameFragment starts or resumes.
         if( rendererSet ) surfaceView.onResume();
+    }
+
+    @SuppressLint( "RestrictedApi" ) @Override public void onCreateOptionsMenu(
+        @NonNull Menu menu, @NonNull MenuInflater inflater
+    ) {
+        this.menu = menu;
+
+        inflater.inflate( R.menu.menu_game, menu );
+
+        if( menu instanceof MenuBuilder )
+            ( (MenuBuilder) menu ).setOptionalIconsVisible( true );
+    }
+
+    @Override public boolean onOptionsItemSelected( @NonNull MenuItem item ) {
+        NavController navController = NavHostFragment.findNavController( GameFragment.this );
+        int itemId = item.getItemId();
+
+        switch( itemId ) {
+            case R.id.action_change_settings:
+                navController.navigate( R.id.action_game_to_settings ); return true;
+            case R.id.action_view_credits:
+                navController.navigate( R.id.action_game_to_credits ); return true;
+            case R.id.action_view_leaderboard:
+                navController.navigate( R.id.action_game_to_leaderboard ); return true;
+        }
+
+        return super.onOptionsItemSelected( item );
     }
 }

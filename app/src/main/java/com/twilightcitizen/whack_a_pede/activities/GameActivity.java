@@ -7,15 +7,13 @@ MDV4910-O, C202006-01
 
 package com.twilightcitizen.whack_a_pede.activities;
 
-import android.annotation.SuppressLint;
 import android.os.Bundle;
 
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.appcompat.view.menu.MenuBuilder;
 import androidx.appcompat.widget.Toolbar;
-
-import android.view.Menu;
-import android.view.MenuItem;
+import androidx.navigation.NavController;
+import androidx.navigation.Navigation;
+import androidx.navigation.ui.NavigationUI;
 
 import com.twilightcitizen.whack_a_pede.R;
 
@@ -39,21 +37,24 @@ public class GameActivity extends AppCompatActivity {
         setSupportActionBar( toolbar );
     }
 
-    // Inflate any options available to the entire application.
-    @SuppressLint( "RestrictedApi" )
-    @Override public boolean onCreateOptionsMenu( Menu menu ) {
-        getMenuInflater().inflate( R.menu.menu_game, menu );
-
-        if( menu instanceof MenuBuilder )
-            ( (MenuBuilder) menu ).setOptionalIconsVisible( true );
-
-        return true;
+    @Override protected void onStart() {
+        super.onStart();
+        setupActionBarNav();
     }
 
-    // Act on any selected options available to the entire application.
-    @Override public boolean onOptionsItemSelected( MenuItem item ) {
-        if( item.getItemId() > 0 ) return true;
+    private void setupActionBarNav() {
+        NavController navController = Navigation.findNavController( this, R.id.nav_host_fragment );
 
-        return super.onOptionsItemSelected( item );
+        NavigationUI.setupActionBarWithNavController( this, navController );
+    }
+
+    @Override public boolean onSupportNavigateUp() {
+        onBackPressed();
+
+        return super.onSupportNavigateUp();
+    }
+
+    @Override public void onBackPressed() {
+        super.onBackPressed();
     }
 }

@@ -19,5 +19,48 @@ MDV4910-O, C202006-01
         android:name="com.twilightcitizen.whack_a_pede.fragments.GameFragment"
         android:label="@string/app_name"
         tools:layout="@layout/fragment_game">
+
+        <action
+            android:id="@+id/action_game_to_credits"
+            app:destination="@id/credits_fragment" />
+
+        <action
+            android:id="@+id/action_game_to_leaderboard"
+            app:destination="@id/leaderboard_fragment" />
+
+        <action
+            android:id="@+id/action_game_to_settings"
+            app:destination="@id/settings_fragment" />
+
+        <action
+            android:id="@+id/action_game_to_game_over"
+            app:destination="@id/game_over_fragment" />
+    </fragment>
+
+    <fragment
+        android:id="@+id/credits_fragment"
+        android:name="com.twilightcitizen.whack_a_pede.fragments.CreditsFragment"
+        android:label="@string/credits"
+        tools:layout="@layout/fragment_credits">
+    </fragment>
+
+    <fragment
+        android:id="@+id/leaderboard_fragment"
+        android:name="com.twilightcitizen.whack_a_pede.fragments.LeaderboardFragment"
+        android:label="@string/leaderboard"
+        tools:layout="@layout/fragment_leaderboard">
+    </fragment>
+
+    <fragment
+        android:id="@+id/settings_fragment"
+        android:name="com.twilightcitizen.whack_a_pede.fragments.SettingsFragment"
+        android:label="@string/settings">
+    </fragment>
+
+    <fragment
+        android:id="@+id/game_over_fragment"
+        android:name="com.twilightcitizen.whack_a_pede.fragments.GameOverFragment"
+        android:label="@string/game_over"
+        tools:layout="@layout/fragment_game_over">
     </fragment>
 </navigation>
