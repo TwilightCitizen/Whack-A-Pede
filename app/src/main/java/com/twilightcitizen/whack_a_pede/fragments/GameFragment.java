@@ -7,6 +7,8 @@ MDV4910-O, C202006-01
 
 package com.twilightcitizen.whack_a_pede.fragments;
 
+import android.app.AlertDialog;
+import android.content.DialogInterface;
 import android.opengl.GLSurfaceView;
 import android.os.Bundle;
 import android.view.LayoutInflater;

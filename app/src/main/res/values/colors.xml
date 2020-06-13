@@ -11,4 +11,25 @@ MDV4910-O, C202006-01
     <color name="colorPrimary">#6200EE</color>
     <color name="colorPrimaryDark">#3700B3</color>
     <color name="colorAccent">#03DAC5</color>
+
+    <color name="sunshine_yellow">#FFD946</color>
+    <color name="sunset_yellow">#EBC83F</color>
+    <color name="sun_bleached">#FFF8DE</color>
+
+    <color name="day_blue">#00C4FF</color>
+    <color name="night_blue">#006280</color>
+
+    <color name="grass_green">#00A315</color>
+    <color name="grass_trans">#CC00A315</color>
+    <color name="grass_green_pressed">#007A10</color>
+    <color name="grass_green_focused">#008F13</color>
+
+    <color name="earth_brown">#524100</color>
+    <color name="earth_brown_pressed">#292100</color>
+    <color name="earth_brown_focused">#3D3100</color>
+
+    <color name="plain_grey">#999999</color>
+    <color name="plain_white">#FFFFFF</color>
+    <color name="not_quite_black">#656565</color>
+    <color name="plain_black">#000000</color>
 </resources>

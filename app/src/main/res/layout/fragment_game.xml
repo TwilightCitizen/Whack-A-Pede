@@ -55,6 +55,7 @@ MDV4910-O, C202006-01
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toEndOf="@id/image_avatar"
             app:layout_constraintTop_toBottomOf="@id/text_score" />
+
     </androidx.constraintlayout.widget.ConstraintLayout>
 
     <FrameLayout
@@ -64,5 +65,7 @@ MDV4910-O, C202006-01
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/constraint_scoreboard" />
+        app:layout_constraintTop_toBottomOf="@id/constraint_scoreboard">
+
+    </FrameLayout>
 </androidx.constraintlayout.widget.ConstraintLayout>

@@ -8,20 +8,20 @@ MDV4910-O, C202006-01
 -->
 
 <resources>
-    <!-- Base application theme. -->
-    <style name="AppTheme" parent="Theme.AppCompat.Light.DarkActionBar">
-        <!-- Customize your theme here. -->
-        <item name="colorPrimary">@color/colorPrimary</item>
-        <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
-        <item name="colorAccent">@color/colorAccent</item>
-    </style>
-
-    <style name="AppTheme.NoActionBar">
+    <style name="Whackapede" parent="Theme.AppCompat.Light">
+        <item name="colorPrimary">@color/sunshine_yellow</item>
+        <item name="colorPrimaryDark">@color/sunset_yellow</item>
+        <item name="colorAccent">@color/day_blue</item>
+        <item name="android:colorBackground">@color/sunshine_yellow</item>
         <item name="windowActionBar">false</item>
         <item name="windowNoTitle">true</item>
         <item name="android:windowFullscreen">true</item>
     </style>
 
-    <style name="AppTheme.AppBarOverlay" parent="ThemeOverlay.AppCompat.Dark.ActionBar" />
-    <style name="AppTheme.PopupOverlay" parent="ThemeOverlay.AppCompat.Light" />
+    <style name="Whackapede.ActionBar">
+        <item name="titleTextColor">@color/earth_brown</item>
+        <item name="android:colorBackground">@color/sun_bleached</item>
+        <item name="android:textColor">@color/grass_green</item>
+        <item name="android:textColorSecondary">@color/grass_green</item>
+    </style>
 </resources>

@@ -15,13 +15,37 @@ MDV4910-O, C202006-01
 
     <item
         android:id="@+id/action_play_pause"
-        android:title="@string/playpause"
+        android:title="@string/play_game"
         android:icon="@drawable/icon_play"
         app:showAsAction="ifRoom" />
 
     <item
+        android:id="@+id/action_quit_game"
+        android:title="@string/quit_game"
+        android:icon="@drawable/icon_quit"
+        app:showAsAction="never" />
+
+    <item
         android:id="@+id/action_sign_in_out"
-        android:title="@string/signinout"
+        android:title="@string/sign_in"
         android:icon="@drawable/icon_account"
+        app:showAsAction="never" />
+
+    <item
+        android:id="@+id/action_view_leaderboard"
+        android:title="@string/view_leaderboard"
+        android:icon="@drawable/icon_leaderboard"
+        app:showAsAction="never" />
+
+    <item
+        android:id="@+id/action_change_settings"
+        android:title="@string/change_settings"
+        android:icon="@drawable/icon_settings"
+        app:showAsAction="never" />
+
+    <item
+        android:id="@+id/action_view_credits"
+        android:title="@string/view_credits"
+        android:icon="@drawable/icon_credits"
         app:showAsAction="never" />
 </menu>

@@ -10,6 +10,13 @@ MDV4910-O, C202006-01
 <resources>
     <string name="app_name">Whack-A-Pede</string>
     <string name="avatar">Player or Guest Avatar</string>
-    <string name="playpause">PlayPause</string>
-    <string name="signinout">SignInOut</string>
+    <string name="play_game">Play Game</string>
+    <string name="pause_game">Pause Game</string>
+    <string name="resume_game">Resume Game</string>
+    <string name="quit_game">Quit Game</string>
+    <string name="sign_in">Sign In with Google</string>
+    <string name="sign_out">Sign Out</string>
+    <string name="view_leaderboard">View Leaderboard</string>
+    <string name="change_settings">Change Settings</string>
+    <string name="view_credits">View Credits</string>
 </resources>
