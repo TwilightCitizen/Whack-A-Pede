@@ -54,7 +54,5 @@ public class GameActivity extends AppCompatActivity {
         return super.onSupportNavigateUp();
     }
 
-    @Override public void onBackPressed() {
-        super.onBackPressed();
-    }
+    @Override public void onBackPressed() { super.onBackPressed(); }
 }

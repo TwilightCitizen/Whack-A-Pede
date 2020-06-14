@@ -14,8 +14,20 @@ MDV4910-O, C202006-01
     tools:context="com.twilightcitizen.whack_a_pede.activities.GameActivity">
 
     <item
-        android:id="@+id/action_play_pause"
+        android:id="@+id/action_play_game"
         android:title="@string/play_game"
+        android:icon="@drawable/icon_play"
+        app:showAsAction="ifRoom" />
+
+    <item
+        android:id="@+id/action_pause_game"
+        android:title="@string/pause_game"
+        android:icon="@drawable/icon_pause"
+        app:showAsAction="ifRoom" />
+
+    <item
+        android:id="@+id/action_resume_game"
+        android:title="@string/resume_game"
         android:icon="@drawable/icon_play"
         app:showAsAction="ifRoom" />
 
@@ -26,8 +38,14 @@ MDV4910-O, C202006-01
         app:showAsAction="never" />
 
     <item
-        android:id="@+id/action_sign_in_out"
+        android:id="@+id/action_sign_in"
         android:title="@string/sign_in"
+        android:icon="@drawable/icon_account"
+        app:showAsAction="never" />
+
+    <item
+        android:id="@+id/action_sign_out"
+        android:title="@string/sign_out"
         android:icon="@drawable/icon_account"
         app:showAsAction="never" />
 

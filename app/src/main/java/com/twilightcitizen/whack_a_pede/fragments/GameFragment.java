@@ -22,11 +22,14 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.view.menu.MenuBuilder;
 import androidx.fragment.app.Fragment;
+import androidx.lifecycle.Observer;
+import androidx.lifecycle.ViewModelProvider;
 import androidx.navigation.NavController;
 import androidx.navigation.fragment.NavHostFragment;
 
 import com.twilightcitizen.whack_a_pede.R;
 import com.twilightcitizen.whack_a_pede.renderers.GameRenderer;
+import com.twilightcitizen.whack_a_pede.viewModels.GameViewModel;
 
 /*
 Game Fragment displays the main game screen to the user.  It provides menu actions for starting,
@@ -42,15 +45,24 @@ public class GameFragment extends Fragment {
 
     private Menu menu;
 
+    private MenuItem itemPlay;
+    private MenuItem itemPause;
+    private MenuItem itemResume;
+    private MenuItem itemQuit;
+    private MenuItem itemSignIn;
+    private MenuItem itemSignOut;
+
+    private GameViewModel gameViewModel;
+
     @Override public void onCreate( @Nullable Bundle savedInstanceState ) {
         super.onCreate( savedInstanceState );
         setHasOptionsMenu( true );
     }
 
     /*
-        At creation, find the frame for the Lawn within the layout, create the GLSurfaceView to go
-        into it, set it up with a renderer, and then add it to the frame, returning the modified view.
-        */
+    At view creation, find the frame for the Lawn within the layout, create the GLSurfaceView to go
+    into it, set it up with a renderer, and then add it to the frame, returning the modified view.
+    */
     @Override public View onCreateView(
         LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState
     ) {
@@ -88,6 +100,8 @@ public class GameFragment extends Fragment {
 
         // Resume the SurfaceView when GameFragment starts or resumes.
         if( rendererSet ) surfaceView.onResume();
+
+        setupGameViewModel();
     }
 
     @SuppressLint( "RestrictedApi" ) @Override public void onCreateOptionsMenu(
@@ -97,8 +111,17 @@ public class GameFragment extends Fragment {
 
         inflater.inflate( R.menu.menu_game, menu );
 
+        itemPlay = menu.findItem( R.id.action_play_game );
+        itemPause = menu.findItem( R.id.action_pause_game );
+        itemResume = menu.findItem( R.id.action_resume_game );
+        itemQuit = menu.findItem( R.id.action_quit_game );
+        itemSignIn = menu.findItem( R.id.action_sign_in );
+        itemSignOut = menu.findItem( R.id.action_sign_out );
+
         if( menu instanceof MenuBuilder )
             ( (MenuBuilder) menu ).setOptionalIconsVisible( true );
+
+        gameViewModel.getState().observe( requireActivity(), this::onGameStateChanged );
     }
 
     @Override public boolean onOptionsItemSelected( @NonNull MenuItem item ) {
@@ -106,6 +129,14 @@ public class GameFragment extends Fragment {
         int itemId = item.getItemId();
 
         switch( itemId ) {
+            case R.id.action_play_game:
+                gameViewModel.play(); return true;
+            case R.id.action_pause_game:
+                gameViewModel.pause(); return true;
+            case R.id.action_resume_game:
+                gameViewModel.resume(); return true;
+            case R.id.action_quit_game:
+                gameViewModel.quit(); return true;
             case R.id.action_change_settings:
                 navController.navigate( R.id.action_game_to_settings ); return true;
             case R.id.action_view_credits:
@@ -115,5 +146,16 @@ public class GameFragment extends Fragment {
         }
 
         return super.onOptionsItemSelected( item );
+    }
+
+    private void setupGameViewModel() {
+        gameViewModel = new ViewModelProvider( requireActivity() ).get( GameViewModel.class );
+    }
+
+    private void onGameStateChanged( GameViewModel.State state ) {
+        itemPlay.setVisible( state == GameViewModel.State.newGame );
+        itemPause.setVisible( state == GameViewModel.State.running );
+        itemResume.setVisible( state == GameViewModel.State.paused );
+        itemQuit.setVisible( state == GameViewModel.State.paused );
     }
 }
