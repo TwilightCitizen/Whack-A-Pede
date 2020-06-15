@@ -42,4 +42,36 @@ public class Point {
     }
 
     @Override public int hashCode() { return Objects.hash( x, y, z ); }
+
+    public boolean coincidesWith( Point nextPosition ) {
+        return x == nextPosition.x && y == nextPosition.y;
+    }
+
+    public boolean wasPassedTopToBottom( Point previousPosition, Point nextPosition ) {
+        return previousPosition.x == x && x == nextPosition.x &&
+            previousPosition.y <  y && y <  nextPosition.y;
+    }
+
+    public boolean wasPassedBottomToTop( Point previousPosition, Point nextPosition ) {
+        return previousPosition.x == x && x == nextPosition.x &&
+            previousPosition.y >  y && y >  nextPosition.y;
+    }
+
+    public boolean wasPassedLeftToRight( Point previousPosition, Point nextPosition ) {
+        return previousPosition.y == y && y == nextPosition.y &&
+            previousPosition.x <  x && x <  nextPosition.x;
+    }
+
+    public boolean wasPassedRightToLeft( Point previousPosition, Point nextPosition ) {
+        return previousPosition.y == y && y == nextPosition.y &&
+            previousPosition.x >  x && x >  nextPosition.x;
+    }
+
+    public boolean intersectsPathOf( Point previousPosition, Point nextPosition ) {
+        return coincidesWith( nextPosition ) ||
+            wasPassedTopToBottom( previousPosition, nextPosition ) ||
+            wasPassedBottomToTop( previousPosition, nextPosition ) ||
+            wasPassedLeftToRight( previousPosition, nextPosition ) ||
+            wasPassedRightToLeft( previousPosition, nextPosition );
+    }
 }

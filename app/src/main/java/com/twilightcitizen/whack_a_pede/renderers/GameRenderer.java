@@ -14,12 +14,14 @@ import androidx.lifecycle.ViewModelProvider;
 import androidx.lifecycle.ViewModelStoreOwner;
 
 import com.twilightcitizen.whack_a_pede.geometry.Point;
+import com.twilightcitizen.whack_a_pede.models.Centipede;
 import com.twilightcitizen.whack_a_pede.models.GrassHole;
 import com.twilightcitizen.whack_a_pede.models.GrassPatch;
 import com.twilightcitizen.whack_a_pede.models.HoleDirt;
 import com.twilightcitizen.whack_a_pede.models.Lawn;
 import com.twilightcitizen.whack_a_pede.models.Segment;
 import com.twilightcitizen.whack_a_pede.shaders.ColorShader;
+import com.twilightcitizen.whack_a_pede.utilities.TimeUtil;
 import com.twilightcitizen.whack_a_pede.viewModels.GameViewModel;
 
 import javax.microedition.khronos.egl.EGLConfig;
@@ -76,11 +78,11 @@ public class GameRenderer implements GLSurfaceView.Renderer {
         glEnable( GL_BLEND );
 
         // Instantiate game models and ColorShader program for drawing them.
-        lawn = new Lawn( lawnNormalHeight, lawnNormalWidth );
-        holeDirt = new HoleDirt( holeNormalRadius, 32 );
-        grassPatch = new GrassPatch( cellNormalHeight );
-        grassHole = new GrassHole( cellNormalHeight, 8 );
-        segment = new Segment( segmentNormalRadius, 32 );
+        lawn = new Lawn( LAWN_NORMAL_HEIGHT, LAWN_NORMAL_WIDTH );
+        holeDirt = new HoleDirt( HOLE_NORMAL_RADIUS, 32 );
+        grassPatch = new GrassPatch( CELL_NORMAL_HEIGHT );
+        grassHole = new GrassHole( CELL_NORMAL_HEIGHT, 8 );
+        segment = new Segment( SEGMENT_NORMAL_RADIUS, 32 );
         colorShader = new ColorShader( context );
     }
 
@@ -124,10 +126,12 @@ public class GameRenderer implements GLSurfaceView.Renderer {
         glClear( GL_COLOR_BUFFER_BIT );
 
         // Use the stencil buffer to confine all models in scene to the lawn.
-        confineSceneToLawn();
+        //confineSceneToLawn();
 
         // Use the ColorShader program to draw models into the scene.
         colorShader.use();
+
+        gameViewModel.loop( TimeUtil.getTimeElapsedMillis() );
 
         /*
         Position some models in the scene, setting the ColorShader's uniforms to the entire
@@ -136,13 +140,14 @@ public class GameRenderer implements GLSurfaceView.Renderer {
 
         positionLawnInScene();
         positionHoleDirtInScene();
+        positionSegmentsInScene( false );
         positionGrassHolesInScene();
-        positionSegmentInScene();
         //positionTurnsInScene();
         positionGrassPatchesInScene();
+        positionSegmentsInScene( true );
 
         // Anything drawn after this point will not be confined to the lawn.
-        glDisable( GL_STENCIL_TEST );
+        //glDisable( GL_STENCIL_TEST );
     }
 
     /*
@@ -168,41 +173,71 @@ public class GameRenderer implements GLSurfaceView.Renderer {
     }
 
     private void positionGrassHolesInScene() {
-        for( Point hole : holes ) {
+        for( Point hole : HOLES ) {
             positionModelInScene( hole.x, hole.y,  0.0f );
-            colorShader.setUniforms( modelViewMatrix,0.0f, 0.5f, 0.0f, 0.8f );
+
+            colorShader.setUniforms(
+                modelViewMatrix,
+                ( float ) 0x00 / 0xFF, ( float ) 0xA3 / 0xFF, ( float ) 0x15 / 0xFF, 0.8f
+            );
+
             grassHole.bindData( colorShader );
             grassHole.draw();
         }
     }
 
     private void positionTurnsInScene() {
-        for( Point turn : turns ) {
+        for( Point turn : TURNS ) {
             positionModelInScene( turn.x, turn.y,  0.0f );
+
             colorShader.setUniforms( modelViewMatrix, 1.0f, 1.0f, 1.0f, 1.0f );
+
             segment.bindData( colorShader );
             segment.draw();
         }
     }
 
     private void positionGrassPatchesInScene() {
-        for( Point patch : patches ) {
+        for( Point patch : PATCHES ) {
             positionModelInScene( patch.x, patch.y, 0.0f );
-            colorShader.setUniforms( modelViewMatrix, 0.0f, 0.5f, 0.0f, 0.8f );
+
+            colorShader.setUniforms(
+                modelViewMatrix,
+                ( float ) 0x00 / 0xFF, ( float ) 0xA3 / 0xFF, ( float ) 0x15 / 0xFF, 0.8f
+            );
+
             grassPatch.bindData( colorShader );
             grassPatch.draw();
         }
     }
 
-    private void positionSegmentInScene() {
-        positionModelInScene( 0.0f, 1.0f, 0.0f );
-        colorShader.setUniforms( modelViewMatrix, 0.0f, 0.0f, 1.0f, 1.0f );
-        segment.bindData( colorShader );
-        segment.draw();
+    private void positionSegmentsInScene( boolean isAbove ) {
+        for( Centipede centipede : GameViewModel.CENTIPEDES ) {
+            while( centipede != null ) {
+                if( centipede.getIsAbove() == isAbove ) {
+                    positionModelInScene(
+                        centipede.getPosition().x, centipede.getPosition().y, 0.0f
+                    );
+
+                    colorShader.setUniforms(
+                        modelViewMatrix,
+                        ( float ) ( isAbove ? 0x00 : 0x00 ) / 0xFF,
+                        ( float ) ( isAbove ? 0xC4 : 0x62 ) / 0xFF,
+                        ( float ) ( isAbove ? 0xFF : 0x80 ) / 0xFF,
+                        1.0f
+                    );
+
+                    segment.bindData( colorShader );
+                    segment.draw();
+                }
+
+                centipede = centipede.getTail();
+            }
+        }
     }
 
     private void positionHoleDirtInScene() {
-        for( Point hole : holes ) {
+        for( Point hole : HOLES ) {
             positionModelInScene( hole.x, hole.y,  0.0f );
 
             colorShader.setUniforms(
@@ -217,7 +252,12 @@ public class GameRenderer implements GLSurfaceView.Renderer {
 
     private void positionLawnInScene() {
         positionModelInScene( 0.0f, 0.0f, 0.0f );
-        colorShader.setUniforms( modelViewMatrix, 0.0f, 0.5f, 0.0f, 1.0f );
+
+        colorShader.setUniforms(
+            modelViewMatrix,
+                ( float ) 0x00 / 0xFF, ( float ) 0xA3 / 0xFF, ( float ) 0x15 / 0xFF, 1.0f
+        );
+
         lawn.bindData( colorShader );
         lawn.draw();
     }
