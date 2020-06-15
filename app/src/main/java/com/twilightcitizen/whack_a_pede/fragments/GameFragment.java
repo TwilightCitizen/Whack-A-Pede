@@ -175,6 +175,13 @@ public class GameFragment extends Fragment {
         return super.onOptionsItemSelected( item );
     }
 
+    @Override public void onPrepareOptionsMenu( @NonNull Menu menu ) {
+        super.onPrepareOptionsMenu( menu );
+
+        if( gameViewModel.getState().getValue() == GameViewModel.State.running )
+            gameViewModel.pause();
+    }
+
     private void onGameStateChanged( GameViewModel.State state ) {
         itemPlay.setVisible( state == GameViewModel.State.newGame );
         itemPause.setVisible( state == GameViewModel.State.running );

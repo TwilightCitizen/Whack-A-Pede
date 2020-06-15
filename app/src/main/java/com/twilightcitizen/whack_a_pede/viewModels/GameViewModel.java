@@ -168,7 +168,7 @@ public class GameViewModel extends ViewModel {
 
     public MutableLiveData< State > getState() { return state; }
 
-    public void reset() { state.setValue( State.newGame ); }
+    public void reset() { state.setValue( State.newGame );}
     public void pause() { state.setValue( State.paused ); }
     public void play() { state.setValue( State.running ); }
     public void resume() { state.setValue( State.running ); }
