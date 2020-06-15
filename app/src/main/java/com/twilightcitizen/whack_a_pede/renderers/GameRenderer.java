@@ -10,12 +10,17 @@ package com.twilightcitizen.whack_a_pede.renderers;
 import android.content.Context;
 import android.opengl.GLSurfaceView;
 
+import androidx.lifecycle.ViewModelProvider;
+import androidx.lifecycle.ViewModelStoreOwner;
+
+import com.twilightcitizen.whack_a_pede.geometry.Point;
 import com.twilightcitizen.whack_a_pede.models.GrassHole;
 import com.twilightcitizen.whack_a_pede.models.GrassPatch;
 import com.twilightcitizen.whack_a_pede.models.HoleDirt;
 import com.twilightcitizen.whack_a_pede.models.Lawn;
 import com.twilightcitizen.whack_a_pede.models.Segment;
 import com.twilightcitizen.whack_a_pede.shaders.ColorShader;
+import com.twilightcitizen.whack_a_pede.viewModels.GameViewModel;
 
 import javax.microedition.khronos.egl.EGLConfig;
 import javax.microedition.khronos.opengles.GL10;
@@ -23,7 +28,7 @@ import javax.microedition.khronos.opengles.GL10;
 import static android.opengl.GLES20.*;
 import static android.opengl.Matrix.*;
 
-import static org.junit.Assert.*;
+import static com.twilightcitizen.whack_a_pede.viewModels.GameViewModel.*;
 
 /*
 GameRenderer implemented rendering for any GLSurfaceView to which is it set as the renderer.
@@ -36,76 +41,8 @@ public class GameRenderer implements GLSurfaceView.Renderer {
     // Context will be required by shader programs that read in GLSL resource files.
     private Context context;
 
-    /*
-    The Whack-A-Pede Lawn assumes a square cellular construction, 7 cells across the X axis by 11
-    cells across the Y axis.  This accommodates a grid of 3 holes across the X axis by 5 holes across
-    the Y axis with turns set on, around, and  between each.  If the height of the Lawn should fill
-    the height of the whole viewport with a normalized height of 2, then the width should fill
-    2 x ( 7 / 11 ), or approximately 1.27 where the 27 repeats.
-    */
-    private static final float lawnCellsXAxis = 7.0f;
-    private static final float lawnCellsYAxis = 11.0f;
-    private static final float lawnCellsRatio = lawnCellsXAxis / lawnCellsYAxis;
-    private static final float lawnNormalHeight = 2.0f;
-    private static final float lawnNormalWidth = lawnNormalHeight * lawnCellsRatio;
-
-    /*
-    Likewise, the square cells should have a height equal to 2 / 11, and a width of 1.27 / 7, both
-    of which should be equivalent, and are within acceptable tolerances for floats.  Other useful
-    measures can be born from these, such as radii for circles.
-    */
-    private static final float cellNormalHeight = lawnNormalHeight / lawnCellsYAxis;
-    private static final float cellNormalWidth = lawnNormalWidth / lawnCellsXAxis;
-    private static final float cellNormalRadius = cellNormalHeight / 2.0f;
-
-    private static final float holeNormalRadius = cellNormalRadius;
-    private static final float segmentNormalRadius = cellNormalRadius * 0.8f;
-
-    /*
-    Lines along the X and Y axes where the grid of Holes on the Lawn will be placed.
-    */
-
-    private static final float[] holesX = new float[] {
-        0.0f - cellNormalWidth * 2.0f,
-        0.0f,
-        0.0f + cellNormalWidth * 2.0f
-    };
-
-    private static final float[] holesY = new float[] {
-        0.0f - cellNormalHeight * 4.0f,
-        0.0f - cellNormalHeight * 2.0f,
-        0.0f,
-        0.0f + cellNormalHeight * 2.0f,
-        0.0f + cellNormalHeight * 4.0f
-    };
-
-    /*
-    Lines along the X and Y axes where the grid of Turns on the Lawn will be placed.
-    */
-
-    private static final float[] turnsX = new float[] {
-        0.0f - cellNormalWidth * 3.0f,
-        0.0f - cellNormalWidth * 2.0f,
-        0.0f - cellNormalWidth * 1.0f,
-        0.0f,
-        0.0f + cellNormalWidth * 1.0f,
-        0.0f + cellNormalWidth * 2.0f,
-        0.0f + cellNormalWidth * 3.0f
-    };
-
-    private static final float[] turnsY = new float[] {
-        0.0f - cellNormalHeight * 5.0f,
-        0.0f - cellNormalHeight * 4.0f,
-        0.0f - cellNormalHeight * 3.0f,
-        0.0f - cellNormalHeight * 2.0f,
-        0.0f - cellNormalHeight * 1.0f,
-        0.0f,
-        0.0f + cellNormalHeight * 1.0f,
-        0.0f + cellNormalHeight * 2.0f,
-        0.0f + cellNormalHeight * 3.0f,
-        0.0f + cellNormalHeight * 4.0f,
-        0.0f + cellNormalHeight * 5.0f
-    };
+    // Game ViewModel maintains game state and the position, direction, and speed of visual elements.
+    private GameViewModel gameViewModel;
 
     // Model matrix for manipulating models without respect to the entire scene.
     private final float[] modelMatrix = new float[ 16 ];
@@ -127,8 +64,7 @@ public class GameRenderer implements GLSurfaceView.Renderer {
     // Accept and store context on creation, and fact check important dimensions
     public GameRenderer( Context context ) {
         this.context = context;
-
-        assertEquals( cellNormalHeight, cellNormalWidth, 0.00001f );
+        gameViewModel = new ViewModelProvider( ( ViewModelStoreOwner ) context ).get( GameViewModel.class );
     }
 
     // Called when GLSurfaceView is first created with the renderer.  Parameter gl is ignored.
@@ -202,7 +138,8 @@ public class GameRenderer implements GLSurfaceView.Renderer {
         positionHoleDirtInScene();
         positionGrassHolesInScene();
         positionSegmentInScene();
-        //positionGrassPatchesInScene();
+        //positionTurnsInScene();
+        positionGrassPatchesInScene();
 
         // Anything drawn after this point will not be confined to the lawn.
         glDisable( GL_STENCIL_TEST );
@@ -231,20 +168,30 @@ public class GameRenderer implements GLSurfaceView.Renderer {
     }
 
     private void positionGrassHolesInScene() {
-        for( float holeX : holesX ) for( float holeY : holesY ) {
-            positionModelInScene( holeX, holeY,  0.0f );
+        for( Point hole : holes ) {
+            positionModelInScene( hole.x, hole.y,  0.0f );
             colorShader.setUniforms( modelViewMatrix,0.0f, 0.5f, 0.0f, 0.8f );
             grassHole.bindData( colorShader );
             grassHole.draw();
         }
     }
 
+    private void positionTurnsInScene() {
+        for( Point turn : turns ) {
+            positionModelInScene( turn.x, turn.y,  0.0f );
+            colorShader.setUniforms( modelViewMatrix, 1.0f, 1.0f, 1.0f, 1.0f );
+            segment.bindData( colorShader );
+            segment.draw();
+        }
+    }
+
     private void positionGrassPatchesInScene() {
-        // TODO: Apply between and around all holes.
-        positionModelInScene( 0.0f, 0.0f, 0.0f );
-        colorShader.setUniforms( modelViewMatrix, 0.0f, 0.5f, 0.0f, 0.8f );
-        grassPatch.bindData( colorShader );
-        grassPatch.draw();
+        for( Point patch : patches ) {
+            positionModelInScene( patch.x, patch.y, 0.0f );
+            colorShader.setUniforms( modelViewMatrix, 0.0f, 0.5f, 0.0f, 0.8f );
+            grassPatch.bindData( colorShader );
+            grassPatch.draw();
+        }
     }
 
     private void positionSegmentInScene() {
@@ -255,8 +202,8 @@ public class GameRenderer implements GLSurfaceView.Renderer {
     }
 
     private void positionHoleDirtInScene() {
-        for( float holeX : holesX ) for( float holeY : holesY ) {
-            positionModelInScene( holeX, holeY,  0.0f );
+        for( Point hole : holes ) {
+            positionModelInScene( hole.x, hole.y,  0.0f );
 
             colorShader.setUniforms(
                 modelViewMatrix,

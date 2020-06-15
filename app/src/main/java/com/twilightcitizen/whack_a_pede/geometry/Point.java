@@ -7,6 +7,8 @@ MDV4910-O, C202006-01
 
 package com.twilightcitizen.whack_a_pede.geometry;
 
+import java.util.Objects;
+
 /*
 Point represents the position of something in three-dimensional space in terms of a cartesian
 coordinate system. X, Y, and Z ordinarily correspond axes along the width, height, and depth of
@@ -26,4 +28,18 @@ public class Point {
     public Point( float x, float y, float z ) {
         this.x = x; this.y = y; this.z = z;
     }
+
+    @Override public boolean equals( Object o ) {
+        if( this == o ) return true;
+
+        if( o == null || getClass() != o.getClass() ) return false;
+
+        Point point = (Point) o;
+
+        return Float.compare( point.x, x ) == 0 &&
+               Float.compare( point.y, y ) == 0 &&
+               Float.compare( point.z, z ) == 0;
+    }
+
+    @Override public int hashCode() { return Objects.hash( x, y, z ); }
 }

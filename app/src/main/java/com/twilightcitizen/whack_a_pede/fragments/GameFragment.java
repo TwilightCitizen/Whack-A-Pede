@@ -56,8 +56,6 @@ public class GameFragment extends Fragment {
     // Flag prevents pausing or resuming non-existent renderer.
     private boolean rendererSet = false;
 
-    private Menu menu;
-
     private MenuItem itemPlay;
     private MenuItem itemPause;
     private MenuItem itemResume;
@@ -125,15 +123,13 @@ public class GameFragment extends Fragment {
         // Resume the SurfaceView when GameFragment starts or resumes.
         if( rendererSet ) surfaceView.onResume();
 
-        setupGameViewModel();
-        setupAccountViewModel();
+        gameViewModel = new ViewModelProvider( requireActivity() ).get( GameViewModel.class );
+        accountViewModel = new ViewModelProvider( requireActivity() ).get( AccountViewModel.class );
     }
 
     @SuppressLint( "RestrictedApi" ) @Override public void onCreateOptionsMenu(
         @NonNull Menu menu, @NonNull MenuInflater inflater
     ) {
-        this.menu = menu;
-
         inflater.inflate( R.menu.menu_game, menu );
 
         itemPlay = menu.findItem( R.id.action_play_game );
@@ -177,14 +173,6 @@ public class GameFragment extends Fragment {
         }
 
         return super.onOptionsItemSelected( item );
-    }
-
-    private void setupGameViewModel() {
-        gameViewModel = new ViewModelProvider( requireActivity() ).get( GameViewModel.class );
-    }
-
-    private void setupAccountViewModel() {
-        accountViewModel = new ViewModelProvider( requireActivity() ).get( AccountViewModel.class );
     }
 
     private void onGameStateChanged( GameViewModel.State state ) {
