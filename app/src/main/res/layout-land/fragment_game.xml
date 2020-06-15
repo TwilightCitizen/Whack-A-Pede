@@ -25,7 +25,7 @@ MDV4910-O, C202006-01
         app:layout_constraintTop_toTopOf="parent">
 
         <ImageView
-            android:id="@+id/image_avatar"
+            android:id="@+id/image_profile_pic"
             android:layout_width="0dp"
             android:layout_height="32dp"
             android:contentDescription="@string/avatar"
@@ -36,21 +36,44 @@ MDV4910-O, C202006-01
             tools:src="@tools:sample/avatars" />
 
         <TextView
+            android:id="@+id/text_display_name"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:textAlignment="textEnd"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toStartOf="@+id/text_score"
+            app:layout_constraintStart_toEndOf="@+id/image_profile_pic"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <TextView
             android:id="@+id/text_score"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
+            android:textAlignment="viewStart"
             app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toStartOf="@+id/text_time"
-            app:layout_constraintStart_toEndOf="@+id/image_avatar"
+            app:layout_constraintEnd_toStartOf="@+id/text_time_label"
+            app:layout_constraintStart_toEndOf="@+id/text_display_name"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <TextView
+            android:id="@+id/text_time_label"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:text="@string/time_remaining"
+            android:textAlignment="textEnd"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toStartOf="@id/text_time"
+            app:layout_constraintStart_toEndOf="@+id/text_score"
             app:layout_constraintTop_toTopOf="parent" />
 
         <TextView
             android:id="@+id/text_time"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
+            android:textAlignment="viewStart"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toEndOf="@+id/text_score"
+            app:layout_constraintStart_toEndOf="@+id/text_time_label"
             app:layout_constraintTop_toTopOf="parent" />
     </androidx.constraintlayout.widget.ConstraintLayout>
 

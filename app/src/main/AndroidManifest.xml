@@ -11,6 +11,9 @@ MDV4910-O, C202006-01
     xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.twilightcitizen.whack_a_pede">
 
+    <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
+
     <application
         android:allowBackup="true"
         android:icon="@drawable/icon_whack_a_pede_placeholder"

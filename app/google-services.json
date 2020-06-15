@@ -1,0 +1,48 @@
+{
+  "project_info": {
+    "project_number": "811328914449",
+    "firebase_url": "https://whack-a-pede-opengl.firebaseio.com",
+    "project_id": "whack-a-pede-opengl",
+    "storage_bucket": "whack-a-pede-opengl.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:811328914449:android:d8bcd01ba54e8902631db0",
+        "android_client_info": {
+          "package_name": "com.twilightcitizen.whack_a_pede"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "811328914449-qmp4m537v7pbs65l2r7lu8pf3j53178i.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.twilightcitizen.whack_a_pede",
+            "certificate_hash": "c5883d8748722c8b420b946b084e6eedeeaeb707"
+          }
+        },
+        {
+          "client_id": "811328914449-afjg8gskud3rid9a0c0mc04cfk5d4mm9.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDVtQgWhdwl--tz-7ix_neD0dGNPytn_uY"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "811328914449-mt6b15dh5hjp96tc9ff91glkubtoft9k.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
