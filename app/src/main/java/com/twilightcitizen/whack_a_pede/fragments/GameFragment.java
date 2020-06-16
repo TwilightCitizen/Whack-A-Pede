@@ -112,6 +112,8 @@ public class GameFragment extends Fragment {
     @Override public void onStop() {
         super.onStop();
 
+        gameViewModel.pause();
+
         // Pause the SurfaceView when GameFragment stops.
         if( rendererSet ) surfaceView.onPause();
     }
@@ -178,8 +180,7 @@ public class GameFragment extends Fragment {
     @Override public void onPrepareOptionsMenu( @NonNull Menu menu ) {
         super.onPrepareOptionsMenu( menu );
 
-        if( gameViewModel.getState().getValue() == GameViewModel.State.running )
-            gameViewModel.pause();
+        gameViewModel.pause();
     }
 
     private void onGameStateChanged( GameViewModel.State state ) {

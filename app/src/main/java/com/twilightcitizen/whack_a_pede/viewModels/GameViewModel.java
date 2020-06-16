@@ -17,6 +17,7 @@ import com.twilightcitizen.whack_a_pede.utilities.TimeUtil;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Random;
 
 public class GameViewModel extends ViewModel {
     public enum State { newGame, paused, running, stopped }
@@ -45,6 +46,8 @@ public class GameViewModel extends ViewModel {
 
     public static final float HOLE_NORMAL_RADIUS = CELL_NORMAL_RADIUS;
     public static final float SEGMENT_NORMAL_RADIUS = CELL_NORMAL_RADIUS * 0.8f;
+    public static final float SEGMENT_NORMAL_WIDTH = SEGMENT_NORMAL_RADIUS * 2.0f;
+    public static final float SEGMENT_NORMAL_HEIGHT = SEGMENT_NORMAL_RADIUS * 2.0f;
 
     /*
     Lines along the X and Y axes where the grid of Holes on the Lawn will be placed.
@@ -70,7 +73,7 @@ public class GameViewModel extends ViewModel {
         int hole = 0;
 
         for( float holeX : HOLES_X ) for( float holeY : HOLES_Y )
-            HOLES[ hole++ ] = new Point( holeX, holeY, 0.0f );
+            HOLES[ hole++ ] = new Point( holeX, holeY );
     }
 
     /*
@@ -107,7 +110,7 @@ public class GameViewModel extends ViewModel {
         int turn = 0;
 
         for( float turnX : TURNS_X ) for( float turnY : TURNS_Y )
-            TURNS[ turn++ ] = new Point( turnX, turnY, 0.0f );
+            TURNS[ turn++ ] = new Point( turnX, turnY );
     }
 
     /*
@@ -122,7 +125,7 @@ public class GameViewModel extends ViewModel {
         patches: for( Point turn : TURNS ) {
             for( Point hole : HOLES ) if( turn.equals( hole ) ) continue patches;
 
-            PATCHES[ patch++ ] = new Point( turn.x, turn.y, 0.0f );
+            PATCHES[ patch++ ] = new Point( turn.x, turn.y );
         }
     }
 
@@ -132,30 +135,18 @@ public class GameViewModel extends ViewModel {
     private static final long BONUS_MILLIS_PER_SEGMENT = ROUND_TIME_MILLIS;
     private static final int BONUS_POINTS_PER_SECOND = 10;
 
-    private static final Vector CENTIPEDE_START_SPEED = new Vector(
-        CELL_NORMAL_WIDTH / 100.0f, CELL_NORMAL_HEIGHT / 100.0f, 0.0f
-    );
+    private static final float CENTIPEDE_START_SPEED = CELL_NORMAL_WIDTH / 20.0f;
 
-    private static final Vector CENTIPEDE_MAX_SPEED = new Vector(
-        CELL_NORMAL_WIDTH, CELL_NORMAL_HEIGHT, 0.0f
-    );
+    private static final float CENTIPEDE_MAX_SPEED = CELL_NORMAL_WIDTH / 10f;
 
-    public static final List< Centipede > CENTIPEDES = new ArrayList< Centipede >();
+    public static final List< Centipede > CENTIPEDES = new ArrayList<>();
+
+    private float centipedeSpeed = CENTIPEDE_START_SPEED;
 
     static {
-        Centipede centipede = new Centipede(
-            new Point( 0.0f, 1.0f, 0.0f ), CENTIPEDE_START_SPEED, Vector.down
-        );
+        Centipede centipede = new Centipede( new Point( 0.0f, 1.0f ), Vector.down );
 
-        centipede.addTails( 1, Vector.up );
-        CENTIPEDES.add( centipede );
-
-        centipede = new Centipede(
-            new Point( -0.5f, 1.0f, 0.0f ), CENTIPEDE_START_SPEED, Vector.down
-        );
-
-        centipede.toggleAbove();
-        centipede.addTails( 1, Vector.up );
+        centipede.addTails( 9, Vector.up );
         CENTIPEDES.add( centipede );
     }
 
@@ -168,11 +159,32 @@ public class GameViewModel extends ViewModel {
 
     public MutableLiveData< State > getState() { return state; }
 
-    public void reset() { state.setValue( State.newGame );}
-    public void pause() { state.setValue( State.paused ); }
-    public void play() { state.setValue( State.running ); }
-    public void resume() { state.setValue( State.running ); }
-    public void quit() { state.setValue( State.stopped ); }
+    public void reset() {
+        if( state.getValue() == State.stopped )
+            state.setValue( State.newGame );
+        else
+            throw new IllegalStateException( "Game Reset while Not Stopped" );
+    }
+
+    public void pause() {
+        if( state.getValue() == State.running ) state.setValue( State.paused );
+    }
+
+    public void play() {
+        if( state.getValue() == State.paused || state.getValue() == State.newGame )
+            state.setValue( State.running );
+        else
+            throw new IllegalStateException( "Game Played while Not Paused or New" );
+    }
+
+    public void resume() { play(); }
+
+    public void quit() {
+        if( state.getValue() == State.paused )
+            state.setValue( State.stopped );
+        else
+            throw new IllegalStateException( "Game Stopped while Not Paused" );
+    }
 
     public void loop( long elapsedTimeMillis  ) {
         if( state.getValue() != State.running ) return;
@@ -197,14 +209,12 @@ public class GameViewModel extends ViewModel {
         for( Centipede centipede : CENTIPEDES ) {
             while( centipede != null ) {
                 Point nextPosition = new Point(
-                    centipede.getPosition().x + centipede.getSpeed().x * centipede.getDirection().x,
-                    centipede.getPosition().y + centipede.getSpeed().y * centipede.getDirection().y,
-                    0.0f
+                    centipede.getPosition().x + centipedeSpeed * centipede.getDirection().x,
+                    centipede.getPosition().y + centipedeSpeed * centipede.getDirection().y
                 );
 
                 animateThroughHoles( centipede, nextPosition );
-
-                centipede.setPosition( nextPosition );
+                animateThroughTurns( centipede, nextPosition );
 
                 centipede = centipede.getTail();
             }
@@ -213,9 +223,98 @@ public class GameViewModel extends ViewModel {
 
     private void animateThroughHoles( Centipede centipede, Point nextPosition ) {
         for( Point hole : HOLES ) {
+            if( !hole.intersectsPathOf( centipede.getPosition(), nextPosition ) ) continue;
 
-            // Go up or down the hole.
-            if( hole.intersectsPathOf( centipede.getPosition(), nextPosition ) ) centipede.toggleAbove();
+            if( centipede.getHole() == hole ) break;
+
+            centipede.setHole( hole );
+
+            centipede.toggleAbove();
+
+            break;
         }
+    }
+
+    private Vector getNewDirectionForTurn( Point turn, Vector currentDirection ) {
+        Random random = new Random();
+        List< Vector > newDirections = new ArrayList<>();
+
+        if( turn.y != 0.0f + CELL_NORMAL_HEIGHT * 5.0f )
+            if( !currentDirection.equals( Vector.down ) )
+                newDirections.add( Vector.up );
+
+        if( turn.y != 0.0f - CELL_NORMAL_HEIGHT * 5.0f )
+            if( !currentDirection.equals( Vector.up ) )
+                newDirections.add( Vector.down );
+
+        if( turn.x != 0.0f - CELL_NORMAL_WIDTH * 3.0f )
+            if( !currentDirection.equals( Vector.right ) )
+                newDirections.add( Vector.left );
+
+        if( turn.x != 0.0f + CELL_NORMAL_WIDTH * 3.0f )
+            if( !currentDirection.equals( Vector.left ) )
+                newDirections.add( Vector.right );
+
+        return newDirections.get( random.nextInt( newDirections.size() ) );
+    }
+
+    private void animateThroughTurns( Centipede centipede, Point nextPosition ) {
+        for( Point turn : TURNS ) {
+            Point previousPosition = centipede.getPosition();
+
+            if( !turn.intersectsPathOf( previousPosition, nextPosition ) ) continue;
+
+            if( centipede.getTurn() == turn ) break;
+
+            centipede.setTurn( turn );
+
+            if( centipede.getIsHead() )
+                centipede.setDirection( getNewDirectionForTurn( turn, centipede.getDirection() ) );
+            else
+                centipede.setDirection( centipede.getHead().getDirection() );
+
+            if( turn.equals( nextPosition ) ) break;
+
+            if( centipede.getIsHead() ) {
+                float travelAfterTurn;
+
+                if( turn.wasPassedVertically( previousPosition, nextPosition ) ) {
+                    travelAfterTurn = Math.abs( nextPosition.y - turn.y );
+                } else  {
+                    travelAfterTurn = Math.abs( nextPosition.x - turn.x );
+                }
+
+                Vector direction = centipede.getDirection();
+
+                if( direction.equals( Vector.up ) ) {
+                    nextPosition = new Point( turn.x, nextPosition.y + travelAfterTurn );
+                } else if( direction.equals( Vector.down ) ) {
+                    nextPosition = new Point( turn.x, nextPosition.y - travelAfterTurn );
+                } else if( direction.equals( Vector.left ) ) {
+                    nextPosition = new Point( nextPosition.x - travelAfterTurn, turn.y );
+                } else {
+                    nextPosition = new Point( nextPosition.x + travelAfterTurn, turn.y );
+                }
+
+                break;
+            }
+
+            Vector direction = centipede.getDirection();
+            Point headPosition = centipede.getHead().getPosition();
+
+            if( direction.equals( Vector.up ) ) {
+                nextPosition = new Point( turn.x, headPosition.y - SEGMENT_NORMAL_HEIGHT );
+            } else if( direction.equals( Vector.down ) ) {
+                nextPosition = new Point( turn.x, headPosition.y + SEGMENT_NORMAL_HEIGHT );
+            } else if( direction.equals( Vector.left ) ) {
+                nextPosition = new Point( headPosition.x + SEGMENT_NORMAL_WIDTH, turn.y );
+            } else {
+                nextPosition = new Point( headPosition.x - SEGMENT_NORMAL_WIDTH, turn.y );
+            }
+
+            break;
+        }
+
+        centipede.setPosition( nextPosition );
     }
 }

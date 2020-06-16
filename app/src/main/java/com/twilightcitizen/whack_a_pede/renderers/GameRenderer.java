@@ -43,7 +43,7 @@ public class GameRenderer implements GLSurfaceView.Renderer {
     // Context will be required by shader programs that read in GLSL resource files.
     private Context context;
 
-    // Game ViewModel maintains game state and the position, direction, and speed of visual elements.
+    // Game ViewModel maintains game state and the position, direction, and speed of game elements.
     private GameViewModel gameViewModel;
 
     // Model matrix for manipulating models without respect to the entire scene.
@@ -126,7 +126,7 @@ public class GameRenderer implements GLSurfaceView.Renderer {
         glClear( GL_COLOR_BUFFER_BIT );
 
         // Use the stencil buffer to confine all models in scene to the lawn.
-        //confineSceneToLawn();
+        confineSceneToLawn();
 
         // Use the ColorShader program to draw models into the scene.
         colorShader.use();
@@ -147,7 +147,7 @@ public class GameRenderer implements GLSurfaceView.Renderer {
         positionSegmentsInScene( true );
 
         // Anything drawn after this point will not be confined to the lawn.
-        //glDisable( GL_STENCIL_TEST );
+        glDisable( GL_STENCIL_TEST );
     }
 
     /*

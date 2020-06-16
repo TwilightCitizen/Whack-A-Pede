@@ -25,7 +25,7 @@ public class GrassPatch {
     public GrassPatch( float length ) {
         ModelBuilder builder = new ModelBuilder( ModelBuilder.sizeOfSquareInVertices );
 
-        builder.appendSquare( new Square( new Point( 0.0f, 0.0f, 0.0f ), length ) );
+        builder.appendSquare( new Square( new Point( 0.0f, 0.0f ), length ) );
 
         generatedData = builder.build();
     }

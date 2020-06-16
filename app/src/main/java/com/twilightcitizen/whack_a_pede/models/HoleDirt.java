@@ -26,7 +26,7 @@ public class HoleDirt {
     public HoleDirt( float radius, int numPoints ) {
         ModelBuilder builder = new ModelBuilder( ModelBuilder.sizeOfCircleInVertices( numPoints ) );
 
-        builder.appendCircle( new Circle( new Point( 0.0f, 0.0f, 0.0f ), radius ), numPoints );
+        builder.appendCircle( new Circle( new Point( 0.0f, 0.0f ), radius ), numPoints );
 
         generatedData = builder.build();
     }

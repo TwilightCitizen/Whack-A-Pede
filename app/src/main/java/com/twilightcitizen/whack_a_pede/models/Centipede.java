@@ -19,11 +19,12 @@ public class Centipede {
     private boolean isAbove = true;
 
     private Point position;
-    private Vector speed;
+    private Point hole;
+    private Point turn;
     private Vector direction;
 
-    public Centipede( Point position, Vector speed, Vector direction ) {
-        this.position = position; this.speed = speed; this.direction = direction;
+    public Centipede( Point position, Vector direction ) {
+        this.position = position; this.direction = direction;
     }
 
     public boolean getIsHead() { return head == null; }
@@ -40,8 +41,11 @@ public class Centipede {
     public Point getPosition() { return position; }
     public void setPosition( Point position ) { this.position = position; }
 
-    public Vector getSpeed() { return speed; }
-    public void setSpeed( Vector speed ) { this.speed = speed; }
+    public Point getHole() { return hole; }
+    public void setHole( Point hole ) { this.hole = hole; }
+
+    public Point getTurn() { return turn; }
+    public void setTurn( Point turn ) { this.turn = turn; }
 
     public Vector getDirection() { return direction; }
     public void setDirection( Vector direction ) { this.direction = direction; }
@@ -50,11 +54,10 @@ public class Centipede {
         Centipede tail = new Centipede(
             new Point(
                 position.x + SEGMENT_NORMAL_RADIUS * 2 * going.x,
-                position.y + SEGMENT_NORMAL_RADIUS * 2 * going.y,
-                0.0f
+                position.y + SEGMENT_NORMAL_RADIUS * 2 * going.y
             ),
 
-            speed, direction
+            direction
         );
 
         this.tail = tail;

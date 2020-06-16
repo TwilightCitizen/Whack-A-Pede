@@ -30,7 +30,7 @@ public class GrassHole {
         );
 
         builder.appendSquareWithHole(
-            new SquareWithHole( new Point( 0.0f, 0.0f, 0.0f ), length ),
+            new SquareWithHole( new Point( 0.0f, 0.0f ), length ),
             numPointsQuarter
         );
 

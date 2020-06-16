@@ -25,7 +25,7 @@ public class Lawn {
     public Lawn( float height, float width ) {
         ModelBuilder builder = new ModelBuilder( ModelBuilder.sizeOfRectangleInVertices );
 
-        builder.appendRectangle( new Rectangle( new Point( 0.0f, 0.0f, 0.0f ), height, width ) );
+        builder.appendRectangle( new Rectangle( new Point( 0.0f, 0.0f ), height, width ) );
 
         generatedData = builder.build();
     }

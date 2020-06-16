@@ -84,7 +84,7 @@ public class ModelBuilder {
         */
         vertexData[ offset++ ] = circle.center.x;
         vertexData[ offset++ ] = circle.center.y;
-        vertexData[ offset++ ] = circle.center.z;
+        vertexData[ offset++ ] = 0.0f;
 
         /*
         Remaining vertices describe the positions of the other two points for each triangle,
@@ -101,7 +101,7 @@ public class ModelBuilder {
             */
             vertexData[ offset++ ] = circle.center.x + circle.radius * (float) Math.cos( angle );
             vertexData[ offset++ ] = circle.center.y + circle.radius * (float) Math.sin( angle );
-            vertexData[ offset++ ] = circle.center.z;
+            vertexData[ offset++ ] = 0.0f;
         }
 
         // Only a single command is needed to draw the circle as a triangle fan.
@@ -126,29 +126,29 @@ public class ModelBuilder {
         */
         vertexData[ offset++ ] = square.center.x;
         vertexData[ offset++ ] = square.center.y;
-        vertexData[ offset++ ] = square.center.z;
+        vertexData[ offset++ ] = 0.0f;
 
         //  Subsequent vertices fan around counterclockwise from bottom left.
         vertexData[ offset++ ] = square.center.x - halfLength;
         vertexData[ offset++ ] = square.center.y - halfLength;
-        vertexData[ offset++ ] = square.center.z;
+        vertexData[ offset++ ] = 0.0f;
 
         vertexData[ offset++ ] = square.center.x + halfLength;
         vertexData[ offset++ ] = square.center.y - halfLength;
-        vertexData[ offset++ ] = square.center.z;
+        vertexData[ offset++ ] = 0.0f;
 
         vertexData[ offset++ ] = square.center.x + halfLength;
         vertexData[ offset++ ] = square.center.y + halfLength;
-        vertexData[ offset++ ] = square.center.z;
+        vertexData[ offset++ ] = 0.0f;
 
         vertexData[ offset++ ] = square.center.x - halfLength;
         vertexData[ offset++ ] = square.center.y + halfLength;
-        vertexData[ offset++ ] = square.center.z;
+        vertexData[ offset++ ] = 0.0f;
 
         // Repeat last outer vertex of the fan to close it.
         vertexData[ offset++ ] = square.center.x - halfLength;
         vertexData[ offset++ ] = square.center.y - halfLength;
-        vertexData[ offset++ ] = square.center.z;
+        vertexData[ offset++ ] = 0.0f;
 
         // Only a single command is needed to draw the square as a triangle fan.
         drawList.add( () -> glDrawArrays( GL_TRIANGLE_FAN, startVertex, sizeOfSquareInVertices ) );
@@ -173,29 +173,29 @@ public class ModelBuilder {
         */
         vertexData[ offset++ ] = rectangle.center.x;
         vertexData[ offset++ ] = rectangle.center.y;
-        vertexData[ offset++ ] = rectangle.center.z;
+        vertexData[ offset++ ] = 0.0f;
 
         //  Subsequent vertices fan around counterclockwise from bottom left.
         vertexData[ offset++ ] = rectangle.center.x - halfWidth;
         vertexData[ offset++ ] = rectangle.center.y - halfHeight;
-        vertexData[ offset++ ] = rectangle.center.z;
+        vertexData[ offset++ ] = 0.0f;
 
         vertexData[ offset++ ] = rectangle.center.x + halfWidth;
         vertexData[ offset++ ] = rectangle.center.y - halfHeight;
-        vertexData[ offset++ ] = rectangle.center.z;
+        vertexData[ offset++ ] = 0.0f;
 
         vertexData[ offset++ ] = rectangle.center.x + halfWidth;
         vertexData[ offset++ ] = rectangle.center.y + halfHeight;
-        vertexData[ offset++ ] = rectangle.center.z;
+        vertexData[ offset++ ] = 0.0f;
 
         vertexData[ offset++ ] = rectangle.center.x - halfWidth;
         vertexData[ offset++ ] = rectangle.center.y + halfHeight;
-        vertexData[ offset++ ] = rectangle.center.z;
+        vertexData[ offset++ ] = 0.0f;
 
         // Repeat last outer vertex of the fan to close it.
         vertexData[ offset++ ] = rectangle.center.x - halfWidth;
         vertexData[ offset++ ] = rectangle.center.y - halfHeight;
-        vertexData[ offset++ ] = rectangle.center.z;
+        vertexData[ offset++ ] = 0.0f;
 
         // Only a single command is needed to draw the rectangle as a triangle fan.
         drawList.add( () -> glDrawArrays( GL_TRIANGLE_FAN, startVertex, sizeOfRectangleInVertices ) );
@@ -225,7 +225,6 @@ public class ModelBuilder {
             startVertex, numVerticesQuarter, 0,
             squareWithHole.center.x + halfLength,
             squareWithHole.center.y + halfLength,
-            squareWithHole.center.z,
             halfLength, 0.0F
         );
 
@@ -234,7 +233,6 @@ public class ModelBuilder {
             startVertex, numVerticesQuarter, 1,
             squareWithHole.center.x + halfLength,
             squareWithHole.center.y - halfLength,
-            squareWithHole.center.z,
             halfLength, 0.5F
         );
 
@@ -243,7 +241,6 @@ public class ModelBuilder {
             startVertex, numVerticesQuarter, 2,
             squareWithHole.center.x - halfLength,
             squareWithHole.center.y - halfLength,
-            squareWithHole.center.z,
             halfLength, 1.0F
         );
 
@@ -252,7 +249,6 @@ public class ModelBuilder {
             startVertex, numVerticesQuarter, 3,
             squareWithHole.center.x - halfLength,
             squareWithHole.center.y + halfLength,
-            squareWithHole.center.z,
             halfLength, 1.5F
         );
     }
@@ -265,13 +261,13 @@ public class ModelBuilder {
     private void appendQuarterSquareWithHole(
         SquareWithHole squareWithHole, int numPointsQuarter,
         int startVertex, int numVerticesQuarter, int cornerOffset,
-        float cornerX, float cornerY, float cornerZ,
+        float cornerX, float cornerY,
         float halfLength, float angleAdjustment
     ) {
         // First vertex is the corner.
         vertexData[ offset++ ] = cornerX;
         vertexData[ offset++ ] = cornerY;
-        vertexData[ offset++ ] = cornerZ;
+        vertexData[ offset++ ] = 0.0f;
 
         /*
         The next set of vertices circumscribe the arc of a circle filling the square from the
@@ -293,7 +289,7 @@ public class ModelBuilder {
             */
             vertexData[ offset++ ] = squareWithHole.center.x + halfLength * (float) Math.cos( angle );
             vertexData[ offset++ ] = squareWithHole.center.y + halfLength * (float) Math.sin( angle );
-            vertexData[ offset++ ] = squareWithHole.center.z;
+            vertexData[ offset++ ] = 0.0f;
         }
 
         // Add the command to draw the bottom left quarter of the square with hole.

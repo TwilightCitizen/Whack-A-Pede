@@ -22,11 +22,11 @@ dimension for all vertices, effectively ignoring it.
 */
 public class Point {
     // The X, Y, and Z cartesian space coordinates.
-    public final float x, y, z;
+    public final float x, y;
 
     // Set the X, Y, and Z cartesian space coordinates at creation.
-    public Point( float x, float y, float z ) {
-        this.x = x; this.y = y; this.z = z;
+    public Point( float x, float y ) {
+        this.x = x; this.y = y;
     }
 
     @Override public boolean equals( Object o ) {
@@ -36,42 +36,37 @@ public class Point {
 
         Point point = (Point) o;
 
-        return Float.compare( point.x, x ) == 0 &&
-               Float.compare( point.y, y ) == 0 &&
-               Float.compare( point.z, z ) == 0;
+        return Float.compare( point.x, x ) == 0 && Float.compare( point.y, y ) == 0;
     }
 
-    @Override public int hashCode() { return Objects.hash( x, y, z ); }
+    @Override public int hashCode() { return Objects.hash( x, y ); }
 
-    public boolean coincidesWith( Point nextPosition ) {
-        return x == nextPosition.x && y == nextPosition.y;
+    public boolean wasPassedVertically( Point previousPosition, Point nextPosition ) {
+        return
+            Float.compare( x, nextPosition.x ) == 0 && ( (
+                Float.compare( previousPosition.y, y ) == -1 &&
+                Float.compare( y, nextPosition.y ) == -1
+            ) || (
+                Float.compare( previousPosition.y, y ) == 1 &&
+                Float.compare( y, nextPosition.y ) == 1
+            ) );
     }
 
-    public boolean wasPassedTopToBottom( Point previousPosition, Point nextPosition ) {
-        return previousPosition.x == x && x == nextPosition.x &&
-            previousPosition.y <  y && y <  nextPosition.y;
-    }
-
-    public boolean wasPassedBottomToTop( Point previousPosition, Point nextPosition ) {
-        return previousPosition.x == x && x == nextPosition.x &&
-            previousPosition.y >  y && y >  nextPosition.y;
-    }
-
-    public boolean wasPassedLeftToRight( Point previousPosition, Point nextPosition ) {
-        return previousPosition.y == y && y == nextPosition.y &&
-            previousPosition.x <  x && x <  nextPosition.x;
-    }
-
-    public boolean wasPassedRightToLeft( Point previousPosition, Point nextPosition ) {
-        return previousPosition.y == y && y == nextPosition.y &&
-            previousPosition.x >  x && x >  nextPosition.x;
+    public boolean wasPassedHorizontally( Point previousPosition, Point nextPosition ) {
+        return
+            Float.compare( y, nextPosition.y ) == 0 && ( (
+                Float.compare( previousPosition.x, x ) == -1 &&
+                Float.compare( x, nextPosition.x ) == -1
+            ) || (
+                Float.compare( previousPosition.x, x ) == 1 &&
+                Float.compare( x, nextPosition.x ) == 1
+            ) );
     }
 
     public boolean intersectsPathOf( Point previousPosition, Point nextPosition ) {
-        return coincidesWith( nextPosition ) ||
-            wasPassedTopToBottom( previousPosition, nextPosition ) ||
-            wasPassedBottomToTop( previousPosition, nextPosition ) ||
-            wasPassedLeftToRight( previousPosition, nextPosition ) ||
-            wasPassedRightToLeft( previousPosition, nextPosition );
+        return
+            wasPassedVertically( previousPosition, nextPosition ) ||
+            wasPassedHorizontally( previousPosition, nextPosition ) ||
+            this.equals( nextPosition );
     }
 }
