@@ -172,6 +172,17 @@ public class GameRenderer implements GLSurfaceView.Renderer {
         glStencilOp(GL_KEEP, GL_KEEP, GL_KEEP);
     }
 
+    /*
+    The positionXInScene methods that proceed all follow the same formula, sometimes within a loop
+    where multiples of the model should be drawn:  The model is positioned in the scene, the uniforms
+    are set for the color shader program being used, drawing data for the model is bound to the
+    program, and the model is drawn.
+    */
+
+    /*
+    Use the color shader program to draw grass holes at every position where a hole is located in
+    the game view model.
+    */
     private void positionGrassHolesInScene() {
         for( Point hole : HOLES ) {
             positionModelInScene( hole.x, hole.y,  0.0f );
@@ -186,6 +197,11 @@ public class GameRenderer implements GLSurfaceView.Renderer {
         }
     }
 
+    /*
+    Use the color shader program to a segment at every position where a turn is located in
+    the game view model.  This is available for troubleshooting turns that otherwise have no
+    visual element on screen.
+    */
     private void positionTurnsInScene() {
         for( Point turn : TURNS ) {
             positionModelInScene( turn.x, turn.y,  0.0f );
@@ -197,6 +213,10 @@ public class GameRenderer implements GLSurfaceView.Renderer {
         }
     }
 
+    /*
+    Use the color shader program to draw patches of grass at every position where a hole is not
+    located in the game view model.
+    */
     private void positionGrassPatchesInScene() {
         for( Point patch : PATCHES ) {
             positionModelInScene( patch.x, patch.y, 0.0f );
@@ -211,31 +231,39 @@ public class GameRenderer implements GLSurfaceView.Renderer {
         }
     }
 
+    /*
+    Use the color shader program to draw a segment wherever a centipede is located in the game
+    view model.  isAbove ensures that above/below-ground centipedes are drawn for the correct
+    layer and with the correct corresponding color.
+    */
     private void positionSegmentsInScene( boolean isAbove ) {
-        for( Centipede centipede : GameViewModel.CENTIPEDES ) {
-            while( centipede != null ) {
-                if( centipede.getIsAbove() == isAbove ) {
-                    positionModelInScene(
-                        centipede.getPosition().x, centipede.getPosition().y, 0.0f
-                    );
-
-                    colorShader.setUniforms(
-                        modelViewMatrix,
-                        ( float ) ( isAbove ? 0x00 : 0x00 ) / 0xFF,
-                        ( float ) ( isAbove ? 0xC4 : 0x62 ) / 0xFF,
-                        ( float ) ( isAbove ? 0xFF : 0x80 ) / 0xFF,
-                        1.0f
-                    );
-
-                    segment.bindData( colorShader );
-                    segment.draw();
-                }
-
-                centipede = centipede.getTail();
+        for( Centipede centipede : GameViewModel.CENTIPEDES ) while( centipede != null ) {
+            // Guard against drawing centipede not for this layer.
+            if( centipede.getIsAbove() != isAbove ) {
+                centipede = centipede.getTail(); continue;
             }
+
+            positionModelInScene( centipede.getPosition().x, centipede.getPosition().y, 0.0f );
+
+            colorShader.setUniforms(
+                modelViewMatrix,
+                ( float ) ( isAbove ? 0x00 : 0x00 ) / 0xFF,
+                ( float ) ( isAbove ? 0xC4 : 0x62 ) / 0xFF,
+                ( float ) ( isAbove ? 0xFF : 0x80 ) / 0xFF,
+                1.0f
+            );
+
+            segment.bindData( colorShader );
+            segment.draw();
+
+            centipede = centipede.getTail();
         }
     }
 
+    /*
+    Use the color shader program to draw the hole's dirt at every position where a hole is located
+    in the game view model.
+    */
     private void positionHoleDirtInScene() {
         for( Point hole : HOLES ) {
             positionModelInScene( hole.x, hole.y,  0.0f );
@@ -250,6 +278,10 @@ public class GameRenderer implements GLSurfaceView.Renderer {
         }
     }
 
+    /*
+    Use the color shader program to draw lawn in the scene which serves to confine the region within
+    which all holes, turns, and centipedes are drawn
+    */
     private void positionLawnInScene() {
         positionModelInScene( 0.0f, 0.0f, 0.0f );
 

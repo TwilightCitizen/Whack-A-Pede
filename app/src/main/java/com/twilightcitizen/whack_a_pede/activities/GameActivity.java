@@ -37,22 +37,23 @@ public class GameActivity extends AppCompatActivity {
         setSupportActionBar( toolbar );
     }
 
+    // Setup action bar navigation on start.
     @Override protected void onStart() {
         super.onStart();
         setupActionBarNav();
     }
 
+    // Provide back/up navigation controller access in action bar.
     private void setupActionBarNav() {
         NavController navController = Navigation.findNavController( this, R.id.nav_host_fragment );
 
         NavigationUI.setupActionBarWithNavController( this, navController );
     }
 
+    // Navigate up mirrors back navigation.
     @Override public boolean onSupportNavigateUp() {
         onBackPressed();
 
         return super.onSupportNavigateUp();
     }
-
-    @Override public void onBackPressed() { super.onBackPressed(); }
 }

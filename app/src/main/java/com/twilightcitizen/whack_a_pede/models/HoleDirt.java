@@ -1,3 +1,10 @@
+/*
+Whack-A-Pede
+David A. Clark, Jr.
+Integrated Product Development
+MDV4910-O, C202006-01
+*/
+
 package com.twilightcitizen.whack_a_pede.models;
 
 import com.twilightcitizen.whack_a_pede.data.VertexArray;
@@ -13,7 +20,7 @@ and execute the drawing commands that OpenGL can use to draw it with that progra
 Android by Kevin Brothaler inspired the design of this class, and it includes some functionality that
 was factored out of ModelBuilder.  ModelBuilder provides primitives to build up a model from geometry
 at the moment, but it should not know how a Hole or any other game model actually describes itself in
-such terms.
+such terms.  NOTE: Z is assumed as 0.0f.
 */
 public class HoleDirt {
     // Vertices of a HoleDirt carry only the X, Y, and Z position in a 3d cartesian coordinate space.

@@ -14,7 +14,5 @@ import androidx.preference.PreferenceFragmentCompat;
 import com.twilightcitizen.whack_a_pede.R;
 
 public class SettingsFragment extends PreferenceFragmentCompat {
-    @Override public void onCreatePreferences( Bundle savedInstanceState, String rootKey ) {
-
-    }
+    @Override public void onCreatePreferences( Bundle savedInstanceState, String rootKey ) {}
 }

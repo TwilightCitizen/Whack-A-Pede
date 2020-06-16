@@ -1,3 +1,10 @@
+/*
+Whack-A-Pede
+David A. Clark, Jr.
+Integrated Product Development
+MDV4910-O, C202006-01
+*/
+
 package com.twilightcitizen.whack_a_pede.models;
 
 import com.twilightcitizen.whack_a_pede.data.VertexArray;
@@ -17,7 +24,7 @@ up from additional shapes such as legs, or even use the third dimension (depth) 
 as a Sphere instead of a Circle.  OpenGL ES 2.0 for Android by Kevin Brothaler inspired the design
 of this class, and it includes some functionality that was factored out of ModelBuilder.  ModelBuilder
 provides  primitives to build up a model from geometry at the moment, but it should not know how a
-Segment or any other game model actually describes itself in such terms.
+Segment or any other game model actually describes itself in such terms.  NOTE: Z is assumed as 0.0f.
 */
 public class Segment {
     // Vertices of a Segment carry only the X, Y, and Z position in a 3d cartesian coordinate space.

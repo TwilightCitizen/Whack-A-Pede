@@ -1,3 +1,10 @@
+/*
+Whack-A-Pede
+David A. Clark, Jr.
+Integrated Product Development
+MDV4910-O, C202006-01
+*/
+
 package com.twilightcitizen.whack_a_pede.models;
 
 import com.twilightcitizen.whack_a_pede.data.VertexArray;
@@ -12,7 +19,7 @@ exposes methods to bind its data to an OpenGL program and execute the drawing co
 can use to draw it with that program.  OpenGL ES 2.0 for Android by Kevin Brothaler inspired the
 design of this class, and it includes some functionality that was factored out of ModelBuilder.  It
 provides primitives to build up a model from geometry at the moment, but it should not know how a
-Lawn or any other game model actually describes itself in such terms.
+Lawn or any other game model actually describes itself in such terms.  NOTE: Z is assumed as 0.0f.
 */
 public class Lawn {
     // Vertices of a GrassPatch carry only the X, Y, and Z position in a 3d cartesian coordinate space.
