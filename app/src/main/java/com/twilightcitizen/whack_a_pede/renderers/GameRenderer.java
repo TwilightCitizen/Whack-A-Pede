@@ -123,7 +123,7 @@ public class GameRenderer implements GLSurfaceView.Renderer {
     // Repeatedly called to draw frames to the GLSurfaceView.  Parameter gl is ignored.
     @Override public void onDrawFrame( GL10 gl ) {
         // Clear the whole screen with the clear color.
-        glClear( GL_COLOR_BUFFER_BIT );
+        glClear( GL_COLOR_BUFFER_BIT | GL_STENCIL_BUFFER_BIT );
 
         // Use the stencil buffer to confine all models in scene to the lawn.
         confineSceneToLawn();
@@ -162,14 +162,14 @@ public class GameRenderer implements GLSurfaceView.Renderer {
     Castle University at https://research.ncl.ac.uk/game/mastersdegree/graphicsforgames/.
     */
     private void confineSceneToLawn() {
-        glEnable(GL_STENCIL_TEST);
-        glColorMask(false , false , false , false);
-        glStencilFunc(GL_ALWAYS , 2, ~0);
-        glStencilOp(GL_REPLACE , GL_REPLACE , GL_REPLACE);
+        glEnable( GL_STENCIL_TEST );
+        glColorMask( false , false , false , false );
+        glStencilFunc( GL_ALWAYS , 2, ~0 );
+        glStencilOp( GL_REPLACE , GL_REPLACE , GL_REPLACE );
         positionLawnInScene();
-        glColorMask(true, true, true, true);
-        glStencilFunc(GL_EQUAL , 2, ~0);
-        glStencilOp(GL_KEEP, GL_KEEP, GL_KEEP);
+        glColorMask( true, true, true, true );
+        glStencilFunc( GL_EQUAL , 2, ~0);
+        glStencilOp( GL_KEEP, GL_KEEP, GL_KEEP );
     }
 
     /*

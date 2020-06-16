@@ -94,6 +94,7 @@ public class GameFragment extends Fragment {
 
         // Use OpenGL 2.0, and GameRenderer will do the drawing.
         surfaceView.setEGLContextClientVersion( 2 );
+        surfaceView.setEGLConfigChooser( 8, 8, 8, 8, 16, 8 );
         surfaceView.setRenderer( new GameRenderer( requireActivity() ) );
 
         // Flag the renderer as set for the SurfaceView.
