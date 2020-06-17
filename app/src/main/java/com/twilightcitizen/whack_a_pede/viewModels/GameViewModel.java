@@ -179,7 +179,7 @@ public class GameViewModel extends ViewModel {
     as needed whenever these values change.
     */
     private MutableLiveData< Integer > score = new MutableLiveData<>( 0 );
-    private MutableLiveData< Integer > rounds = new MutableLiveData<>( 0 );
+    private MutableLiveData< Integer > rounds = new MutableLiveData<>( 1 );
     private MutableLiveData< Long > remainingTimeMillis = new MutableLiveData<>( ROUND_TIME_MILLIS );
     private MutableLiveData< Long > elapsedTimeMillis = new MutableLiveData<>( 0L );
 
@@ -240,9 +240,17 @@ public class GameViewModel extends ViewModel {
         // Guard against changing anything if the game state is not running.
         if( state.getValue() != State.running ) return;
 
+        // Obtain elapsed time and time remaining values.
+        Long timeElapsedValue = this.elapsedTimeMillis.getValue();
+        Long timeRemainingValue = remainingTimeMillis.getValue();
+
+        // Null check and coalesce elapsed time and time remaining values.
+        timeElapsedValue = timeElapsedValue == null ? 0 : timeElapsedValue;
+        timeRemainingValue = timeRemainingValue == null ? 0 : timeRemainingValue;
+
         // Update the time elapsed and time remaining with the provided slice.
-        this.elapsedTimeMillis.postValue( this.elapsedTimeMillis.getValue() + elapsedTimeMillis );
-        remainingTimeMillis.postValue( remainingTimeMillis.getValue() - elapsedTimeMillis );
+        this.elapsedTimeMillis.postValue( timeElapsedValue + elapsedTimeMillis );
+        remainingTimeMillis.postValue( timeRemainingValue - elapsedTimeMillis );
 
         // Check for game over or next round, then attack and animate centipedes.
         checkForGameOver();
@@ -302,8 +310,14 @@ public class GameViewModel extends ViewModel {
 
     // Check for game over conditions and switch state as needed.
     private void checkForGameOver() {
+        // Obtain time remaining value.
+        Long timeRemainingValue = remainingTimeMillis.getValue();
+
+        // Null check and coalesce time remaining value.
+        timeRemainingValue = timeRemainingValue == null ? 0 : timeRemainingValue;
+
         // Game is over if timer reaches zero.
-        if( remainingTimeMillis.getValue() <= 0 ) {
+        if( timeRemainingValue <= 0 ) {
             // Prevent negative clock.
             remainingTimeMillis.postValue( 0L );
             // Flag Game Over and pause it.
@@ -320,15 +334,23 @@ public class GameViewModel extends ViewModel {
         // Guard against starting new round when centipedes still exist.
         if( !CENTIPEDES.isEmpty() ) return;
 
+        // Obtain score, rounds, and time remaining values.
+        Integer scoreValue = score.getValue();
+        Integer roundsValue = rounds.getValue();
+        Long timeRemainingValue = remainingTimeMillis.getValue();
+
+        // Null check and coalesce score, rounds, and time remaining values.
+        scoreValue = scoreValue == null ? 0 : scoreValue;
+        roundsValue = roundsValue == null ? 1 : roundsValue;
+        timeRemainingValue = timeRemainingValue == null ? 0 : timeRemainingValue;
+
         // Add points for time remaining.
         score.postValue(
-            score.getValue() +
-            TimeUtil.millisToSeconds( remainingTimeMillis.getValue() ) *
-            BONUS_POINTS_PER_SECOND
+            scoreValue + TimeUtil.millisToSeconds( timeRemainingValue ) * BONUS_POINTS_PER_SECOND
         );
 
         // Increment rounds.
-        rounds.postValue( rounds.getValue() + 1 );
+        rounds.postValue( roundsValue + 1 );
 
         // Reset the clock.
         remainingTimeMillis.postValue( ROUND_TIME_MILLIS );
@@ -427,11 +449,19 @@ public class GameViewModel extends ViewModel {
         CENTIPEDES.removeAll( centipedesToRemove );
         CENTIPEDES.addAll( centipedesToAdd );
 
+        // Obtain score and time remaining values.
+        Integer scoreValue = score.getValue();
+        Long timeRemainingValue = remainingTimeMillis.getValue();
+
+        // Null check and coalesce score and time remaining values.
+        scoreValue = scoreValue == null ? 0 : scoreValue;
+        timeRemainingValue = timeRemainingValue == null ? 0 : timeRemainingValue;
+
         // Add points for each segment killed to the player's score.
-        score.postValue( score.getValue() + centipedesKilled.size() * POINTS_PER_CENTIPEDE );
+        score.postValue( scoreValue + centipedesKilled.size() * POINTS_PER_CENTIPEDE );
 
         remainingTimeMillis.postValue(
-            remainingTimeMillis.getValue() + centipedesKilled.size() * BONUS_MILLIS_PER_CENTIPEDE
+            timeRemainingValue + centipedesKilled.size() * BONUS_MILLIS_PER_CENTIPEDE
         );
 
         // Figure out the new speed for all segments.
