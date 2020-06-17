@@ -7,12 +7,15 @@ MDV4910-O, C202006-01
 
 package com.twilightcitizen.whack_a_pede.viewModels;
 
+import android.util.Log;
+
 import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.ViewModel;
 
 import com.twilightcitizen.whack_a_pede.geometry.Point;
 import com.twilightcitizen.whack_a_pede.geometry.Vector;
 import com.twilightcitizen.whack_a_pede.models.Centipede;
+import com.twilightcitizen.whack_a_pede.utilities.LoggerUtil;
 import com.twilightcitizen.whack_a_pede.utilities.TimeUtil;
 
 import java.util.ArrayList;
@@ -137,8 +140,8 @@ public class GameViewModel extends ViewModel {
 
     // Player scoring and timing constants.
     private static final long ROUND_TIME_MILLIS = 10_000L;
-    private static final int POINTS_PER_SEGMENT = 100;
-    private static final long BONUS_MILLIS_PER_SEGMENT = ROUND_TIME_MILLIS;
+    private static final int POINTS_PER_CENTIPEDE = 100;
+    private static final long BONUS_MILLIS_PER_CENTIPEDE = ROUND_TIME_MILLIS;
     private static final int BONUS_POINTS_PER_SECOND = 10;
 
     // Centipede speed constants.
@@ -157,6 +160,19 @@ public class GameViewModel extends ViewModel {
 
     // Current speed of centipedes on the lawn.
     private float centipedeSpeed = CENTIPEDE_START_SPEED;
+
+    // Touch events received from the surface to which the game is drawn.
+    private final ArrayList< Point > touchPoints = new ArrayList<>();
+
+    // Expose setter to add touch events.
+    public void addTouchPoint( Point touchPoint ) {
+        if( state.getValue() == State.running ) touchPoints.add( touchPoint );
+    }
+
+    // Attacked centipedes must be managed carefully to avoid concurrent list manipulation.
+    ArrayList< Centipede > centipedesKilled = new ArrayList<>();
+    ArrayList< Centipede > centipedesToRemove = new ArrayList<>();
+    ArrayList< Centipede > centipedesToAdd = new ArrayList<>();
 
     /*
     Mutable live data for scoring and timing information allows external observers to update
@@ -326,8 +342,115 @@ public class GameViewModel extends ViewModel {
         setupCentipede();
     }
 
+    /*
+    Process collected touch events as centipede attacks.  Remove touched segments of the centipedes,
+    if any, from the lawn, splitting or scattering attached centipedes as needed, and speeding them
+    all up.  Score points for the player for all successfully attacked segments.
+    */
     private void attackCentipedes() {
+        // Guard against processing attacks if there are no touch points.
+        if( touchPoints.isEmpty() ) return;
 
+        // Process all touch points as attacks.
+        for( Point touchPoint : touchPoints ) {
+            // Cache the X and Y of the touch event.
+            float x = touchPoint.x; float y = touchPoint.y;
+
+            if( LoggerUtil.DEBUGGING ) Log.wtf( "GVM", "TOUCH - " + x + ", " + y );
+
+            // Test attacks against all centipedes.
+            for( Centipede centipede : CENTIPEDES ) while( centipede != null ) {
+                // Cache the centipede position.
+                Point position = centipede.getPosition();
+
+                if( LoggerUtil.DEBUGGING )
+                    Log.wtf( "GVM", "CENTIPEDE - " + position.x + ", " + position.y );
+
+                // Touch X falls within X bounds of centipede.
+                boolean touchedX =
+                    x >= position.x - SEGMENT_NORMAL_RADIUS &&
+                    x <= position.x + SEGMENT_NORMAL_RADIUS;
+
+                // Touch Y falls within Y bounds of centipede.
+                boolean touchedY =
+                    y >= position.y - SEGMENT_NORMAL_RADIUS &&
+                    y <= position.y + SEGMENT_NORMAL_RADIUS;
+
+                // Touch falls in bounds of centipede and centipede is above ground.
+                boolean touched = touchedX && touchedY && centipede.getIsAbove();
+
+                // Add any touched segments to the killed segments collection.
+                if( touched ) {
+                    if( LoggerUtil.DEBUGGING ) Log.wtf( "GVM", "TOUCH ON CENTIPEDE" );
+
+                    centipedesKilled.add( centipede );
+                }
+
+                centipede = centipede.getTail();
+            }
+        }
+
+        // Remove killed centipedes, splitting or scattering others as needed.
+        for( Centipede centipede : centipedesKilled ) {
+            // Killed heads are removed and all their tails are scattered as independent heads.
+            if( centipede.getIsHead() ) {
+                Centipede tail = centipede.getTail();
+
+                centipede.removeTail();
+                centipedesToRemove.add( centipede );
+
+                while( tail != null ) {
+                    centipedesToAdd.add( tail );
+                    tail.removeHead();
+
+                    Centipede newTail = tail.getTail();
+
+                    tail.removeTail();
+
+                    tail = newTail;
+                }
+            // Killed tails just go away.
+            } else if ( centipede.getIsTail() ) {
+                centipede.getHead().removeTail();
+                centipede.removeHead();
+            // Killed middles split the centipede into two independent ones.
+            } else {
+                centipedesToAdd.add( centipede.getTail() );
+                centipede.getHead().removeTail();
+                centipede.removeHead();
+                centipede.getTail().removeHead();
+                centipede.removeTail();
+            }
+        }
+
+        // Do the actual adds and removes.
+        CENTIPEDES.removeAll( centipedesToRemove );
+        CENTIPEDES.addAll( centipedesToAdd );
+
+        // Add points for each segment killed to the player's score.
+        score.postValue( score.getValue() + centipedesKilled.size() * POINTS_PER_CENTIPEDE );
+
+        remainingTimeMillis.postValue(
+            remainingTimeMillis.getValue() + centipedesKilled.size() * BONUS_MILLIS_PER_CENTIPEDE
+        );
+
+        // Figure out the new speed for all segments.
+        centipedeSpeed += CENTIPEDE_SPEED_INCREASE * centipedesKilled.size();
+
+        // Play an appropriate sound.
+        /*if( centipedesKilled.isEmpty() )
+            SoundUtility.getInstance().playMiss();
+        else
+            SoundUtility.getInstance().playHit();
+        }*/
+
+        // Clear touch points so they cannot keep killing centipedes.
+        touchPoints.clear();
+
+        // Clear centipede attack lists to avoid needless checks.
+        centipedesKilled.clear();
+        centipedesToRemove.clear();
+        centipedesToAdd.clear();
     }
 
     // Animate centipedes over the provided time slice.

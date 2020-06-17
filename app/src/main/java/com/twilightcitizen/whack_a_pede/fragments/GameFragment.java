@@ -16,6 +16,7 @@ import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.FrameLayout;
@@ -55,7 +56,9 @@ public class GameFragment extends Fragment {
     private static final int REQUEST_GOOGLE_SIGN_IN = 100;
 
     // SurfaceView where OpenGL will draw graphics.
-    private GLSurfaceView surfaceView;
+    private GLSurfaceView gameSurfaceView;
+    // Renderer that OpenGL will use to draw graphics to the SurfaceView.
+    private GameRenderer gameRenderer;
     // Flag prevents pausing or resuming non-existent renderer.
     private boolean rendererSet = false;
 
@@ -87,7 +90,7 @@ public class GameFragment extends Fragment {
     At view creation, find the frame for the Lawn within the layout, create the GLSurfaceView to go
     into it, set it up with a renderer, and then add it to the frame, returning the modified view.
     */
-    @Override public View onCreateView(
+    @SuppressLint( "ClickableViewAccessibility" ) @Override public View onCreateView(
         LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState
     ) {
         // Get the layout for the GameFragment and the GameFrame in it.
@@ -95,20 +98,38 @@ public class GameFragment extends Fragment {
         FrameLayout frame = view.findViewById( R.id.frame_game );
 
         // Create the SurfaceView where OpenGL will draw graphics.
-        surfaceView = new GLSurfaceView( requireActivity() );
+        gameSurfaceView = new GLSurfaceView( requireActivity() );
+
+        // Create the renderer that OpenGL will use to draw graphics to the SurfaceView.
+        gameRenderer = new GameRenderer( requireActivity() );
 
         // Use OpenGL 2.0, and GameRenderer will do the drawing.
-        surfaceView.setEGLContextClientVersion( 2 );
-        surfaceView.setEGLConfigChooser( 8, 8, 8, 8, 16, 8 );
-        surfaceView.setRenderer( new GameRenderer( requireActivity() ) );
+        gameSurfaceView.setEGLContextClientVersion( 2 );
+        gameSurfaceView.setEGLConfigChooser( 8, 8, 8, 8, 16, 8 );
+        gameSurfaceView.setRenderer( gameRenderer );
+        gameSurfaceView.setOnTouchListener( this::onTouch );
 
         // Flag the renderer as set for the SurfaceView.
         rendererSet = true;
 
         // Add the SurfaceView to the GameFrame.
-        frame.addView( surfaceView );
+        frame.addView( gameSurfaceView );
 
         return view;
+    }
+
+    private boolean onTouch( View view, MotionEvent event ) {
+        // Guard against touch events other than a tap.
+        if( event == null || event.getAction() != MotionEvent.ACTION_DOWN ) return false;
+
+        // Convert touch coordinates to normalized device coordinates.  Y is inverted.
+        final float normalizedX = ( event.getX() / (float) view.getWidth() ) * 2 - 1;
+        final float normalizedY = -( ( event.getY() / (float) view.getHeight() ) * 2 - 1 );
+
+        // Forward the normalized touch coordinates to the renderer for handling.
+        gameSurfaceView.queueEvent( () -> gameRenderer.onTouch( normalizedX, normalizedY ) );
+
+        return true;
     }
 
     // After view creation, keep references to the profile pic and display name views.
@@ -132,7 +153,7 @@ public class GameFragment extends Fragment {
         gameViewModel.pause();
 
         // Pause the SurfaceView when GameFragment stops.
-        if( rendererSet ) surfaceView.onPause();
+        if( rendererSet ) gameSurfaceView.onPause();
     }
 
     // Restore view models and allow rendering to the GLSurfaceView when the fragment is resumed.
@@ -148,7 +169,7 @@ public class GameFragment extends Fragment {
         gameViewModel.getRemainingTimeMillis().observe( requireActivity(), this::onTimeRemainingChanged );
 
         // Resume the SurfaceView when GameFragment starts or resumes.
-        if( rendererSet ) surfaceView.onResume();
+        if( rendererSet ) gameSurfaceView.onResume();
     }
 
     /*

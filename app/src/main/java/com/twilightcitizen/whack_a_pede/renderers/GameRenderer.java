@@ -52,6 +52,8 @@ public class GameRenderer implements GLSurfaceView.Renderer {
     private final float[] viewMatrix = new float[ 16 ];
     // Matrix for entire scene, orthographically projected with all models placed in it.
     private final float[] modelViewMatrix = new float[ 16 ];
+    // Matrix for entire scene inverted for touch events.
+    private final float[] invertedViewMatrix = new float[ 16 ];
 
     // Some game models to place in scene.
     private Lawn lawn;
@@ -67,6 +69,20 @@ public class GameRenderer implements GLSurfaceView.Renderer {
     public GameRenderer( Context context ) {
         this.context = context;
         gameViewModel = new ViewModelProvider( ( ViewModelStoreOwner ) context ).get( GameViewModel.class );
+    }
+
+    // Called when a touch event is sent from the GLSurfaceView.
+    public void onTouch( float normalizedX, float normalizedY ) {
+        // Normalized point coordinates as a vector.  Z and W are normalized to 0 and 1.
+        final float[] normalizedPoint = new float[] { normalizedX, normalizedY, 0.0f, 1.0f };
+        // Inverted point maps to coordinate space of the game world before projection and etc.
+        final float[] invertedPoint = new float[ 4 ];
+
+        // Invert the normalized point to the game world coordinate space.
+        multiplyMV( invertedPoint, 0, invertedViewMatrix, 0, normalizedPoint, 0 );
+
+        // Add the inverted point to the game view model's touch points.
+        gameViewModel.addTouchPoint( new Point( invertedPoint[ 0 ], invertedPoint[ 1 ] ) );
     }
 
     // Called when GLSurfaceView is first created with the renderer.  Parameter gl is ignored.
@@ -127,6 +143,9 @@ public class GameRenderer implements GLSurfaceView.Renderer {
         */
 
         scaleM( viewMatrix, 0, 1.25f, 1.25f, 1.0f );
+
+        // Invert the viewMatrix to translate touch events into the space.
+        invertM( invertedViewMatrix, 0, viewMatrix, 0 );
     }
 
     // Repeatedly called to draw frames to the GLSurfaceView.  Parameter gl is ignored.
