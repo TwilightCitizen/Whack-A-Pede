@@ -62,7 +62,7 @@ public class GameFragment extends Fragment {
     // Flag prevents pausing or resuming non-existent renderer.
     private boolean rendererSet = false;
 
-    // Menu items whose function and visibility depend on game or acccount state.
+    // Menu items whose function and visibility depend on game or account state.
     private MenuItem itemPlay;
     private MenuItem itemPause;
     private MenuItem itemResume;

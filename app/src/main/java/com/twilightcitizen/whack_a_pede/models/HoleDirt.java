@@ -27,7 +27,7 @@ public class HoleDirt {
     private static final int POSITION_COMPONENT_COUNT = 3;
 
     // Data generated from the builder used to compose the HoleDirt.
-    private ModelBuilder.GeneratedData generatedData;
+    private final ModelBuilder.GeneratedData generatedData;
 
     // Upon creation, just build up the HoleDirt from an appropriately specified Circle.
     public HoleDirt( float radius, int numPoints ) {

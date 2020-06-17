@@ -26,7 +26,7 @@ public class GrassPatch {
     private static final int POSITION_COMPONENT_COUNT = 3;
 
     // Data generated from the builder used to compose the GrassPatch.
-    private ModelBuilder.GeneratedData generatedData;
+    private final ModelBuilder.GeneratedData generatedData;
 
     // Upon creation, just build up the GrassPatch from an appropriately specified Square.
     public GrassPatch( float length ) {

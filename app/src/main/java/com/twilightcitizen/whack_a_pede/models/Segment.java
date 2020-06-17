@@ -31,7 +31,7 @@ public class Segment {
     private static final int POSITION_COMPONENT_COUNT = 3;
 
     // Data generated from the builder used to compose the Segment.
-    private GeneratedData generatedData;
+    private final GeneratedData generatedData;
 
     // Upon creation, just build up the Segment from an appropriately specified Circle.
     public Segment( float radius, int numPoints ) {

@@ -76,7 +76,9 @@ public class Point {
     /*
     Test point to see if it intersects the line between two others somehow.
     */
-    public boolean intersectsPathOf( Point previousPosition, Point nextPosition ) {
+    @SuppressWarnings( "BooleanMethodIsAlwaysInverted" ) public boolean intersectsPathOf(
+        Point previousPosition, Point nextPosition
+    ) {
         return
             wasPassedVertically( previousPosition, nextPosition ) ||
             wasPassedHorizontally( previousPosition, nextPosition ) ||

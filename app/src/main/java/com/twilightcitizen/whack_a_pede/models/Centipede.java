@@ -10,7 +10,7 @@ package com.twilightcitizen.whack_a_pede.models;
 import com.twilightcitizen.whack_a_pede.geometry.Point;
 import com.twilightcitizen.whack_a_pede.geometry.Vector;
 
-import static com.twilightcitizen.whack_a_pede.viewModels.GameViewModel.SEGMENT_NORMAL_RADIUS;
+import static com.twilightcitizen.whack_a_pede.viewModels.GameViewModel.CENTIPEDE_NORMAL_RADIUS;
 
 /*
 Centipede tracks various data necessary for the proper placement of a centipede  on the lawn,
@@ -74,8 +74,8 @@ public class Centipede {
         Centipede tail = new Centipede(
             new Point(
                 // Tail should be on opposite side of the centipede's direction.
-                position.x + SEGMENT_NORMAL_RADIUS * 2.0f * ( 0.0f - direction.x ),
-                position.y + SEGMENT_NORMAL_RADIUS * 2.0f * ( 0.0f - direction.y )
+                position.x + CENTIPEDE_NORMAL_RADIUS * 2.0f * ( 0.0f - direction.x ),
+                position.y + CENTIPEDE_NORMAL_RADIUS * 2.0f * ( 0.0f - direction.y )
             ),
 
             // And, it should follow the this as its head.

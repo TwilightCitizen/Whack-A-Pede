@@ -23,7 +23,7 @@ have been colored with prerendered texture graphics (zebra stripes, astroturf, e
 from OpenGL ES 2.0 for Android by Kevin Brothaler with much refactoring for better succinctness
 and slight performance enhancements.
 */
-public class ShaderProgram {
+@SuppressWarnings( "SameParameterValue" ) public class ShaderProgram {
     // Tag for filtering any debug message logged.
     private static final String TAG = "ShaderProgram";
 

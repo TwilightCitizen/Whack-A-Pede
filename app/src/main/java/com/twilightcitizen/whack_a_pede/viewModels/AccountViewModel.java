@@ -26,9 +26,9 @@ public class AccountViewModel extends ViewModel {
     Mutable live data for profile information allows external observers to update
     as needed whenever these values change.
     */
-    private MutableLiveData< Boolean > signedIn = new MutableLiveData<>( false );
-    private MutableLiveData< Uri > profilePicUri = new MutableLiveData<>( null );
-    private MutableLiveData< String > displayName = new MutableLiveData<>( null );
+    private final MutableLiveData< Boolean > signedIn = new MutableLiveData<>( false );
+    private final MutableLiveData< Uri > profilePicUri = new MutableLiveData<>( null );
+    private final MutableLiveData< String > displayName = new MutableLiveData<>( null );
 
     /*
     Expose mutable live data for profile information to external observers.

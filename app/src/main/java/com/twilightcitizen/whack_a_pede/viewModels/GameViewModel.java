@@ -52,9 +52,9 @@ public class GameViewModel extends ViewModel {
     public static final float CELL_NORMAL_RADIUS = CELL_NORMAL_HEIGHT / 2.0f;
 
     public static final float HOLE_NORMAL_RADIUS = CELL_NORMAL_RADIUS;
-    public static final float SEGMENT_NORMAL_RADIUS = CELL_NORMAL_RADIUS * 0.8f;
-    public static final float SEGMENT_NORMAL_WIDTH = SEGMENT_NORMAL_RADIUS * 2.0f;
-    public static final float SEGMENT_NORMAL_HEIGHT = SEGMENT_NORMAL_RADIUS * 2.0f;
+    public static final float CENTIPEDE_NORMAL_RADIUS = CELL_NORMAL_RADIUS * 0.8f;
+    public static final float CENTIPEDE_NORMAL_WIDTH = CENTIPEDE_NORMAL_RADIUS * 2.0f;
+    public static final float CENTIPEDE_NORMAL_HEIGHT = CENTIPEDE_NORMAL_RADIUS * 2.0f;
 
     /*
     Lines along the X and Y axes where the grid of Holes on the Lawn will be placed.
@@ -145,15 +145,15 @@ public class GameViewModel extends ViewModel {
     private static final int BONUS_POINTS_PER_SECOND = 10;
 
     // Centipede speed constants.
-    private static final float CENTIPEDE_START_SPEED = CELL_NORMAL_WIDTH / 20.0f;
-    private static final float CENTIPEDE_MAX_SPEED = CELL_NORMAL_WIDTH / 5.0f;
+    private static final float CENTIPEDE_START_SPEED = CELL_NORMAL_WIDTH * 3.0f;
+    private static final float CENTIPEDE_MAX_SPEED = CELL_NORMAL_WIDTH * 12.0f;
 
     // This more or less determines the number of rounds before max speed is reached.
     private static final float CENTIPEDE_SPEED_INCREASE =
-        ( CENTIPEDE_MAX_SPEED - CENTIPEDE_START_SPEED ) / 1_000.0f;
+        ( CENTIPEDE_MAX_SPEED - CENTIPEDE_START_SPEED ) / 100.0f;
 
     // Edges of the lawn where centipedes can enter it.
-    private enum StartingEdge { top, bottom, left, right };
+    private enum StartingEdge { top, bottom, left, right }
 
     // Centipedes on the lawn at any given time.
     public static final List< Centipede > CENTIPEDES = new ArrayList<>();
@@ -170,18 +170,18 @@ public class GameViewModel extends ViewModel {
     }
 
     // Attacked centipedes must be managed carefully to avoid concurrent list manipulation.
-    ArrayList< Centipede > centipedesKilled = new ArrayList<>();
-    ArrayList< Centipede > centipedesToRemove = new ArrayList<>();
-    ArrayList< Centipede > centipedesToAdd = new ArrayList<>();
+    final ArrayList< Centipede > centipedesKilled = new ArrayList<>();
+    final ArrayList< Centipede > centipedesToRemove = new ArrayList<>();
+    final ArrayList< Centipede > centipedesToAdd = new ArrayList<>();
 
     /*
     Mutable live data for scoring and timing information allows external observers to update
     as needed whenever these values change.
     */
-    private MutableLiveData< Integer > score = new MutableLiveData<>( 0 );
-    private MutableLiveData< Integer > rounds = new MutableLiveData<>( 1 );
-    private MutableLiveData< Long > remainingTimeMillis = new MutableLiveData<>( ROUND_TIME_MILLIS );
-    private MutableLiveData< Long > elapsedTimeMillis = new MutableLiveData<>( 0L );
+    private final MutableLiveData< Integer > score = new MutableLiveData<>( 0 );
+    private final MutableLiveData< Integer > rounds = new MutableLiveData<>( 1 );
+    private final MutableLiveData< Long > remainingTimeMillis = new MutableLiveData<>( ROUND_TIME_MILLIS );
+    private final MutableLiveData< Long > elapsedTimeMillis = new MutableLiveData<>( 0L );
 
     // Expose the mutable live data for score, rounds, time remaining, and elapsed time.
     public MutableLiveData< Integer > getScore() { return score; }
@@ -193,7 +193,7 @@ public class GameViewModel extends ViewModel {
         Mutable live data for the game's overall state allows external observers to update as needed
         whenever the game's state changes.
         */
-    private MutableLiveData< State > state = new MutableLiveData<>( State.newGame );
+    private final MutableLiveData< State > state = new MutableLiveData<>( State.newGame );
 
     // Expose the mutable live data game state.
     public MutableLiveData< State > getState() { return state; }
@@ -390,13 +390,13 @@ public class GameViewModel extends ViewModel {
 
                 // Touch X falls within X bounds of centipede.
                 boolean touchedX =
-                    x >= position.x - SEGMENT_NORMAL_RADIUS &&
-                    x <= position.x + SEGMENT_NORMAL_RADIUS;
+                    x >= position.x - CENTIPEDE_NORMAL_RADIUS &&
+                    x <= position.x + CENTIPEDE_NORMAL_RADIUS;
 
                 // Touch Y falls within Y bounds of centipede.
                 boolean touchedY =
-                    y >= position.y - SEGMENT_NORMAL_RADIUS &&
-                    y <= position.y + SEGMENT_NORMAL_RADIUS;
+                    y >= position.y - CENTIPEDE_NORMAL_RADIUS &&
+                    y <= position.y + CENTIPEDE_NORMAL_RADIUS;
 
                 // Touch falls in bounds of centipede and centipede is above ground.
                 boolean touched = touchedX && touchedY && centipede.getIsAbove();
@@ -486,14 +486,14 @@ public class GameViewModel extends ViewModel {
     // Animate centipedes over the provided time slice.
     private void animateCentipedes( long elapsedTimeMillis ) {
         // Normalize the elapsed time as a fraction of 1 second.
-        double interval = TimeUtil.millisToIntervalOfSeconds( elapsedTimeMillis );
+        float interval = TimeUtil.millisToIntervalOfSeconds( elapsedTimeMillis );
 
         // Animate each centipede, including its tails and their tails.
         for( Centipede centipede : CENTIPEDES ) while( centipede != null ) {
             // Generate a new position for it based on current position, direction, and speed.
             Point nextPosition = new Point(
-                centipede.getPosition().x + centipedeSpeed * centipede.getDirection().x,
-                centipede.getPosition().y + centipedeSpeed * centipede.getDirection().y
+                centipede.getPosition().x + centipedeSpeed * interval * centipede.getDirection().x,
+                centipede.getPosition().y + centipedeSpeed * interval * centipede.getDirection().y
             );
 
             // Animate through holes and turns separately.
@@ -619,13 +619,13 @@ public class GameViewModel extends ViewModel {
 
             // Change the position based on the head's distance already past the turn.
             if( direction.equals( Vector.up ) ) {
-                nextPosition = new Point( turn.x, headPosition.y - SEGMENT_NORMAL_HEIGHT );
+                nextPosition = new Point( turn.x, headPosition.y - CENTIPEDE_NORMAL_HEIGHT );
             } else if( direction.equals( Vector.down ) ) {
-                nextPosition = new Point( turn.x, headPosition.y + SEGMENT_NORMAL_HEIGHT );
+                nextPosition = new Point( turn.x, headPosition.y + CENTIPEDE_NORMAL_HEIGHT );
             } else if( direction.equals( Vector.left ) ) {
-                nextPosition = new Point( headPosition.x + SEGMENT_NORMAL_WIDTH, turn.y );
+                nextPosition = new Point( headPosition.x + CENTIPEDE_NORMAL_WIDTH, turn.y );
             } else {
-                nextPosition = new Point( headPosition.x - SEGMENT_NORMAL_WIDTH, turn.y );
+                nextPosition = new Point( headPosition.x - CENTIPEDE_NORMAL_WIDTH, turn.y );
             }
 
             break;

@@ -41,10 +41,10 @@ called anytime the GLSurfaceView's dimensions change, including after creation.
 */
 public class GameRenderer implements GLSurfaceView.Renderer {
     // Context will be required by shader programs that read in GLSL resource files.
-    private Context context;
+    private final Context context;
 
     // Game ViewModel maintains game state and the position, direction, and speed of game elements.
-    private GameViewModel gameViewModel;
+    private final GameViewModel gameViewModel;
 
     // Model matrix for manipulating models without respect to the entire scene.
     private final float[] modelMatrix = new float[ 16 ];
@@ -98,7 +98,7 @@ public class GameRenderer implements GLSurfaceView.Renderer {
         holeDirt = new HoleDirt( HOLE_NORMAL_RADIUS, 32 );
         grassPatch = new GrassPatch( CELL_NORMAL_HEIGHT );
         grassHole = new GrassHole( CELL_NORMAL_HEIGHT, 8 );
-        segment = new Segment( SEGMENT_NORMAL_RADIUS, 32 );
+        segment = new Segment( CENTIPEDE_NORMAL_RADIUS, 32 );
         colorShader = new ColorShader( context );
     }
 
@@ -213,7 +213,7 @@ public class GameRenderer implements GLSurfaceView.Renderer {
     */
     private void positionGrassHolesInScene() {
         for( Point hole : HOLES ) {
-            positionModelInScene( hole.x, hole.y,  0.0f );
+            positionModelInScene( hole.x, hole.y );
 
             colorShader.setUniforms(
                 modelViewMatrix,
@@ -230,16 +230,16 @@ public class GameRenderer implements GLSurfaceView.Renderer {
     the game view model.  This is available for troubleshooting turns that otherwise have no
     visual element on screen.
     */
-    private void positionTurnsInScene() {
+    /* private void positionTurnsInScene() {
         for( Point turn : TURNS ) {
-            positionModelInScene( turn.x, turn.y,  0.0f );
+            positionModelInScene( turn.x, turn.y );
 
             colorShader.setUniforms( modelViewMatrix, 1.0f, 1.0f, 1.0f, 1.0f );
 
             segment.bindData( colorShader );
             segment.draw();
         }
-    }
+    } */
 
     /*
     Use the color shader program to draw patches of grass at every position where a hole is not
@@ -247,7 +247,7 @@ public class GameRenderer implements GLSurfaceView.Renderer {
     */
     private void positionGrassPatchesInScene() {
         for( Point patch : PATCHES ) {
-            positionModelInScene( patch.x, patch.y, 0.0f );
+            positionModelInScene( patch.x, patch.y );
 
             colorShader.setUniforms(
                 modelViewMatrix,
@@ -271,7 +271,7 @@ public class GameRenderer implements GLSurfaceView.Renderer {
                 centipede = centipede.getTail(); continue;
             }
 
-            positionModelInScene( centipede.getPosition().x, centipede.getPosition().y, 0.0f );
+            positionModelInScene( centipede.getPosition().x, centipede.getPosition().y );
 
             colorShader.setUniforms(
                 modelViewMatrix,
@@ -294,7 +294,7 @@ public class GameRenderer implements GLSurfaceView.Renderer {
     */
     private void positionHoleDirtInScene() {
         for( Point hole : HOLES ) {
-            positionModelInScene( hole.x, hole.y,  0.0f );
+            positionModelInScene( hole.x, hole.y );
 
             colorShader.setUniforms(
                 modelViewMatrix,
@@ -311,7 +311,7 @@ public class GameRenderer implements GLSurfaceView.Renderer {
     which all holes, turns, and centipedes are drawn
     */
     private void positionLawnInScene() {
-        positionModelInScene( 0.0f, 0.0f, 0.0f );
+        positionModelInScene( 0.0f, 0.0f );
 
         colorShader.setUniforms(
             modelViewMatrix,
@@ -322,12 +322,12 @@ public class GameRenderer implements GLSurfaceView.Renderer {
         lawn.draw();
     }
 
-    // Position a model in the scene at specific X, Y, and Z cartesian space coordinates.
-    private void positionModelInScene( float x, float y, float z ) {
+    // Position a model in the scene at specific X, Y, and Z cartesian space coordinates. Z is 0.0f.
+    private void positionModelInScene( float x, float y ) {
         // Give the model its own coordinate space where it can be manipulated alone.
         setIdentityM( modelMatrix, 0 );
         // Move the model to the desired position in its own space.
-        translateM( modelMatrix, 0, x, y, z );
+        translateM( modelMatrix, 0, x, y, ( float ) 0.0 );
         // Fix it into the scene where any manipulations effect all models as part of the whole.
         multiplyMM( modelViewMatrix, 0, viewMatrix, 0, modelMatrix, 0 );
     }
