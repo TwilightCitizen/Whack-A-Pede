@@ -19,6 +19,10 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 
+/*
+Game ViewModel abstracts the necessary details of an ongoing game of Whack-A-Pede within a module
+that can survive lifecycle events of the activity to which it belongs.
+*/
 public class GameViewModel extends ViewModel {
     public enum State { newGame, paused, running, stopped }
 
@@ -145,22 +149,14 @@ public class GameViewModel extends ViewModel {
     private static final float CENTIPEDE_SPEED_INCREASE =
         ( CENTIPEDE_MAX_SPEED - CENTIPEDE_START_SPEED ) / 1_000.0f;
 
+    // Edges of the lawn where centipedes can enter it.
+    private enum StartingEdge { top, bottom, left, right };
+
     // Centipedes on the lawn at any given time.
     public static final List< Centipede > CENTIPEDES = new ArrayList<>();
 
     // Current speed of centipedes on the lawn.
-    private float centipedeSpeed = CENTIPEDE_MAX_SPEED; // CENTIPEDE_START_SPEED;
-
-    /*
-    Statically generate a starting centipede for now.
-    TODO: Add method to add randomly positioned centipede to lawn.
-    */
-    static {
-        Centipede centipede = new Centipede( new Point( 0.0f, 1.0f ), Vector.down );
-
-        centipede.addTails( 9 );
-        CENTIPEDES.add( centipede );
-    }
+    private float centipedeSpeed = CENTIPEDE_START_SPEED;
 
     /*
     Mutable live data for scoring and timing information allows external observers to update
@@ -169,12 +165,18 @@ public class GameViewModel extends ViewModel {
     private MutableLiveData< Integer > score = new MutableLiveData<>( 0 );
     private MutableLiveData< Integer > rounds = new MutableLiveData<>( 0 );
     private MutableLiveData< Long > remainingTimeMillis = new MutableLiveData<>( ROUND_TIME_MILLIS );
-    private MutableLiveData< Long > totalTimeMillis = new MutableLiveData<>( 0L );
+    private MutableLiveData< Long > elapsedTimeMillis = new MutableLiveData<>( 0L );
+
+    // Expose the mutable live data for score, rounds, time remaining, and elapsed time.
+    public MutableLiveData< Integer > getScore() { return score; }
+    public MutableLiveData< Integer > getRounds() { return rounds; }
+    public MutableLiveData< Long > getRemainingTimeMillis() { return remainingTimeMillis; }
+    public MutableLiveData< Long > getElapsedTimeMillis() { return elapsedTimeMillis; }
 
     /*
-    Mutable live data for the game's overall state allows external observers to update as needed
-    whenever the game's state changes.
-    */
+        Mutable live data for the game's overall state allows external observers to update as needed
+        whenever the game's state changes.
+        */
     private MutableLiveData< State > state = new MutableLiveData<>( State.newGame );
 
     // Expose the mutable live data game state.
@@ -194,14 +196,14 @@ public class GameViewModel extends ViewModel {
     }
 
     // Only running games should be paused.  Other states basically assumed quasi-paused state.
-    public void pause() {
-        if( state.getValue() == State.running ) state.setValue( State.paused );
-    }
+    public void pause() { if( state.getValue() == State.running ) state.setValue( State.paused ); }
 
     // Only new or paused games can be started or resumed.
     public void play() {
-        if( state.getValue() == State.paused || state.getValue() == State.newGame )
+        if( state.getValue() == State.paused || state.getValue() == State.newGame ) {
+            setupCentipede();
             state.setValue( State.running );
+        }
         else
             throw new IllegalStateException( "Game Played while Not Paused or New" );
     }
@@ -223,7 +225,7 @@ public class GameViewModel extends ViewModel {
         if( state.getValue() != State.running ) return;
 
         // Update the time elapsed and time remaining with the provided slice.
-        totalTimeMillis.postValue( totalTimeMillis.getValue() + elapsedTimeMillis );
+        this.elapsedTimeMillis.postValue( this.elapsedTimeMillis.getValue() + elapsedTimeMillis );
         remainingTimeMillis.postValue( remainingTimeMillis.getValue() - elapsedTimeMillis );
 
         // Check for game over or next round, then attack and animate centipedes.
@@ -233,10 +235,100 @@ public class GameViewModel extends ViewModel {
         animateCentipedes( elapsedTimeMillis );
     }
 
-    // TODO: Implement These
-    private void checkForGameOver() {}
-    private void checkForNextRound() {}
-    private void attackCentipedes() {}
+    // Setup a new centipede to enter the lawn from a random location at one of its edges.
+    private void setupCentipede() {
+        // Guard against adding a new centipede when one already exists.
+        if( !CENTIPEDES.isEmpty() ) return;
+
+        // Position and direction for the new centipede.
+        Point startingPosition = null;
+        Vector startingDirection = null;
+
+        // Random numbers for selecting lawn edges and positions along it.
+        Random random = new Random();
+
+        // Pick an edge of the lawn at random.
+        StartingEdge startingEdge = StartingEdge.values()[
+            random.nextInt( StartingEdge.values().length )
+        ];
+
+        // Pick a random position along that edge for the centipede with an opposing direction.
+        switch( startingEdge ) {
+            case top:
+                startingPosition = new Point( TURNS_X[ random.nextInt( TURNS_X.length ) ], 1.0f );
+                startingDirection = Vector.down;
+                break;
+            case bottom:
+                startingPosition = new Point( TURNS_X[ random.nextInt( TURNS_X.length ) ], -1.0f );
+                startingDirection = Vector.up;
+                break;
+            case left:
+                startingPosition =
+                    new Point( -LAWN_CELLS_RATIO, TURNS_Y[ random.nextInt( TURNS_Y.length ) ] );
+
+                startingDirection = Vector.right;
+                break;
+            case right:
+                startingPosition =
+                    new Point( LAWN_CELLS_RATIO, TURNS_Y[ random.nextInt( TURNS_Y.length ) ] );
+
+                startingDirection = Vector.left;
+                break;
+        }
+
+        // Create a new centipede with the random position and opposing direction picked.
+        Centipede centipede = new Centipede( startingPosition, startingDirection );
+
+        // Give it 9 tails and add it to the lawn.
+        centipede.addTails( 9 );
+        CENTIPEDES.add( centipede );
+    }
+
+    // Check for game over conditions and switch state as needed.
+    private void checkForGameOver() {
+        // Game is over if timer reaches zero.
+        if( remainingTimeMillis.getValue() <= 0 ) {
+            // Prevent negative clock.
+            remainingTimeMillis.postValue( 0L );
+            // Flag Game Over and pause it.
+            state.postValue( State.stopped );
+
+            // Play an appropriate sound.
+            //SoundUtility.getInstance().playGameOver();
+            //SoundUtility.getInstance().stopMusic();
+        }
+    }
+
+    // Check for new round conditions, modifying score and time and adding centipedes as needed.
+    private void checkForNextRound() {
+        // Guard against starting new round when centipedes still exist.
+        if( !CENTIPEDES.isEmpty() ) return;
+
+        // Add points for time remaining.
+        score.postValue(
+            score.getValue() +
+            TimeUtil.millisToSeconds( remainingTimeMillis.getValue() ) *
+            BONUS_POINTS_PER_SECOND
+        );
+
+        // Increment rounds.
+        rounds.postValue( rounds.getValue() + 1 );
+
+        // Reset the clock.
+        remainingTimeMillis.postValue( ROUND_TIME_MILLIS );
+
+        // Set the next round's centipede starting speed.
+        centipedeSpeed += CENTIPEDE_SPEED_INCREASE;
+        centipedeSpeed = Math.min( centipedeSpeed, CENTIPEDE_MAX_SPEED );
+
+        // Setup a new centipede and play an appropriate sound.
+        //SoundUtility.getInstance().playNewRound();
+        setupCentipede();
+    }
+
+    private void attackCentipedes() {
+
+    }
 
     // Animate centipedes over the provided time slice.
     private void animateCentipedes( long elapsedTimeMillis ) {

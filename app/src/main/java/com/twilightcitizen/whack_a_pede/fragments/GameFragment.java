@@ -39,8 +39,11 @@ import com.google.android.gms.common.api.ApiException;
 import com.google.android.gms.tasks.Task;
 import com.twilightcitizen.whack_a_pede.R;
 import com.twilightcitizen.whack_a_pede.renderers.GameRenderer;
+import com.twilightcitizen.whack_a_pede.utilities.TimeUtil;
 import com.twilightcitizen.whack_a_pede.viewModels.AccountViewModel;
 import com.twilightcitizen.whack_a_pede.viewModels.GameViewModel;
+
+import java.util.Locale;
 
 /*
 Game Fragment displays the main game screen to the user.  It provides menu actions for starting,
@@ -68,9 +71,11 @@ public class GameFragment extends Fragment {
     private GameViewModel gameViewModel;
     private AccountViewModel accountViewModel;
 
-    // Profile pic and display name shown in scoreboard.
+    // Profile pic, display name, score, and time remaining shown in scoreboard.
     private ImageView imageProfilePic;
     private TextView textDisplayName;
+    private TextView textScore;
+    private TextView textTimeRemaining;
 
     // Specify existence of options menu at creation.
     @Override public void onCreate( @Nullable Bundle savedInstanceState ) {
@@ -112,9 +117,11 @@ public class GameFragment extends Fragment {
     ) {
         super.onViewCreated( view, savedInstanceState );
 
-        // Keep references to the profile pic and display name views.
+        // Keep references to the profile pic, display name, score, and time remaining views.
         imageProfilePic = view.findViewById( R.id.image_profile_pic );
         textDisplayName = view.findViewById( R.id.text_display_name );
+        textScore = view.findViewById( R.id.text_score );
+        textTimeRemaining = view.findViewById( R.id.text_time_remaining );
     }
 
     // Pause the game and prevent rendering to GLSurfaceView when the fragment is stopped.
@@ -135,6 +142,10 @@ public class GameFragment extends Fragment {
         // Restore view models.
         gameViewModel = new ViewModelProvider( requireActivity() ).get( GameViewModel.class );
         accountViewModel = new ViewModelProvider( requireActivity() ).get( AccountViewModel.class );
+
+        // Setup observers that will act on changes to score and time remaining in game view model.
+        gameViewModel.getScore().observe( requireActivity(), this::onScoreChanged );
+        gameViewModel.getRemainingTimeMillis().observe( requireActivity(), this::onTimeRemainingChanged );
 
         // Resume the SurfaceView when GameFragment starts or resumes.
         if( rendererSet ) surfaceView.onResume();
@@ -163,7 +174,7 @@ public class GameFragment extends Fragment {
 
         /*
         Setup observers that will act on changes initiated by the menu items when selected.  These
-        must be established here rather than at start because the observers change the visibility
+        must be established here rather than at resume because the observers change the visibility
         of key menu options that do not exist at start, but here.
         */
         gameViewModel.getState().observe( requireActivity(), this::onGameStateChanged );
@@ -223,13 +234,13 @@ public class GameFragment extends Fragment {
     // Observer to replace the profile pic when it changes in the account view model.
     private void onProfilePicUriChanged( Uri profilePicUri ) {
         Glide.with( requireActivity() ).load( profilePicUri )
-                .placeholder( R.drawable.icon_guest_avatar ).into( imageProfilePic );
+            .placeholder( R.drawable.icon_guest_avatar ).into( imageProfilePic );
     }
 
     // Observer to replace the display name when it changes in the account view model.
     private void onDisplayNameChanged( String displayName ) {
         textDisplayName.setText(
-                ( displayName == null ? requireActivity().getString( R.string.guest ) : displayName )
+            ( displayName == null ? requireActivity().getString( R.string.guest ) : displayName )
         );
     }
 
@@ -237,6 +248,18 @@ public class GameFragment extends Fragment {
     private void onSignedInChanged( boolean signedIn ) {
         itemSignIn.setVisible( !signedIn );
         itemSignOut.setVisible( signedIn );
+    }
+
+    // Observer to update the score on the scoreboard when it changes in the game view model.
+    private void onScoreChanged( int score ) {
+        // Format score with commas.
+        textScore.setText( String.format( Locale.getDefault(), "%,d", score ) );
+    }
+
+    // Observer to update the time remaining on the scoreboard when it changes in the view model.
+    private void onTimeRemainingChanged( long timeRemaining ) {
+        // Format time remaining as MM:SS.
+        textTimeRemaining.setText( TimeUtil.millisToMinutesAndSeconds( timeRemaining ) );
     }
 
     // Initiate the Google Sign-In process.

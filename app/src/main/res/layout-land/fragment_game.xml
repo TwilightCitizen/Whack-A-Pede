@@ -13,6 +13,7 @@ MDV4910-O, C202006-01
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:keepScreenOn="true"
     tools:context=".fragments.GameFragment">
 
     <androidx.constraintlayout.widget.ConstraintLayout
@@ -62,12 +63,12 @@ MDV4910-O, C202006-01
             android:text="@string/time_remaining"
             android:textAlignment="textEnd"
             app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toStartOf="@id/text_time"
+            app:layout_constraintEnd_toStartOf="@id/text_time_remaining"
             app:layout_constraintStart_toEndOf="@+id/text_score"
             app:layout_constraintTop_toTopOf="parent" />
 
         <TextView
-            android:id="@+id/text_time"
+            android:id="@+id/text_time_remaining"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:textAlignment="viewStart"
