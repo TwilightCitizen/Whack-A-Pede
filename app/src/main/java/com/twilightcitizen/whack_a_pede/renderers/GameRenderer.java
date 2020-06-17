@@ -118,6 +118,15 @@ public class GameRenderer implements GLSurfaceView.Renderer {
             // Portrait orientation or square device.
             orthoM( viewMatrix, 0, -1.0f, 1.0f, -aspectRatio, aspectRatio, -1.0f, 1.0f );
         }
+
+        /*
+        TODO: Look at options here.
+
+        Different aspect calculations for orthographic projection within an aspect-constrained
+        GLSurfaceView in the layout or scaling.
+        */
+
+        scaleM( viewMatrix, 0, 1.25f, 1.25f, 1.0f );
     }
 
     // Repeatedly called to draw frames to the GLSurfaceView.  Parameter gl is ignored.
