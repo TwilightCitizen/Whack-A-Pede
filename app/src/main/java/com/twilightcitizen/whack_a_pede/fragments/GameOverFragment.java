@@ -45,6 +45,6 @@ public class GameOverFragment extends Fragment {
         // Setup observers that will act on changes to score and time remaining in game view model.
         //gameViewModel.getScore().observe( requireActivity(), this::onScoreChanged );
         //gameViewModel.getRounds().observe( requireActivity(), this::onRoundChanged );
-        //gameViewModel.getElapsedTimeMillis().observe( requireActivity(), this::onElaspedTimeChanged );
+        //gameViewModel.getElapsedTimeMillis().observe( requireActivity(), this::onElapsedTimeChanged );
     }
 }

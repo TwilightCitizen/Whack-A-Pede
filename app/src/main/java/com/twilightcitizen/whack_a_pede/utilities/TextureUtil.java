@@ -10,7 +10,7 @@ import static android.opengl.GLES20.*;
 import static android.opengl.GLUtils.*;
 
 /*
-TexureUtil provides a utility method for loading a texture into OpenGl from DPI-independent bitmap
+TextureUtil provides a utility method for loading a texture into OpenGl from DPI-independent bitmap
 resources with appropriate scaling, min- and magnification, and mipmapping. This borrows from OpenGL
 ES 2.0 for Android by Kevin Brothaler.
 */

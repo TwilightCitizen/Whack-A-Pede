@@ -7,7 +7,6 @@ MDV4910-O, C202006-01
 
 package com.twilightcitizen.whack_a_pede.models;
 
-import com.twilightcitizen.whack_a_pede.geometry.Circle;
 import com.twilightcitizen.whack_a_pede.geometry.Rectangle;
 
 import static android.opengl.GLES20.GL_TRIANGLE_FAN;
