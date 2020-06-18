@@ -19,7 +19,6 @@ import com.twilightcitizen.whack_a_pede.geometry.Vector;
 import com.twilightcitizen.whack_a_pede.models.Centipede;
 import com.twilightcitizen.whack_a_pede.models.Lawn;
 import com.twilightcitizen.whack_a_pede.models.Segment;
-import com.twilightcitizen.whack_a_pede.shaders.ColorShader;
 import com.twilightcitizen.whack_a_pede.shaders.TextureShader;
 import com.twilightcitizen.whack_a_pede.utilities.TextureUtil;
 import com.twilightcitizen.whack_a_pede.utilities.TimeUtil;
@@ -59,9 +58,6 @@ public class GameRenderer implements GLSurfaceView.Renderer {
     // Some game models to place in scene.
     private Lawn lawn;
     private Segment segment;
-
-    // ColorShader program for drawing game models in scene with solid colors to screen.
-    private ColorShader colorShader;
 
     // TextureShader program for drawing game models in scene with textures to screen.
     private TextureShader textureShader;
@@ -107,7 +103,6 @@ public class GameRenderer implements GLSurfaceView.Renderer {
         // Instantiate game models and shader programs for drawing them.
         lawn = new Lawn( LAWN_NORMAL_HEIGHT, LAWN_NORMAL_WIDTH );
         segment = new Segment( CENTIPEDE_NORMAL_HEIGHT, CENTIPEDE_NORMAL_WIDTH );
-        colorShader = new ColorShader( context );
         textureShader = new TextureShader( context );
 
         // Load textures to be used by the TextureShader program.
@@ -227,10 +222,8 @@ public class GameRenderer implements GLSurfaceView.Renderer {
             else
                 texture = isHead ? centipedeHeadBelow : centipedeBodyBelow;
 
-            //textureShader.setUniforms( modelViewMatrix, texture );
             textureShader.setUniforms( modelViewMatrix, texture );
 
-            // segment.bindData( colorShader );
             segment.bindData( textureShader );
             segment.draw();
 
