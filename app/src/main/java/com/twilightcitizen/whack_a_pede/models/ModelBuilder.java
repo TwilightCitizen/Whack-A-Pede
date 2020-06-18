@@ -113,7 +113,8 @@ public class ModelBuilder {
 
     /*
     Given a Circle and a number of points about its  outer edge, generate data that specifies how to
-    draw a fan of that many triangles from its center to approximate a circle.
+    draw a fan of that many triangles from its center to approximate a circle with a texture applied
+    uniformly over it.
     */
     public void appendTextureCircle( Circle circle, int numPoints ) {
         // Find the starting vertex and number of vertices.
@@ -150,11 +151,15 @@ public class ModelBuilder {
             float x = (float) Math.cos( angle );
             float y =  (float) Math.sin( angle );
 
+            // Circle center and radius specifies coordinates for its outer edge.
             vertexData[ offset++ ] = circle.center.x + circle.radius * x;
             vertexData[ offset++ ] = circle.center.y + circle.radius * y;
             vertexData[ offset++ ] = 0.0f;
 
-
+            /*
+            Texture center and half-width/height specify coordinates into the texture to apply.
+            The Y coordinate is inverted to account for how images are stored.
+            */
             vertexData[ offset++ ] = 0.5f + 0.5f * x;
             vertexData[ offset++ ] = 0.5f + 0.5f * -y;
         }

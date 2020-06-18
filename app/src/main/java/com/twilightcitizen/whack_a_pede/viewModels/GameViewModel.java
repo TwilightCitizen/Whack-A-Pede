@@ -154,7 +154,7 @@ public class GameViewModel extends ViewModel {
 
     // This more or less determines the number of rounds before max speed is reached.
     private static final float CENTIPEDE_SPEED_INCREASE =
-        ( CENTIPEDE_MAX_SPEED - CENTIPEDE_START_SPEED ) / 100.0f;
+        ( CENTIPEDE_MAX_SPEED - CENTIPEDE_START_SPEED ) / 1_000.0f;
 
     // Edges of the lawn where centipedes can enter it.
     private enum StartingEdge { top, bottom, left, right }

@@ -30,10 +30,13 @@ Segment or any other game model actually describes itself in such terms.  NOTE: 
 public class Segment {
     // Vertices of a Segment carry only the X, Y, and Z position in a 3d cartesian coordinate space.
     private static final int POSITION_COMPONENT_COUNT = 3;
+    // Vertices of a 2D texture carry only S and T coordinates.
     private static final int TEXTURE_COORDINATES_COMPONENT_COUNT = 2;
 
+    // Byte count per float needed for stride.
     public static final int BYTES_PER_FLOAT = 4;
 
+    // Stride allows OpenGL to read segment and texture vertex coordinates from the same float buffer.
     private static final int STRIDE =
         ( POSITION_COMPONENT_COUNT + TEXTURE_COORDINATES_COMPONENT_COUNT ) * BYTES_PER_FLOAT;
 
@@ -49,18 +52,18 @@ public class Segment {
         generatedData = builder.build();
     }
 
-    // Associate the vertices in the Generated Data with a ColorShader program to draw them.
-    // public void bindData( ColorShader colorProgram ) {
+    // Associate the vertices in the Generated Data with a TextureShader program to draw them.
     public void bindData( TextureShader textureShader ) {
         // Convert them to a VertexArray on the graphics hardware first.
         VertexArray vertexArray = new VertexArray( generatedData.vertexData );
 
-        // Then let OpenGL know through which location in the ColorShader it should feed.
+        // Let OpenGL know from which location in the TextureShader it should read segment vertices.
         vertexArray.setVertexAttributePointer(
             0, textureShader.getPositionAttributeLocation(),
             POSITION_COMPONENT_COUNT, STRIDE
         );
 
+        // Let OpenGL know from which location in the TextureShader it should read texture vertices.
         vertexArray.setVertexAttributePointer(
             POSITION_COMPONENT_COUNT,
             textureShader.getTextureCoordinatesAttributeLocation(),

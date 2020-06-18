@@ -181,9 +181,9 @@ public class GameRenderer implements GLSurfaceView.Renderer {
 
     /*
     The positionXInScene methods that proceed all follow the same formula, sometimes within a loop
-    where multiples of the model should be drawn:  The model is positioned in the scene, the uniforms
-    are set for the color shader program being used, drawing data for the model is bound to the
-    program, and the model is drawn.
+    where multiples of the model should be drawn:  The shader program to use is specified, the model
+    is positioned in the scene, the uniforms are set for the shader program being used, drawing data
+    for the model is bound to the program, and the model is drawn.
     */
 
     /*
@@ -227,9 +227,9 @@ public class GameRenderer implements GLSurfaceView.Renderer {
     }
 
     /*
-    Use the color shader program to draw a segment wherever a centipede is located in the game
+    Use the texture shader program to draw a segment wherever a centipede is located in the game
     view model.  isAbove ensures that above/below-ground centipedes are drawn for the correct
-    layer and with the correct corresponding color.
+    layer for which it is called and with the correct corresponding texture.
     */
     private void positionSegmentsInScene( boolean isAbove ) {
         textureShader.use();
@@ -240,11 +240,16 @@ public class GameRenderer implements GLSurfaceView.Renderer {
                 centipede = centipede.getTail(); continue;
             }
 
+            // Get the centipede's direction and if it is a head.
             Vector direction = centipede.getDirection();
             boolean isHead = centipede.getIsHead();
 
             float rotation;
 
+            /*
+            Centipede rotation is based on its direction.  This is necessary because centipede
+            textures infer a bias toward direction of travel.
+            */
             if( direction == Vector.down )
                 rotation = 180.0f;
             else if( direction ==  Vector.left )
@@ -260,6 +265,7 @@ public class GameRenderer implements GLSurfaceView.Renderer {
 
             int texture;
 
+            // Get the right texture for the segment.
             if( centipede.getIsAbove() )
                 texture = isHead ? centipedeHeadAbove : centipedeBodyAbove;
             else
