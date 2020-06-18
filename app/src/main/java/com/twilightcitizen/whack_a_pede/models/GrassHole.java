@@ -28,12 +28,12 @@ public class GrassHole {
     private static final int POSITION_COMPONENT_COUNT = 3;
 
     // Data generated from the builder used to compose the GrassPatch.
-    private final ModelBuilder.GeneratedData generatedData;
+    private final ColorModelBuilder.GeneratedData generatedData;
 
     // Upon creation, just build up the GrassPatch from an appropriately specified Square.
     public GrassHole( float length, int numPointsQuarter ) {
-        ModelBuilder builder = new ModelBuilder(
-            ModelBuilder.sizeOfSquareWithHoleInVertices( numPointsQuarter )
+        ColorModelBuilder builder = new ColorModelBuilder(
+            ColorModelBuilder.sizeOfSquareWithHoleInVertices( numPointsQuarter )
         );
 
         builder.appendSquareWithHole(

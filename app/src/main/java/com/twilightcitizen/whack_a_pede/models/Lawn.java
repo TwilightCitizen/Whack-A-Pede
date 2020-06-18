@@ -26,11 +26,13 @@ public class Lawn {
     private static final int POSITION_COMPONENT_COUNT = 3;
 
     // Data generated from the builder used to compose the GrassPatch.
-    private final ModelBuilder.GeneratedData generatedData;
+    private final ColorModelBuilder.GeneratedData generatedData;
 
     // Upon creation, just build up the GrassPatch from an appropriately specified Square.
     public Lawn( float height, float width ) {
-        ModelBuilder builder = new ModelBuilder( ModelBuilder.sizeOfRectangleInVertices );
+        ColorModelBuilder builder = new ColorModelBuilder(
+            ColorModelBuilder.sizeOfRectangleInVertices
+        );
 
         builder.appendRectangle( new Rectangle( new Point( 0.0f, 0.0f ), height, width ) );
 

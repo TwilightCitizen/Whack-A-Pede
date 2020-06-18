@@ -45,9 +45,11 @@ public class Segment {
 
     // Upon creation, just build up the Segment from an appropriately specified Circle.
     public Segment( float radius, int numPoints ) {
-        ModelBuilder builder = new ModelBuilder( ModelBuilder.sizeOfTextureCircleInVertices( numPoints ) );
+        TextureModelBuilder builder = new TextureModelBuilder(
+            TextureModelBuilder.sizeOfCircleInVertices( numPoints )
+        );
 
-        builder.appendTextureCircle( new Circle( new Point( 0.0f, 0.0f ), radius ), numPoints );
+        builder.appendCircle( new Circle( new Point( 0.0f, 0.0f ), radius ), numPoints );
 
         generatedData = builder.build();
     }

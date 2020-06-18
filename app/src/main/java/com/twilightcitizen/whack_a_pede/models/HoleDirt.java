@@ -27,11 +27,13 @@ public class HoleDirt {
     private static final int POSITION_COMPONENT_COUNT = 3;
 
     // Data generated from the builder used to compose the HoleDirt.
-    private final ModelBuilder.GeneratedData generatedData;
+    private final ColorModelBuilder.GeneratedData generatedData;
 
     // Upon creation, just build up the HoleDirt from an appropriately specified Circle.
     public HoleDirt( float radius, int numPoints ) {
-        ModelBuilder builder = new ModelBuilder( ModelBuilder.sizeOfCircleInVertices( numPoints ) );
+        ColorModelBuilder builder = new ColorModelBuilder(
+            ColorModelBuilder.sizeOfCircleInVertices( numPoints )
+        );
 
         builder.appendCircle( new Circle( new Point( 0.0f, 0.0f ), radius ), numPoints );
 
