@@ -27,6 +27,10 @@ Game ViewModel abstracts the necessary details of an ongoing game of Whack-A-Ped
 that can survive lifecycle events of the activity to which it belongs.
 */
 public class GameViewModel extends ViewModel {
+    // Tag for filtering any debug message logged.
+    private static final String TAG = "GameViewModel";
+
+    // States that the game can be in.
     public enum State { newGame, paused, running, stopped }
 
     /*
@@ -378,7 +382,7 @@ public class GameViewModel extends ViewModel {
             // Cache the X and Y of the touch event.
             float x = touchPoint.x; float y = touchPoint.y;
 
-            if( LoggerUtil.DEBUGGING ) Log.wtf( "GVM", "TOUCH - " + x + ", " + y );
+            if( LoggerUtil.DEBUGGING ) Log.wtf( TAG, "TOUCH - " + x + ", " + y );
 
             // Test attacks against all centipedes.
             for( Centipede centipede : CENTIPEDES ) while( centipede != null ) {
@@ -386,7 +390,7 @@ public class GameViewModel extends ViewModel {
                 Point position = centipede.getPosition();
 
                 if( LoggerUtil.DEBUGGING )
-                    Log.wtf( "GVM", "CENTIPEDE - " + position.x + ", " + position.y );
+                    Log.wtf( TAG, "CENTIPEDE - " + position.x + ", " + position.y );
 
                 // Touch X falls within X bounds of centipede.
                 boolean touchedX =
@@ -403,7 +407,7 @@ public class GameViewModel extends ViewModel {
 
                 // Add any touched segments to the killed segments collection.
                 if( touched ) {
-                    if( LoggerUtil.DEBUGGING ) Log.wtf( "GVM", "TOUCH ON CENTIPEDE" );
+                    if( LoggerUtil.DEBUGGING ) Log.wtf( TAG, "TOUCH ON CENTIPEDE" );
 
                     centipedesKilled.add( centipede );
                 }

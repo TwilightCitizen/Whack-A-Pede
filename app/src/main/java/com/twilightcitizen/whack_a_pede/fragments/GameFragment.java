@@ -105,7 +105,8 @@ public class GameFragment extends Fragment {
 
         // Use OpenGL 2.0, and GameRenderer will do the drawing.
         gameSurfaceView.setEGLContextClientVersion( 2 );
-        gameSurfaceView.setEGLConfigChooser( 8, 8, 8, 8, 16, 8 );
+        gameSurfaceView.setEGLConfigChooser( true );
+        //gameSurfaceView.setEGLConfigChooser( 8, 8, 8, 8, 16, 8 );
         gameSurfaceView.setRenderer( gameRenderer );
         gameSurfaceView.setOnTouchListener( this::onTouch );
 
@@ -118,6 +119,7 @@ public class GameFragment extends Fragment {
         return view;
     }
 
+    // Forward touches within the SurfaceView to the renderer.
     private boolean onTouch( View view, MotionEvent event ) {
         // Guard against touch events other than a tap.
         if( event == null || event.getAction() != MotionEvent.ACTION_DOWN ) return false;

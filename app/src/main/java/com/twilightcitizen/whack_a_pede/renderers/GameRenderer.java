@@ -13,7 +13,9 @@ import android.opengl.GLSurfaceView;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.lifecycle.ViewModelStoreOwner;
 
+import com.twilightcitizen.whack_a_pede.R;
 import com.twilightcitizen.whack_a_pede.geometry.Point;
+import com.twilightcitizen.whack_a_pede.geometry.Vector;
 import com.twilightcitizen.whack_a_pede.models.Centipede;
 import com.twilightcitizen.whack_a_pede.models.GrassHole;
 import com.twilightcitizen.whack_a_pede.models.GrassPatch;
@@ -21,6 +23,8 @@ import com.twilightcitizen.whack_a_pede.models.HoleDirt;
 import com.twilightcitizen.whack_a_pede.models.Lawn;
 import com.twilightcitizen.whack_a_pede.models.Segment;
 import com.twilightcitizen.whack_a_pede.shaders.ColorShader;
+import com.twilightcitizen.whack_a_pede.shaders.TextureShader;
+import com.twilightcitizen.whack_a_pede.utilities.TextureUtil;
 import com.twilightcitizen.whack_a_pede.utilities.TimeUtil;
 import com.twilightcitizen.whack_a_pede.viewModels.GameViewModel;
 
@@ -65,6 +69,15 @@ public class GameRenderer implements GLSurfaceView.Renderer {
     // ColorShader program for drawing game models in scene with solid colors to screen.
     private ColorShader colorShader;
 
+    // TextureShader program for drawing game models in scene with textures to screen.
+    private TextureShader textureShader;
+
+    // Textures for the centipede head and body to be used by the TextureShader program.
+    private int centipedeHeadAbove;
+    private int centipedeHeadBelow;
+    private int centipedeBodyAbove;
+    private int centipedeBodyBelow;
+
     // Accept and store context on creation, and fact check important dimensions
     public GameRenderer( Context context ) {
         this.context = context;
@@ -93,13 +106,20 @@ public class GameRenderer implements GLSurfaceView.Renderer {
         glBlendFunc( GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA );
         glEnable( GL_BLEND );
 
-        // Instantiate game models and ColorShader program for drawing them.
+        // Instantiate game models and shader programs for drawing them.
         lawn = new Lawn( LAWN_NORMAL_HEIGHT, LAWN_NORMAL_WIDTH );
         holeDirt = new HoleDirt( HOLE_NORMAL_RADIUS, 32 );
         grassPatch = new GrassPatch( CELL_NORMAL_HEIGHT );
         grassHole = new GrassHole( CELL_NORMAL_HEIGHT, 8 );
         segment = new Segment( CENTIPEDE_NORMAL_RADIUS, 32 );
         colorShader = new ColorShader( context );
+        textureShader = new TextureShader( context );
+
+        // Load textures to be used by the TextureShader program.
+        centipedeHeadAbove = TextureUtil.LoadTexture( context, R.drawable.centipede_head_day_blue );
+        centipedeHeadBelow = TextureUtil.LoadTexture( context, R.drawable.centipede_head_night_blue );
+        centipedeBodyAbove = TextureUtil.LoadTexture( context, R.drawable.centipede_body_day_blue );
+        centipedeBodyBelow = TextureUtil.LoadTexture( context, R.drawable.centipede_body_night_blue );
     }
 
     // Called when GLSurfaceView dimensions change. Parameter gl is ignored.
@@ -113,7 +133,7 @@ public class GameRenderer implements GLSurfaceView.Renderer {
         For the rare (non-existent?) square device, portrait orientation is assumed.
         */
         final float aspectRatio =
-            width > height ? (float) width / (float) height : (float) height / (float) width;
+            width < height ? (float) width / (float) height : (float) height / (float) width;
 
         /*
         Apply an orthographic projection to the scene based on the device's orientation.  OpenGL
@@ -128,21 +148,12 @@ public class GameRenderer implements GLSurfaceView.Renderer {
         */
         if( width > height ) {
             // Landscape orientation.
-            orthoM( viewMatrix, 0, -aspectRatio, aspectRatio, -1.0f, 1.0f, -1.0f, 1.0f );
+            orthoM( viewMatrix, 0, -1.0f, 1.0f, -aspectRatio, aspectRatio, -1.0f, 1.0f );
             rotateM( viewMatrix, 0, 90.0f, 0.0f, 0.0f, 1.0f );
         } else {
             // Portrait orientation or square device.
-            orthoM( viewMatrix, 0, -1.0f, 1.0f, -aspectRatio, aspectRatio, -1.0f, 1.0f );
+            orthoM( viewMatrix, 0, -aspectRatio, aspectRatio, -1.0f, 1.0f, -1.0f, 1.0f );
         }
-
-        /*
-        TODO: Look at options here.
-
-        Different aspect calculations for orthographic projection within an aspect-constrained
-        GLSurfaceView in the layout or scaling.
-        */
-
-        scaleM( viewMatrix, 0, 1.25f, 1.25f, 1.0f );
 
         // Invert the viewMatrix to translate touch events into the space.
         invertM( invertedViewMatrix, 0, viewMatrix, 0 );
@@ -151,53 +162,21 @@ public class GameRenderer implements GLSurfaceView.Renderer {
     // Repeatedly called to draw frames to the GLSurfaceView.  Parameter gl is ignored.
     @Override public void onDrawFrame( GL10 gl ) {
         // Clear the whole screen with the clear color.
-        glClear( GL_COLOR_BUFFER_BIT | GL_STENCIL_BUFFER_BIT );
+        glClear( GL_COLOR_BUFFER_BIT );
 
-        // Use the stencil buffer to confine all models in scene to the lawn.
-        confineSceneToLawn();
-
-        // Use the ColorShader program to draw models into the scene.
-        colorShader.use();
-
+        // Loop the game for the time slice elapsed.
         gameViewModel.loop( TimeUtil.getTimeElapsedMillis() );
 
         /*
         Position some models in the scene, setting the ColorShader's uniforms to the entire
         orthographically projected and rotated view, binding the model's data it and drawing it.
         */
-
         positionLawnInScene();
         positionHoleDirtInScene();
         positionSegmentsInScene( false );
         positionGrassHolesInScene();
-        //positionTurnsInScene();
         positionGrassPatchesInScene();
         positionSegmentsInScene( true );
-
-        // Anything drawn after this point will not be confined to the lawn.
-        glDisable( GL_STENCIL_TEST );
-    }
-
-    /*
-    Confining the scene to the Lawn prevents OpenGL from drawing anything outside of it, clipping
-    or discarding fragments that would have been drawn otherwise.  The stencil buffer is another
-    buffer on the graphics hardware where scene models can be drawn, but rather than displaying
-    these on screen, these can be used to modify other models drawn to the color buffer which are
-    are eventually sent to the screen.  This tells OpenGL that for whatever models are drawn, put
-    a 2 (arbitrary) for that pixel in the stencil buffer.  Then, for every model drawn to the color
-    buffer afterward, check its pixels against the ones in the stencil buffer.  If they are equal to
-    2, then keep them. Otherwise, discard them.  This was adapted from research provided by New
-    Castle University at https://research.ncl.ac.uk/game/mastersdegree/graphicsforgames/.
-    */
-    private void confineSceneToLawn() {
-        glEnable( GL_STENCIL_TEST );
-        glColorMask( false , false , false , false );
-        glStencilFunc( GL_ALWAYS , 2, ~0 );
-        glStencilOp( GL_REPLACE , GL_REPLACE , GL_REPLACE );
-        positionLawnInScene();
-        glColorMask( true, true, true, true );
-        glStencilFunc( GL_EQUAL , 2, ~0);
-        glStencilOp( GL_KEEP, GL_KEEP, GL_KEEP );
     }
 
     /*
@@ -212,8 +191,10 @@ public class GameRenderer implements GLSurfaceView.Renderer {
     the game view model.
     */
     private void positionGrassHolesInScene() {
+        colorShader.use();
+
         for( Point hole : HOLES ) {
-            positionModelInScene( hole.x, hole.y );
+            positionModelInScene( hole.x, hole.y, 0.0f );
 
             colorShader.setUniforms(
                 modelViewMatrix,
@@ -226,28 +207,14 @@ public class GameRenderer implements GLSurfaceView.Renderer {
     }
 
     /*
-    Use the color shader program to a segment at every position where a turn is located in
-    the game view model.  This is available for troubleshooting turns that otherwise have no
-    visual element on screen.
-    */
-    /* private void positionTurnsInScene() {
-        for( Point turn : TURNS ) {
-            positionModelInScene( turn.x, turn.y );
-
-            colorShader.setUniforms( modelViewMatrix, 1.0f, 1.0f, 1.0f, 1.0f );
-
-            segment.bindData( colorShader );
-            segment.draw();
-        }
-    } */
-
-    /*
     Use the color shader program to draw patches of grass at every position where a hole is not
     located in the game view model.
     */
     private void positionGrassPatchesInScene() {
+        colorShader.use();
+
         for( Point patch : PATCHES ) {
-            positionModelInScene( patch.x, patch.y );
+            positionModelInScene( patch.x, patch.y, 0.0f );
 
             colorShader.setUniforms(
                 modelViewMatrix,
@@ -265,23 +232,44 @@ public class GameRenderer implements GLSurfaceView.Renderer {
     layer and with the correct corresponding color.
     */
     private void positionSegmentsInScene( boolean isAbove ) {
+        textureShader.use();
+
         for( Centipede centipede : GameViewModel.CENTIPEDES ) while( centipede != null ) {
             // Guard against drawing centipede not for this layer.
             if( centipede.getIsAbove() != isAbove ) {
                 centipede = centipede.getTail(); continue;
             }
 
-            positionModelInScene( centipede.getPosition().x, centipede.getPosition().y );
+            Vector direction = centipede.getDirection();
+            boolean isHead = centipede.getIsHead();
 
-            colorShader.setUniforms(
-                modelViewMatrix,
-                ( float ) ( isAbove ? 0x00 : 0x00 ) / 0xFF,
-                ( float ) ( isAbove ? 0xC4 : 0x62 ) / 0xFF,
-                ( float ) ( isAbove ? 0xFF : 0x80 ) / 0xFF,
-                1.0f
+            float rotation;
+
+            if( direction == Vector.down )
+                rotation = 180.0f;
+            else if( direction ==  Vector.left )
+                rotation = 90.0f;
+            else if( direction ==  Vector.right )
+                rotation = -90.0f;
+            else
+                rotation = 0.0f;
+
+            positionModelInScene(
+                centipede.getPosition().x, centipede.getPosition().y, rotation
             );
 
-            segment.bindData( colorShader );
+            int texture;
+
+            if( centipede.getIsAbove() )
+                texture = isHead ? centipedeHeadAbove : centipedeBodyAbove;
+            else
+                texture = isHead ? centipedeHeadBelow : centipedeBodyBelow;
+
+            //textureShader.setUniforms( modelViewMatrix, texture );
+            textureShader.setUniforms( modelViewMatrix, texture );
+
+            // segment.bindData( colorShader );
+            segment.bindData( textureShader );
             segment.draw();
 
             centipede = centipede.getTail();
@@ -293,8 +281,10 @@ public class GameRenderer implements GLSurfaceView.Renderer {
     in the game view model.
     */
     private void positionHoleDirtInScene() {
+        colorShader.use();
+
         for( Point hole : HOLES ) {
-            positionModelInScene( hole.x, hole.y );
+            positionModelInScene( hole.x, hole.y, 0.0f );
 
             colorShader.setUniforms(
                 modelViewMatrix,
@@ -311,7 +301,8 @@ public class GameRenderer implements GLSurfaceView.Renderer {
     which all holes, turns, and centipedes are drawn
     */
     private void positionLawnInScene() {
-        positionModelInScene( 0.0f, 0.0f );
+        colorShader.use();
+        positionModelInScene( 0.0f, 0.0f, 0.0f );
 
         colorShader.setUniforms(
             modelViewMatrix,
@@ -323,11 +314,13 @@ public class GameRenderer implements GLSurfaceView.Renderer {
     }
 
     // Position a model in the scene at specific X, Y, and Z cartesian space coordinates. Z is 0.0f.
-    private void positionModelInScene( float x, float y ) {
+    private void positionModelInScene( float x, float y, float rotation ) {
         // Give the model its own coordinate space where it can be manipulated alone.
         setIdentityM( modelMatrix, 0 );
         // Move the model to the desired position in its own space.
         translateM( modelMatrix, 0, x, y, ( float ) 0.0 );
+        // Rotate the model if needed.
+        if( rotation != 0.0f ) rotateM( modelMatrix, 0, rotation, 0.0f, 0.0f, 1.0f );
         // Fix it into the scene where any manipulations effect all models as part of the whole.
         multiplyMM( modelViewMatrix, 0, viewMatrix, 0, modelMatrix, 0 );
     }

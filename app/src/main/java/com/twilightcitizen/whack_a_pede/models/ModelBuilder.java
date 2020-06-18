@@ -70,8 +70,6 @@ public class ModelBuilder {
     /*
     Given a Circle and a number of points about its  outer edge, generate data that specifies how to
     draw a fan of that many triangles from its center to approximate a circle.
-
-    TODO: Look at pushing out of ModelBuilder into Circle somehow.
     */
     public void appendCircle( Circle circle, int numPoints ) {
         // Find the starting vertex and number of vertices.
@@ -102,6 +100,63 @@ public class ModelBuilder {
             vertexData[ offset++ ] = circle.center.x + circle.radius * (float) Math.cos( angle );
             vertexData[ offset++ ] = circle.center.y + circle.radius * (float) Math.sin( angle );
             vertexData[ offset++ ] = 0.0f;
+        }
+
+        // Only a single command is needed to draw the circle as a triangle fan.
+        drawList.add( () -> glDrawArrays( GL_TRIANGLE_FAN, startVertex, numVertices ) );
+    }
+
+    // Size of Circle in vertices.
+    public static int sizeOfTextureCircleInVertices( int numPoints ) {
+        return 1 + ( numPoints + 1 ) + numPoints * 2;
+    }
+
+    /*
+    Given a Circle and a number of points about its  outer edge, generate data that specifies how to
+    draw a fan of that many triangles from its center to approximate a circle.
+    */
+    public void appendTextureCircle( Circle circle, int numPoints ) {
+        // Find the starting vertex and number of vertices.
+        final int startVertex = offset / FLOATS_PER_VERTEX;
+        final int numVertices = sizeOfCircleInVertices( numPoints );
+
+        /*
+        First vertex requires the 3d position of the circle center, which all triangles in the
+        fan will share in common.
+        */
+        vertexData[ offset++ ] = circle.center.x;
+        vertexData[ offset++ ] = circle.center.y;
+        vertexData[ offset++ ] = 0.0f;
+
+        /*
+        Texture origin 0,0 is at bottom left extending to 1,1 at top right.
+        */
+        vertexData[ offset++ ] = 0.5f;
+        vertexData[ offset++ ] = 0.5f;
+
+        /*
+        Remaining vertices describe the positions of the other two points for each triangle,
+        each being shared between two triangles in the fan.  The first one is repeated as the
+        last one to close the fan.
+        */
+        for( int i = 0; i <= numPoints; i++ ) {
+            // Get the angle in radians that, multiplied by numPoints, circumscribes the circle.
+            float angle = ( (float) i / (float) numPoints ) * ( (float) Math.PI * 2.0f );
+
+            /*
+            Use trigonometry to find the X and Y coordinates of the end of the triangle's
+            hypotenuse opposite its origin at the circle center cast at the given angle.
+            */
+            float x = (float) Math.cos( angle );
+            float y =  (float) Math.sin( angle );
+
+            vertexData[ offset++ ] = circle.center.x + circle.radius * x;
+            vertexData[ offset++ ] = circle.center.y + circle.radius * y;
+            vertexData[ offset++ ] = 0.0f;
+
+
+            vertexData[ offset++ ] = 0.5f + 0.5f * x;
+            vertexData[ offset++ ] = 0.5f + 0.5f * -y;
         }
 
         // Only a single command is needed to draw the circle as a triangle fan.
