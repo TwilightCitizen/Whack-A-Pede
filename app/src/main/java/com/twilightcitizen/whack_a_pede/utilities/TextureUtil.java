@@ -38,6 +38,7 @@ public class TextureUtil {
 
         // Scaling can make bitmap dimensions not a power of 2 which can cause issues.
         options.inScaled = false;
+        options.inPremultiplied = false;
 
         // Decode the bitmap resource
         final Bitmap bitmap = BitmapFactory.decodeResource(

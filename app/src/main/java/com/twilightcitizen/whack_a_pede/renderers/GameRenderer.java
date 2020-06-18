@@ -17,9 +17,6 @@ import com.twilightcitizen.whack_a_pede.R;
 import com.twilightcitizen.whack_a_pede.geometry.Point;
 import com.twilightcitizen.whack_a_pede.geometry.Vector;
 import com.twilightcitizen.whack_a_pede.models.Centipede;
-import com.twilightcitizen.whack_a_pede.models.GrassHole;
-import com.twilightcitizen.whack_a_pede.models.GrassPatch;
-import com.twilightcitizen.whack_a_pede.models.HoleDirt;
 import com.twilightcitizen.whack_a_pede.models.Lawn;
 import com.twilightcitizen.whack_a_pede.models.Segment;
 import com.twilightcitizen.whack_a_pede.shaders.ColorShader;
@@ -61,9 +58,6 @@ public class GameRenderer implements GLSurfaceView.Renderer {
 
     // Some game models to place in scene.
     private Lawn lawn;
-    private HoleDirt holeDirt;
-    private GrassPatch grassPatch;
-    private GrassHole grassHole;
     private Segment segment;
 
     // ColorShader program for drawing game models in scene with solid colors to screen.
@@ -71,6 +65,10 @@ public class GameRenderer implements GLSurfaceView.Renderer {
 
     // TextureShader program for drawing game models in scene with textures to screen.
     private TextureShader textureShader;
+
+    // Textures for the lawn top and bottom;
+    private int lawnTopGrassWithHoles;
+    private int lawnBottomGrassWithDirt;
 
     // Textures for the centipede head and body to be used by the TextureShader program.
     private int centipedeHeadAbove;
@@ -103,14 +101,11 @@ public class GameRenderer implements GLSurfaceView.Renderer {
         // Set the clear color to yellow #FFD946.
         glClearColor( (float) 0xFF / 0xFF, (float) 0xD9 / 0xFF, (float) 0x46 / 0xFF, 0.0f );
         // Set and enable alpha blending for transparency.
-        glBlendFunc( GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA );
         glEnable( GL_BLEND );
+        glBlendFunc( GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA );
 
         // Instantiate game models and shader programs for drawing them.
         lawn = new Lawn( LAWN_NORMAL_HEIGHT, LAWN_NORMAL_WIDTH );
-        holeDirt = new HoleDirt( HOLE_NORMAL_RADIUS, 32 );
-        grassPatch = new GrassPatch( CELL_NORMAL_HEIGHT );
-        grassHole = new GrassHole( CELL_NORMAL_HEIGHT, 8 );
         segment = new Segment( CENTIPEDE_NORMAL_RADIUS, 32 );
         colorShader = new ColorShader( context );
         textureShader = new TextureShader( context );
@@ -120,6 +115,8 @@ public class GameRenderer implements GLSurfaceView.Renderer {
         centipedeHeadBelow = TextureUtil.LoadTexture( context, R.drawable.centipede_head_night_blue );
         centipedeBodyAbove = TextureUtil.LoadTexture( context, R.drawable.centipede_body_day_blue );
         centipedeBodyBelow = TextureUtil.LoadTexture( context, R.drawable.centipede_body_night_blue );
+        lawnTopGrassWithHoles = TextureUtil.LoadTexture( context, R.drawable.lawn_holes_grass_green );
+        lawnBottomGrassWithDirt = TextureUtil.LoadTexture( context, R.drawable.lawn_holes_dirt_brown );
     }
 
     // Called when GLSurfaceView dimensions change. Parameter gl is ignored.
@@ -171,11 +168,9 @@ public class GameRenderer implements GLSurfaceView.Renderer {
         Position some models in the scene, setting the ColorShader's uniforms to the entire
         orthographically projected and rotated view, binding the model's data it and drawing it.
         */
-        positionLawnInScene();
-        positionHoleDirtInScene();
+        positionLawnBottomInScene();
         positionSegmentsInScene( false );
-        positionGrassHolesInScene();
-        positionGrassPatchesInScene();
+        positionLawnTopInScene();
         positionSegmentsInScene( true );
     }
 
@@ -186,45 +181,6 @@ public class GameRenderer implements GLSurfaceView.Renderer {
     for the model is bound to the program, and the model is drawn.
     */
 
-    /*
-    Use the color shader program to draw grass holes at every position where a hole is located in
-    the game view model.
-    */
-    private void positionGrassHolesInScene() {
-        colorShader.use();
-
-        for( Point hole : HOLES ) {
-            positionModelInScene( hole.x, hole.y, 0.0f );
-
-            colorShader.setUniforms(
-                modelViewMatrix,
-                ( float ) 0x00 / 0xFF, ( float ) 0xA3 / 0xFF, ( float ) 0x15 / 0xFF, 0.8f
-            );
-
-            grassHole.bindData( colorShader );
-            grassHole.draw();
-        }
-    }
-
-    /*
-    Use the color shader program to draw patches of grass at every position where a hole is not
-    located in the game view model.
-    */
-    private void positionGrassPatchesInScene() {
-        colorShader.use();
-
-        for( Point patch : PATCHES ) {
-            positionModelInScene( patch.x, patch.y, 0.0f );
-
-            colorShader.setUniforms(
-                modelViewMatrix,
-                ( float ) 0x00 / 0xFF, ( float ) 0xA3 / 0xFF, ( float ) 0x15 / 0xFF, 0.8f
-            );
-
-            grassPatch.bindData( colorShader );
-            grassPatch.draw();
-        }
-    }
 
     /*
     Use the texture shader program to draw a segment wherever a centipede is located in the game
@@ -283,39 +239,26 @@ public class GameRenderer implements GLSurfaceView.Renderer {
     }
 
     /*
-    Use the color shader program to draw the hole's dirt at every position where a hole is located
-    in the game view model.
+    Use the texture shader program to draw lawn top in the scene which serves to confine the region
+    within which all holes, turns, and centipedes are drawn.
     */
-    private void positionHoleDirtInScene() {
-        colorShader.use();
-
-        for( Point hole : HOLES ) {
-            positionModelInScene( hole.x, hole.y, 0.0f );
-
-            colorShader.setUniforms(
-                modelViewMatrix,
-                ( float ) 0x52 / 0xFF, ( float ) 0x41 / 0xFF, ( float ) 0x00 / 0xFF, 1.0f
-            );
-
-            holeDirt.bindData( colorShader );
-            holeDirt.draw();
-        }
+    private void positionLawnTopInScene() {
+        textureShader.use();
+        positionModelInScene( 0.0f, 0.0f, 0.0f );
+        textureShader.setUniforms( modelViewMatrix, lawnTopGrassWithHoles );
+        lawn.bindData( textureShader );
+        lawn.draw();
     }
 
     /*
     Use the color shader program to draw lawn in the scene which serves to confine the region within
     which all holes, turns, and centipedes are drawn
     */
-    private void positionLawnInScene() {
-        colorShader.use();
+    private void positionLawnBottomInScene() {
+        textureShader.use();
         positionModelInScene( 0.0f, 0.0f, 0.0f );
-
-        colorShader.setUniforms(
-            modelViewMatrix,
-                ( float ) 0x00 / 0xFF, ( float ) 0xA3 / 0xFF, ( float ) 0x15 / 0xFF, 1.0f
-        );
-
-        lawn.bindData( colorShader );
+        textureShader.setUniforms( modelViewMatrix, lawnBottomGrassWithDirt );
+        lawn.bindData( textureShader );
         lawn.draw();
     }
 

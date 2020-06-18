@@ -9,6 +9,7 @@ package com.twilightcitizen.whack_a_pede.fragments;
 
 import android.annotation.SuppressLint;
 import android.content.Intent;
+import android.graphics.PixelFormat;
 import android.net.Uri;
 import android.opengl.GLSurfaceView;
 import android.os.Bundle;
@@ -106,7 +107,8 @@ public class GameFragment extends Fragment {
         // Use OpenGL 2.0, and GameRenderer will do the drawing.
         gameSurfaceView.setEGLContextClientVersion( 2 );
         gameSurfaceView.setEGLConfigChooser( true );
-        //gameSurfaceView.setEGLConfigChooser( 8, 8, 8, 8, 16, 8 );
+        gameSurfaceView.getHolder().setFormat( PixelFormat.RGBA_8888 );
+        gameSurfaceView.getHolder().setFormat( PixelFormat.TRANSPARENT );
         gameSurfaceView.setRenderer( gameRenderer );
         gameSurfaceView.setOnTouchListener( this::onTouch );
 
