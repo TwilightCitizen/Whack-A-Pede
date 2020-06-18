@@ -67,8 +67,8 @@ public class GameRenderer implements GLSurfaceView.Renderer {
     private TextureShader textureShader;
 
     // Textures for the lawn top and bottom;
-    private int lawnTopGrassWithHoles;
-    private int lawnBottomGrassWithDirt;
+    private int lawnTop;
+    private int lawnBottom;
 
     // Textures for the centipede head and body to be used by the TextureShader program.
     private int centipedeHeadAbove;
@@ -106,17 +106,17 @@ public class GameRenderer implements GLSurfaceView.Renderer {
 
         // Instantiate game models and shader programs for drawing them.
         lawn = new Lawn( LAWN_NORMAL_HEIGHT, LAWN_NORMAL_WIDTH );
-        segment = new Segment( CENTIPEDE_NORMAL_RADIUS, 32 );
+        segment = new Segment( CENTIPEDE_NORMAL_HEIGHT, CENTIPEDE_NORMAL_WIDTH );
         colorShader = new ColorShader( context );
         textureShader = new TextureShader( context );
 
         // Load textures to be used by the TextureShader program.
-        centipedeHeadAbove = TextureUtil.LoadTexture( context, R.drawable.centipede_head_day_blue );
-        centipedeHeadBelow = TextureUtil.LoadTexture( context, R.drawable.centipede_head_night_blue );
-        centipedeBodyAbove = TextureUtil.LoadTexture( context, R.drawable.centipede_body_day_blue );
-        centipedeBodyBelow = TextureUtil.LoadTexture( context, R.drawable.centipede_body_night_blue );
-        lawnTopGrassWithHoles = TextureUtil.LoadTexture( context, R.drawable.lawn_holes_grass_green );
-        lawnBottomGrassWithDirt = TextureUtil.LoadTexture( context, R.drawable.lawn_holes_dirt_brown );
+        centipedeHeadAbove = TextureUtil.LoadTexture( context, R.drawable.centipede_head_above_default );
+        centipedeHeadBelow = TextureUtil.LoadTexture( context, R.drawable.centipede_head_below_default );
+        centipedeBodyAbove = TextureUtil.LoadTexture( context, R.drawable.centipede_body_above_default );
+        centipedeBodyBelow = TextureUtil.LoadTexture( context, R.drawable.centipede_body_below_default );
+        lawnTop = TextureUtil.LoadTexture( context, R.drawable.lawn_top_default );
+        lawnBottom = TextureUtil.LoadTexture( context, R.drawable.lawn_bottom_default );
     }
 
     // Called when GLSurfaceView dimensions change. Parameter gl is ignored.
@@ -245,7 +245,7 @@ public class GameRenderer implements GLSurfaceView.Renderer {
     private void positionLawnTopInScene() {
         textureShader.use();
         positionModelInScene( 0.0f, 0.0f, 0.0f );
-        textureShader.setUniforms( modelViewMatrix, lawnTopGrassWithHoles );
+        textureShader.setUniforms( modelViewMatrix, lawnTop );
         lawn.bindData( textureShader );
         lawn.draw();
     }
@@ -257,7 +257,7 @@ public class GameRenderer implements GLSurfaceView.Renderer {
     private void positionLawnBottomInScene() {
         textureShader.use();
         positionModelInScene( 0.0f, 0.0f, 0.0f );
-        textureShader.setUniforms( modelViewMatrix, lawnBottomGrassWithDirt );
+        textureShader.setUniforms( modelViewMatrix, lawnBottom );
         lawn.bindData( textureShader );
         lawn.draw();
     }

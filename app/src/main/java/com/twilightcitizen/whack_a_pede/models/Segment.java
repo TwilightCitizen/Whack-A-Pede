@@ -10,6 +10,7 @@ package com.twilightcitizen.whack_a_pede.models;
 import com.twilightcitizen.whack_a_pede.data.VertexArray;
 import com.twilightcitizen.whack_a_pede.geometry.Circle;
 import com.twilightcitizen.whack_a_pede.geometry.Point;
+import com.twilightcitizen.whack_a_pede.geometry.Rectangle;
 import com.twilightcitizen.whack_a_pede.shaders.ColorShader;
 import com.twilightcitizen.whack_a_pede.shaders.TextureShader;
 
@@ -44,12 +45,12 @@ public class Segment {
     private final GeneratedData generatedData;
 
     // Upon creation, just build up the Segment from an appropriately specified Circle.
-    public Segment( float radius, int numPoints ) {
+    public Segment( float height, float width ) { // float radius, int numPoints ) {
         TextureModelBuilder builder = new TextureModelBuilder(
-            TextureModelBuilder.sizeOfCircleInVertices( numPoints )
+            TextureModelBuilder.sizeOfRectangleInVertices //.sizeOfCircleInVertices( numPoints )
         );
 
-        builder.appendCircle( new Circle( new Point( 0.0f, 0.0f ), radius ), numPoints );
+        builder.appendRectangle( new Rectangle( new Point( 0.0f, 0.0f ), height, width ) ); //.appendCircle( new Circle( new Point( 0.0f, 0.0f ), radius ), numPoints );
 
         generatedData = builder.build();
     }

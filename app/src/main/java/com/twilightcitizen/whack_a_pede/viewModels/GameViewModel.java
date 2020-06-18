@@ -55,10 +55,9 @@ public class GameViewModel extends ViewModel {
     public static final float CELL_NORMAL_WIDTH = LAWN_NORMAL_WIDTH / LAWN_CELLS_X_AXIS;
     public static final float CELL_NORMAL_RADIUS = CELL_NORMAL_HEIGHT / 2.0f;
 
-    public static final float HOLE_NORMAL_RADIUS = CELL_NORMAL_RADIUS;
     public static final float CENTIPEDE_NORMAL_RADIUS = CELL_NORMAL_RADIUS * 0.8f;
-    public static final float CENTIPEDE_NORMAL_WIDTH = CENTIPEDE_NORMAL_RADIUS * 2.0f;
-    public static final float CENTIPEDE_NORMAL_HEIGHT = CENTIPEDE_NORMAL_RADIUS * 2.0f;
+    public static final float CENTIPEDE_NORMAL_WIDTH =  CELL_NORMAL_WIDTH * 0.8f; //CENTIPEDE_NORMAL_RADIUS * 2.0f;
+    public static final float CENTIPEDE_NORMAL_HEIGHT = CELL_NORMAL_HEIGHT * 0.8f; // CENTIPEDE_NORMAL_RADIUS * 2.0f;
 
     /*
     Lines along the X and Y axes where the grid of Holes on the Lawn will be placed.
