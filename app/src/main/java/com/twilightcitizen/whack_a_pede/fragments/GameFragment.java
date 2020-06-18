@@ -250,6 +250,12 @@ public class GameFragment extends Fragment {
 
     // Observer to set the visibility of game state menu items depending on its view model state.
     private void onGameStateChanged( GameViewModel.State state ) {
+        // Navigation controller for game over navigation.
+        NavController navController = NavHostFragment.findNavController( GameFragment.this );
+
+        if( state == GameViewModel.State.gameOver )
+            navController.navigate( R.id.action_game_to_game_over );
+
         itemPlay.setVisible( state == GameViewModel.State.newGame );
         itemPause.setVisible( state == GameViewModel.State.running );
         itemResume.setVisible( state == GameViewModel.State.paused );
@@ -265,8 +271,9 @@ public class GameFragment extends Fragment {
     // Observer to replace the display name when it changes in the account view model.
     private void onDisplayNameChanged( String displayName ) {
         textDisplayName.setText(
+            String.format( Locale.getDefault(), "%s:",
             ( displayName == null ? requireActivity().getString( R.string.guest ) : displayName )
-        );
+        ) );
     }
 
     // Observer to set the visibility of account menu items when its state changes in the view model.

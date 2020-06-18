@@ -31,7 +31,7 @@ public class GameViewModel extends ViewModel {
     private static final String TAG = "GameViewModel";
 
     // States that the game can be in.
-    public enum State { newGame, paused, running, stopped }
+    public enum State { newGame, paused, running, gameOver }
 
     /*
     The Whack-A-Pede Lawn assumes a square cellular construction, 7 cells across the X axis by 11
@@ -146,6 +146,10 @@ public class GameViewModel extends ViewModel {
     private static final int POINTS_PER_CENTIPEDE = 100;
     private static final long BONUS_MILLIS_PER_CENTIPEDE = ROUND_TIME_MILLIS;
     private static final int BONUS_POINTS_PER_SECOND = 10;
+    private static final int STARTING_SCORE = 0;
+    private static final int STARTING_ROUNDS = 1;
+    private static final long STARTING_REMAINING_TIME_MILLIS = ROUND_TIME_MILLIS;
+    private static final long STARTING_ELAPSED_TIME_MILLIS = 0L;
 
     // Centipede speed constants.
     private static final float CENTIPEDE_START_SPEED = CELL_NORMAL_WIDTH * 3.0f;
@@ -181,10 +185,10 @@ public class GameViewModel extends ViewModel {
     Mutable live data for scoring and timing information allows external observers to update
     as needed whenever these values change.
     */
-    private final MutableLiveData< Integer > score = new MutableLiveData<>( 0 );
-    private final MutableLiveData< Integer > rounds = new MutableLiveData<>( 1 );
-    private final MutableLiveData< Long > remainingTimeMillis = new MutableLiveData<>( ROUND_TIME_MILLIS );
-    private final MutableLiveData< Long > elapsedTimeMillis = new MutableLiveData<>( 0L );
+    private final MutableLiveData< Integer > score = new MutableLiveData<>( STARTING_SCORE );
+    private final MutableLiveData< Integer > rounds = new MutableLiveData<>( STARTING_ROUNDS );
+    private final MutableLiveData< Long > remainingTimeMillis = new MutableLiveData<>( STARTING_REMAINING_TIME_MILLIS );
+    private final MutableLiveData< Long > elapsedTimeMillis = new MutableLiveData<>( STARTING_ELAPSED_TIME_MILLIS );
 
     // Expose the mutable live data for score, rounds, time remaining, and elapsed time.
     public MutableLiveData< Integer > getScore() { return score; }
@@ -208,10 +212,10 @@ public class GameViewModel extends ViewModel {
 
     // Only stopped games should be reset to new games.
     public void reset() {
-        if( state.getValue() == State.stopped )
-            state.setValue( State.newGame );
-        else
-            throw new IllegalStateException( "Game Reset while Not Stopped" );
+        if( state.getValue() != State.gameOver )
+            throw new IllegalStateException( "Game Reset when Not Game Over" );
+
+        setupNewGame();
     }
 
     // Only running games should be paused.  Other states basically assumed quasi-paused state.
@@ -219,12 +223,11 @@ public class GameViewModel extends ViewModel {
 
     // Only new or paused games can be started or resumed.
     public void play() {
-        if( state.getValue() == State.paused || state.getValue() == State.newGame ) {
-            setupCentipede();
-            state.setValue( State.running );
-        }
-        else
+        if( !( state.getValue() == State.paused || state.getValue() == State.newGame ) )
             throw new IllegalStateException( "Game Played while Not Paused or New" );
+
+        setupCentipede();
+        state.setValue( State.running );
     }
 
     // Resume is semantically similar to play, but offers different accessibility feedback.
@@ -232,10 +235,21 @@ public class GameViewModel extends ViewModel {
 
     // A running game should be paused first.  Otherwise, not yet started to stop or already stopped.
     public void quit() {
-        if( state.getValue() == State.paused )
-            state.setValue( State.stopped );
-        else
+        if( state.getValue() != State.paused )
             throw new IllegalStateException( "Game Stopped while Not Paused" );
+
+        setupNewGame();
+    }
+
+    private void setupNewGame() {
+        centipedeSpeed = CENTIPEDE_START_SPEED;
+
+        CENTIPEDES.clear();
+        state.setValue( State.newGame );
+        score.setValue( STARTING_SCORE );
+        rounds.setValue( STARTING_ROUNDS );
+        remainingTimeMillis.setValue( STARTING_REMAINING_TIME_MILLIS );
+        elapsedTimeMillis.setValue( STARTING_ELAPSED_TIME_MILLIS );
     }
 
     // Loop the game through the provided time slice.
@@ -306,6 +320,9 @@ public class GameViewModel extends ViewModel {
         // Create a new centipede with the random position and opposing direction picked.
         Centipede centipede = new Centipede( startingPosition, startingDirection );
 
+        // Randomize its above/below ground position.
+        if( ( random.nextInt( 2 ) + 1 ) % 2 == 0 ) centipede.toggleAbove();
+
         // Give it 9 tails and add it to the lawn.
         centipede.addTails( 9 );
         CENTIPEDES.add( centipede );
@@ -324,7 +341,7 @@ public class GameViewModel extends ViewModel {
             // Prevent negative clock.
             remainingTimeMillis.postValue( 0L );
             // Flag Game Over and pause it.
-            state.postValue( State.stopped );
+            state.postValue( State.gameOver );
 
             // Play an appropriate sound.
             //SoundUtility.getInstance().playGameOver();

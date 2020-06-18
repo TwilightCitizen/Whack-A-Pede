@@ -10,6 +10,7 @@ MDV4910-O, C202006-01
 <resources>
     <string name="app_name">Whack-A-Pede</string>
     <string name="avatar">Player or Guest Avatar</string>
+    <string name="overlay">Circular Overlay</string>
     <string name="play_game">Play Game</string>
     <string name="pause_game">Pause Game</string>
     <string name="resume_game">Resume Game</string>
