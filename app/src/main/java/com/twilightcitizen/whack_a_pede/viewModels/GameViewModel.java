@@ -16,6 +16,7 @@ import com.twilightcitizen.whack_a_pede.geometry.Point;
 import com.twilightcitizen.whack_a_pede.geometry.Vector;
 import com.twilightcitizen.whack_a_pede.models.Centipede;
 import com.twilightcitizen.whack_a_pede.utilities.LoggerUtil;
+import com.twilightcitizen.whack_a_pede.utilities.SoundUtil;
 import com.twilightcitizen.whack_a_pede.utilities.TimeUtil;
 
 import java.util.ArrayList;
@@ -197,9 +198,9 @@ public class GameViewModel extends ViewModel {
     public MutableLiveData< Long > getElapsedTimeMillis() { return elapsedTimeMillis; }
 
     /*
-        Mutable live data for the game's overall state allows external observers to update as needed
-        whenever the game's state changes.
-        */
+    Mutable live data for the game's overall state allows external observers to update as needed
+    whenever the game's state changes.
+    */
     private final MutableLiveData< State > state = new MutableLiveData<>( State.newGame );
 
     // Expose the mutable live data game state.
@@ -219,7 +220,12 @@ public class GameViewModel extends ViewModel {
     }
 
     // Only running games should be paused.  Other states basically assumed quasi-paused state.
-    public void pause() { if( state.getValue() == State.running ) state.setValue( State.paused ); }
+    public void pause() {
+        if( state.getValue() != State.running ) return;
+
+        SoundUtil.pauseMusic();
+        state.setValue( State.paused );
+    }
 
     // Only new or paused games can be started or resumed.
     public void play() {
@@ -227,6 +233,7 @@ public class GameViewModel extends ViewModel {
             throw new IllegalStateException( "Game Played while Not Paused or New" );
 
         setupCentipede();
+        SoundUtil.playMusic();
         state.setValue( State.running );
     }
 
@@ -238,6 +245,7 @@ public class GameViewModel extends ViewModel {
         if( state.getValue() != State.paused )
             throw new IllegalStateException( "Game Stopped while Not Paused" );
 
+        SoundUtil.stopMusic();
         setupNewGame();
     }
 
@@ -344,8 +352,8 @@ public class GameViewModel extends ViewModel {
             state.postValue( State.gameOver );
 
             // Play an appropriate sound.
-            //SoundUtility.getInstance().playGameOver();
-            //SoundUtility.getInstance().stopMusic();
+            SoundUtil.playGameOver();
+            SoundUtil.stopMusic();
         }
     }
 
@@ -380,7 +388,7 @@ public class GameViewModel extends ViewModel {
         centipedeSpeed = Math.min( centipedeSpeed, CENTIPEDE_MAX_SPEED );
 
         // Setup a new centipede and play an appropriate sound.
-        //SoundUtility.getInstance().playNewRound();
+        SoundUtil.playNewRound();
         setupCentipede();
     }
 
@@ -488,11 +496,7 @@ public class GameViewModel extends ViewModel {
         centipedeSpeed += CENTIPEDE_SPEED_INCREASE * centipedesKilled.size();
 
         // Play an appropriate sound.
-        /*if( centipedesKilled.isEmpty() )
-            SoundUtility.getInstance().playMiss();
-        else
-            SoundUtility.getInstance().playHit();
-        }*/
+        if( centipedesKilled.isEmpty() ) SoundUtil.playMiss(); else SoundUtil.playHit();
 
         // Clear touch points so they cannot keep killing centipedes.
         touchPoints.clear();
@@ -531,14 +535,7 @@ public class GameViewModel extends ViewModel {
             // Ignore holes that the centipede did not pass over/under.
             if( !hole.intersectsPathOf( centipede.getPosition(), nextPosition ) ) continue;
 
-            // Guard against time slice issues where the centipede is at the previous frame's hole.
-            if( centipede.getHole() == hole ) break;
-
-            // Otherwise, remember the hole and toggle the above/below position.
-            centipede.setHole( hole );
-            centipede.toggleAbove();
-
-            break;
+            centipede.toggleAbove(); break;
         }
     }
 
@@ -583,12 +580,6 @@ public class GameViewModel extends ViewModel {
 
             // Disregard turns that the centipede did not traverse.
             if( !turn.intersectsPathOf( previousPosition, nextPosition ) ) continue;
-
-            // Guard against time slice issues where the centipede is at the previous frame's turn.
-            if( centipede.getTurn() == turn ) break;
-
-            // Otherwise, the centipede has traversed the turn.  Remember it.
-            centipede.setTurn( turn );
 
             // Get the centipede's direction before changing it.
             Vector previousDirection = centipede.getDirection();

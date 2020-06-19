@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<!--
+Whack-A-Pede
+David A. Clark, Jr.
+Integrated Product Development
+MDV4910-O, C202006-01
+-->
+
+<resources>
+    <integer name="volume_min">0</integer>
+    <integer name="volume_max">100</integer>
+    <integer name="volume_effects">100</integer>
+    <integer name="volume_music">20</integer>
+</resources>

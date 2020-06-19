@@ -27,9 +27,6 @@ public class Centipede {
 
     // Current position.
     private Point position;
-    // Last hole or turn encountered.
-    private Point hole;
-    private Point turn;
     // Direction of heading to be applied to speed of traversal.
     private Vector direction;
 
@@ -55,12 +52,6 @@ public class Centipede {
     // Get or set the current position.
     public Point getPosition() { return position; }
     public void setPosition( Point position ) { this.position = position; }
-
-    // Get or set the last hole or turn encountered.
-    public Point getHole() { return hole; }
-    public void setHole( Point hole ) { this.hole = hole; }
-    public Point getTurn() { return turn; }
-    public void setTurn( Point turn ) { this.turn = turn; }
 
     // Get or set the direction of traversal.
     public Vector getDirection() { return direction; }

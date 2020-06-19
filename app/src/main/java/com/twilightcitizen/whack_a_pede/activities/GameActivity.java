@@ -7,6 +7,7 @@ MDV4910-O, C202006-01
 
 package com.twilightcitizen.whack_a_pede.activities;
 
+import android.media.AudioManager;
 import android.os.Bundle;
 
 import androidx.appcompat.app.AppCompatActivity;
@@ -16,6 +17,7 @@ import androidx.navigation.Navigation;
 import androidx.navigation.ui.NavigationUI;
 
 import com.twilightcitizen.whack_a_pede.R;
+import com.twilightcitizen.whack_a_pede.utilities.SoundUtil;
 
 /*
 GameActivity hosts an ActionBar and a FragmentContainerView which acts as the application's
@@ -28,6 +30,7 @@ public class GameActivity extends AppCompatActivity {
         super.onCreate( savedInstanceState );
         setContentView( R.layout.activity_game );
         setupActionBar();
+        setupAudio();
     }
 
     // Setup the toolbar as an action bar.
@@ -35,6 +38,12 @@ public class GameActivity extends AppCompatActivity {
         Toolbar toolbar = findViewById( R.id.toolbar );
 
         setSupportActionBar( toolbar );
+    }
+
+    // Setup the game audio for media playback with the sound utility.
+    private void setupAudio() {
+        setVolumeControlStream( AudioManager.STREAM_MUSIC );
+        SoundUtil.initialize( getApplicationContext() );
     }
 
     // Setup action bar navigation on start.
