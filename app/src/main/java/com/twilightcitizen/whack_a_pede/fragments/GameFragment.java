@@ -8,6 +8,8 @@ MDV4910-O, C202006-01
 package com.twilightcitizen.whack_a_pede.fragments;
 
 import android.annotation.SuppressLint;
+import android.app.AlertDialog;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.PixelFormat;
 import android.net.Uri;
@@ -222,7 +224,7 @@ public class GameFragment extends Fragment {
             case R.id.action_resume_game:
                 gameViewModel.resume(); return true;
             case R.id.action_quit_game:
-                gameViewModel.quit(); return true;
+                confirmQuit(); return true;
             // Change logged in state.
             case R.id.action_sign_in:
                 startGoogleSignIn(); return true;
@@ -238,6 +240,22 @@ public class GameFragment extends Fragment {
         }
 
         return super.onOptionsItemSelected( item );
+    }
+
+    private void confirmQuit() {
+        new AlertDialog.Builder( requireActivity(), R.style.Whackapede_AlertDialog )
+            .setIcon( R.drawable.icon_warning )
+            .setTitle( R.string.quit_confirmation_title )
+            .setMessage( R.string.quit_confirmation_body )
+            .setNegativeButton(  R.string.quit_confirmation_no, null )
+
+            .setPositiveButton(
+                R.string.quit_confirmation_yes,
+
+                ( DialogInterface dialog, int id ) ->  gameViewModel.quit()
+            )
+
+            .show();
     }
 
     // Pause the game if the options menu is selected and opened.

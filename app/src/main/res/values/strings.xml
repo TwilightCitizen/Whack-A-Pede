@@ -26,4 +26,8 @@ MDV4910-O, C202006-01
     <string name="game_over">Game Over</string>
     <string name="guest">Guest</string>
     <string name="time_remaining">Time Remaining:</string>
+    <string name="quit_confirmation_title">Sure you want to quit?</string>
+    <string name="quit_confirmation_body">If you quit now, any points or achievements you obtained will be lost.</string>
+    <string name="quit_confirmation_yes">Quit Now</string>
+    <string name="quit_confirmation_no">Keep Playing</string>
 </resources>

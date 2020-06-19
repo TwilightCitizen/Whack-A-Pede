@@ -24,4 +24,11 @@ MDV4910-O, C202006-01
         <item name="android:textColor">@color/grass_green</item>
         <item name="android:textColorSecondary">@color/grass_green</item>
     </style>
+
+    <style name="Whackapede.AlertDialog" parent="Theme.AppCompat.Light.Dialog">
+        <item name="android:colorAccent">@color/earth_brown</item>
+        <item name="android:textColor">@color/grass_green</item>
+        <item name="android:textColorPrimary">@color/earth_brown</item>
+        <item name="android:background">@color/sun_bleached</item>
+    </style>
 </resources>

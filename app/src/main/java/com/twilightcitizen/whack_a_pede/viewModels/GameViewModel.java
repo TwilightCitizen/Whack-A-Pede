@@ -188,8 +188,12 @@ public class GameViewModel extends ViewModel {
     */
     private final MutableLiveData< Integer > score = new MutableLiveData<>( STARTING_SCORE );
     private final MutableLiveData< Integer > rounds = new MutableLiveData<>( STARTING_ROUNDS );
-    private final MutableLiveData< Long > remainingTimeMillis = new MutableLiveData<>( STARTING_REMAINING_TIME_MILLIS );
-    private final MutableLiveData< Long > elapsedTimeMillis = new MutableLiveData<>( STARTING_ELAPSED_TIME_MILLIS );
+
+    private final MutableLiveData< Long > remainingTimeMillis =
+        new MutableLiveData<>( STARTING_REMAINING_TIME_MILLIS );
+
+    private final MutableLiveData< Long > elapsedTimeMillis =
+        new MutableLiveData<>( STARTING_ELAPSED_TIME_MILLIS );
 
     // Expose the mutable live data for score, rounds, time remaining, and elapsed time.
     public MutableLiveData< Integer > getScore() { return score; }
