@@ -45,7 +45,7 @@ MDV4910-O, C202006-01
             tools:src="@tools:sample/avatars" />
 
         <ImageView
-            android:id="@+id/imageOverlay"
+            android:id="@+id/image_overlay"
             android:layout_width="0dp"
             android:layout_height="0dp"
             android:contentDescription="@string/overlay"

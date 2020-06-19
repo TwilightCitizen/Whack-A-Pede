@@ -12,6 +12,7 @@ import android.os.Bundle;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
+import androidx.fragment.app.Fragment;
 import androidx.navigation.NavController;
 import androidx.navigation.Navigation;
 import androidx.navigation.ui.NavigationUI;
@@ -25,6 +26,12 @@ navigation host, loading subordinate fragments to display and manage.  GameFragm
 default navigation target and the first fragment users will see at launch.
 */
 public class GameActivity extends AppCompatActivity {
+    // Interface for fragments that need to act on or consume a back press.
+    public interface BackFragment {
+        // Return true for consuming back presses or false if not.
+        boolean onBackPressed();
+    }
+
     // Setup content view and action bar at creation.
     @Override protected void onCreate( Bundle savedInstanceState ) {
         super.onCreate( savedInstanceState );
@@ -64,5 +71,25 @@ public class GameActivity extends AppCompatActivity {
         onBackPressed();
 
         return super.onSupportNavigateUp();
+    }
+
+    @Override public void onBackPressed() {
+        // Get the currently displayed fragment.
+        Fragment fragment = getSupportFragmentManager()
+            // The navigation host is the first fragment.
+            .getFragments().get( 0 )
+            // The first fragment of its child manager is current fragment.
+            .getChildFragmentManager().getFragments().get( 0 );
+
+        // Guard against non-BackFragment.
+        if( !( fragment instanceof BackFragment ) ) {
+            super.onBackPressed(); return;
+        }
+
+        // Cast it to a BackFragment.
+        BackFragment backFragment = (BackFragment) fragment;
+
+        // Notify it of a back press and see if it consumes it.
+        if( !backFragment.onBackPressed() ) super.onBackPressed();
     }
 }

@@ -242,6 +242,7 @@ public class GameFragment extends Fragment {
         return super.onOptionsItemSelected( item );
     }
 
+    // Confirm the player's intentions to quit.
     private void confirmQuit() {
         new AlertDialog.Builder( requireActivity(), R.style.Whackapede_AlertDialog )
             .setIcon( R.drawable.icon_warning )
