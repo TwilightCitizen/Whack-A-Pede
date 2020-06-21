@@ -143,7 +143,7 @@ public class GameViewModel extends ViewModel {
     }
 
     // Player scoring and timing constants.
-    private static final long ROUND_TIME_MILLIS = 10_000L;
+    private static final long ROUND_TIME_MILLIS = 100_000L;
     private static final int POINTS_PER_CENTIPEDE = 100;
     private static final long BONUS_MILLIS_PER_CENTIPEDE = ROUND_TIME_MILLIS;
     private static final int BONUS_POINTS_PER_SECOND = 10;
@@ -526,7 +526,9 @@ public class GameViewModel extends ViewModel {
 
             // Animate through holes and turns separately.
             animateThroughHoles( centipede, nextPosition );
+            approachTurns( centipede, nextPosition, interval );
             animateThroughTurns( centipede, nextPosition );
+            rotateAroundTurns( centipede, interval );
 
             centipede = centipede.getTail();
         }
@@ -575,30 +577,110 @@ public class GameViewModel extends ViewModel {
         return newDirections.get( random.nextInt( newDirections.size() ) );
     }
 
-    // Animate the centipede through any turn it encountered on its heading.
-    private void animateThroughTurns( Centipede centipede, Point nextPosition ) {
+    private void rotateAroundTurns( Centipede centipede, float interval ) {
+        if( centipede.getRotationPercentage() > 0.0f && centipede.getRotationPercentage() <= 1.0f )
+            centipede.setRotationPercentage(
+                centipede.getRotationPercentage() - 1.0f / CELL_NORMAL_WIDTH * interval
+            );
+        else if( centipede.getRotationPercentage() < 0.0f && centipede.getRotationPercentage() >= -1.0f )
+            centipede.setRotationPercentage(
+                centipede.getRotationPercentage() + 1.0f / CELL_NORMAL_WIDTH * interval
+            );
+
+        centipede.setRotation(
+            centipede.getTargetRotation() - 90.0f * centipede.getRotationPercentage()
+        );
+    }
+
+    private void approachTurns( Centipede centipede, Point nextPosition, float interval ) {
+        // Cache previous position for speedier access.
+        Point previousPosition = centipede.getPosition();
+        // Cache direction for speedier access.
+        Vector direction = centipede.getDirection();
+        // Point of approach is ahead of centipede center.
+        Point previousApproach = null;
+        Point nextApproach = null;
+
+        // Find the approach based on the centipede's current direction.
+        if( direction == Vector.down ) {
+            previousApproach = new Point( previousPosition.x, previousPosition.y - CELL_NORMAL_RADIUS );
+            nextApproach = new Point( nextPosition.x, nextPosition.y - CELL_NORMAL_RADIUS );
+        } else if( direction == Vector.up ) {
+            previousApproach = new Point( previousPosition.x, previousPosition.y + CELL_NORMAL_RADIUS );
+            nextApproach = new Point( nextPosition.x, nextPosition.y + CELL_NORMAL_RADIUS );
+        } else if( direction == Vector.left ) {
+            previousApproach = new Point( previousPosition.x - CELL_NORMAL_RADIUS, previousPosition.y );
+            nextApproach = new Point( nextPosition.x - CELL_NORMAL_RADIUS, nextPosition.y );
+        } else {
+            previousApproach = new Point( previousPosition.x + CELL_NORMAL_RADIUS, previousPosition.y );
+            nextApproach = new Point( nextPosition.x + CELL_NORMAL_RADIUS, nextPosition.y );
+        }
+
         // Check each turn to see if it was traversed.
         for( Point turn : TURNS ) {
-            // Cache previous position for speedier access.
-            Point previousPosition = centipede.getPosition();
-
-            // Disregard turns that the centipede did not traverse.
-            if( !turn.intersectsPathOf( previousPosition, nextPosition ) ) continue;
-
-            // Get the centipede's direction before changing it.
-            Vector previousDirection = centipede.getDirection();
+            // Disregard turns that the centipede did not approach.
+            if( !turn.intersectsPathOf( previousApproach, nextApproach ) ) continue;
 
             // Heads get their own direction from the turn, while tails follow their heads.
             if( centipede.getIsHead() )
-                centipede.setDirection( getNewDirectionForTurn( turn, centipede.getDirection() ) );
+                centipede.setNextDirection( getNewDirectionForTurn( turn, direction ) );
             else
-                centipede.setDirection( centipede.getHead().getDirection() );
+                centipede.setNextDirection( centipede.getHead().getNextDirection() );
+
+            // Get the centipede's next direction after changing it.
+            Vector nextDirection = centipede.getNextDirection();
+
+            centipede.setTargetRotation( Vector.getTargetRotation( nextDirection ) );
+            centipede.setRotationPercentage( 0.0f );
+
+            // The centipede's current direction matches the new one, no need to rotate.
+            if( nextDirection == direction ) break;
+
+            // Otherwise, set it up to start rotating for the turn.
+            if( nextDirection == Vector.down ) {
+                if( direction == Vector.left )
+                    centipede.setRotationPercentage( 1.0f );
+                else
+                    centipede.setRotationPercentage( -1.0f );
+            } else if( nextDirection == Vector.up ) {
+                if( direction == Vector.left )
+                    centipede.setRotationPercentage( -1.0f );
+                else
+                    centipede.setRotationPercentage( 1.0f );
+            } else if( nextDirection == Vector.left ) {
+                if( direction == Vector.down )
+                    centipede.setRotationPercentage( -1.0f );
+                else
+                    centipede.setRotationPercentage( 1.0f );
+            } else {
+                if( direction == Vector.down )
+                    centipede.setRotationPercentage( 1.0f );
+                else
+                    centipede.setRotationPercentage( -1.0f );
+            }
+        }
+    }
+
+    // Animate the centipede through any turn it encountered on its heading.
+    private void animateThroughTurns( Centipede centipede, Point nextPosition ) {
+        // Cache previous position for speedier access.
+        Point previousPosition = centipede.getPosition();
+        // Get the centipede's direction before changing it.
+        Vector previousDirection = centipede.getDirection();
+
+        // Check each turn to see if it was traversed.
+        for( Point turn : TURNS ) {
+            // Disregard turns that the centipede did not traverse.
+            if( !turn.intersectsPathOf( previousPosition, nextPosition ) ) continue;
+
+            // Use new direction gotten from turn at approach.
+            centipede.setDirection( centipede.getNextDirection() );
 
             // Get the centipede's direction after changing it.
-            Vector direction = centipede.getDirection();
+            Vector nextDirection = centipede.getDirection();
 
             // The centipede's previous direction matches the new one, keep it on course.
-            if( centipede.getDirection() == previousDirection ) break;
+            if( nextDirection == previousDirection ) break;
 
             // No need to bend the centipede's path around the turn if its path ends dead on it.
             if( turn.equals( nextPosition ) ) break;
@@ -616,11 +698,11 @@ public class GameViewModel extends ViewModel {
                 }
 
                 // Change the next position based on travel after turn in new direction.
-                if( direction.equals( Vector.up ) ) {
+                if( nextDirection.equals( Vector.up ) ) {
                     nextPosition = new Point( turn.x, nextPosition.y + travelAfterTurn );
-                } else if( direction.equals( Vector.down ) ) {
+                } else if( nextDirection.equals( Vector.down ) ) {
                     nextPosition = new Point( turn.x, nextPosition.y - travelAfterTurn );
-                } else if( direction.equals( Vector.left ) ) {
+                } else if( nextDirection.equals( Vector.left ) ) {
                     nextPosition = new Point( nextPosition.x - travelAfterTurn, turn.y );
                 } else {
                     nextPosition = new Point( nextPosition.x + travelAfterTurn, turn.y );
@@ -633,11 +715,11 @@ public class GameViewModel extends ViewModel {
             Point headPosition = centipede.getHead().getPosition();
 
             // Change the position based on the head's distance already past the turn.
-            if( direction.equals( Vector.up ) ) {
+            if( nextDirection.equals( Vector.up ) ) {
                 nextPosition = new Point( turn.x, headPosition.y - CENTIPEDE_NORMAL_HEIGHT );
-            } else if( direction.equals( Vector.down ) ) {
+            } else if( nextDirection.equals( Vector.down ) ) {
                 nextPosition = new Point( turn.x, headPosition.y + CENTIPEDE_NORMAL_HEIGHT );
-            } else if( direction.equals( Vector.left ) ) {
+            } else if( nextDirection.equals( Vector.left ) ) {
                 nextPosition = new Point( headPosition.x + CENTIPEDE_NORMAL_WIDTH, turn.y );
             } else {
                 nextPosition = new Point( headPosition.x - CENTIPEDE_NORMAL_WIDTH, turn.y );

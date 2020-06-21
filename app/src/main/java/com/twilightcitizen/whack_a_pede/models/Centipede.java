@@ -29,10 +29,21 @@ public class Centipede {
     private Point position;
     // Direction of heading to be applied to speed of traversal.
     private Vector direction;
+    // Direction of heading once turn is encountered.
+    private Vector nextDirection;
+
+    // Rotation percentage for smooth rotation through turns.
+    private Float rotation;
+    private Float targetRotation;
+    private Float rotationPercentage = 0.0f;
 
     // Centipede must have position and direction.
     public Centipede( Point position, Vector direction ) {
-        this.position = position; this.direction = direction;
+        this.position = position;
+        this.direction = direction;
+        this.nextDirection = direction;
+        this.rotation = Vector.getTargetRotation( direction );
+        this.targetRotation = this.rotation;
     }
 
     // Determine if the centipede is a head or tail.  Can be both.
@@ -56,6 +67,16 @@ public class Centipede {
     // Get or set the direction of traversal.
     public Vector getDirection() { return direction; }
     public void setDirection( Vector direction ) { this.direction = direction; }
+    public Vector getNextDirection() { return nextDirection; }
+    public void setNextDirection( Vector nextDirection ) { this.nextDirection = nextDirection; }
+
+    // Get or set the rotation.
+    public float getRotation() { return rotation; }
+    public void setRotation( float rotation ) { this.rotation = rotation; }
+    public float getTargetRotation() { return targetRotation; }
+    public void setTargetRotation( float targetRotation ) { this.targetRotation = targetRotation; }
+    public float getRotationPercentage() { return rotationPercentage; }
+    public void setRotationPercentage( float rotationPercentage ) { this.rotationPercentage = rotationPercentage; }
 
     /*
     Add a tail to the centipede opposite side of its direction going in the same direction and

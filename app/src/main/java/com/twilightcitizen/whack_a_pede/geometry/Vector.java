@@ -37,4 +37,12 @@ public class Vector {
     public static final Vector down = new Vector( 0.0f, -1.0f );
     public static final Vector left = new Vector( -1.0f, 0.0f );
     public static final Vector right = new Vector( 1.0f, 0.0f );
+
+    // Get the target rotation for a model oriented in the given direction.
+    public static float getTargetRotation( Vector direction ) {
+        if( direction == Vector.down ) return 180.0f;
+        else if( direction ==  Vector.left ) return  90.0f;
+        else if( direction ==  Vector.right ) return  270.0f;
+        else return 0.0f;
+    }
 }

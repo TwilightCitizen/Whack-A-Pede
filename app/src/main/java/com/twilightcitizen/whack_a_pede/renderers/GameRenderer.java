@@ -106,10 +106,10 @@ public class GameRenderer implements GLSurfaceView.Renderer {
         textureShader = new TextureShader( context );
 
         // Load textures to be used by the TextureShader program.
-        centipedeHeadAbove = TextureUtil.LoadTexture( context, R.drawable.centipede_head_above_default );
-        centipedeHeadBelow = TextureUtil.LoadTexture( context, R.drawable.centipede_head_below_default );
-        centipedeBodyAbove = TextureUtil.LoadTexture( context, R.drawable.centipede_body_above_default );
-        centipedeBodyBelow = TextureUtil.LoadTexture( context, R.drawable.centipede_body_below_default );
+        centipedeHeadAbove = TextureUtil.LoadTexture( context, R.drawable.centipede_head_above_camouflage );
+        centipedeHeadBelow = TextureUtil.LoadTexture( context, R.drawable.centipede_head_below_camouflage );
+        centipedeBodyAbove = TextureUtil.LoadTexture( context, R.drawable.centipede_body_above_camouflage );
+        centipedeBodyBelow = TextureUtil.LoadTexture( context, R.drawable.centipede_body_below_camouflage );
         lawnTop = TextureUtil.LoadTexture( context, R.drawable.lawn_top_default );
         lawnBottom = TextureUtil.LoadTexture( context, R.drawable.lawn_bottom_default );
     }
@@ -191,36 +191,17 @@ public class GameRenderer implements GLSurfaceView.Renderer {
                 centipede = centipede.getTail(); continue;
             }
 
-            // Get the centipede's direction and if it is a head.
-            Vector direction = centipede.getDirection();
-            boolean isHead = centipede.getIsHead();
-
-            float rotation;
-
-            /*
-            Centipede rotation is based on its direction.  This is necessary because centipede
-            textures infer a bias toward direction of travel.
-            */
-            if( direction == Vector.down )
-                rotation = 180.0f;
-            else if( direction ==  Vector.left )
-                rotation = 90.0f;
-            else if( direction ==  Vector.right )
-                rotation = -90.0f;
-            else
-                rotation = 0.0f;
-
             positionModelInScene(
-                centipede.getPosition().x, centipede.getPosition().y, rotation
+                centipede.getPosition().x, centipede.getPosition().y, centipede.getRotation()
             );
 
             int texture;
 
             // Get the right texture for the segment.
             if( centipede.getIsAbove() )
-                texture = isHead ? centipedeHeadAbove : centipedeBodyAbove;
+                texture = centipede.getIsHead() ? centipedeHeadAbove : centipedeBodyAbove;
             else
-                texture = isHead ? centipedeHeadBelow : centipedeBodyBelow;
+                texture = centipede.getIsHead() ? centipedeHeadBelow : centipedeBodyBelow;
 
             textureShader.setUniforms( modelViewMatrix, texture );
 
