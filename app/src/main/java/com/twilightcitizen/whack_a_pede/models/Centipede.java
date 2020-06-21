@@ -32,9 +32,8 @@ public class Centipede {
     // Direction of heading once turn is encountered.
     private Vector nextDirection;
 
-    // Rotation percentage for smooth rotation through turns.
+    // Rotation and percentage for smooth rotation through turns.
     private Float rotation;
-    private Float targetRotation;
     private Float rotationPercentage = 0.0f;
 
     // Centipede must have position and direction.
@@ -42,8 +41,7 @@ public class Centipede {
         this.position = position;
         this.direction = direction;
         this.nextDirection = direction;
-        this.rotation = Vector.getTargetRotation( direction );
-        this.targetRotation = this.rotation;
+        this.rotation = direction.getTargetRotation();
     }
 
     // Determine if the centipede is a head or tail.  Can be both.
@@ -70,11 +68,10 @@ public class Centipede {
     public Vector getNextDirection() { return nextDirection; }
     public void setNextDirection( Vector nextDirection ) { this.nextDirection = nextDirection; }
 
-    // Get or set the rotation.
+    // Get or set the rotation and rotation related data.
     public float getRotation() { return rotation; }
     public void setRotation( float rotation ) { this.rotation = rotation; }
-    public float getTargetRotation() { return targetRotation; }
-    public void setTargetRotation( float targetRotation ) { this.targetRotation = targetRotation; }
+    public float getTargetRotation() { return nextDirection.getTargetRotation(); }
     public float getRotationPercentage() { return rotationPercentage; }
     public void setRotationPercentage( float rotationPercentage ) { this.rotationPercentage = rotationPercentage; }
 

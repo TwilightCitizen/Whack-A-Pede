@@ -524,8 +524,12 @@ public class GameViewModel extends ViewModel {
                 centipede.getPosition().y + centipedeSpeed * interval * centipede.getDirection().y
             );
 
-            // Animate through holes and turns separately.
+            // Animate through holes to change above/below-ground layer.
             animateThroughHoles( centipede, nextPosition );
+            /*
+             Get new directions from turns at approach, change trajectory through them, and
+             rotate smoothing around them.
+            */
             approachTurns( centipede, nextPosition, interval );
             animateThroughTurns( centipede, nextPosition );
             rotateAroundTurns( centipede, interval );
@@ -577,21 +581,23 @@ public class GameViewModel extends ViewModel {
         return newDirections.get( random.nextInt( newDirections.size() ) );
     }
 
+    // Smoothly rotate the centipede as it navigates turns.
     private void rotateAroundTurns( Centipede centipede, float interval ) {
-        if( centipede.getRotationPercentage() > 0.0f && centipede.getRotationPercentage() <= 1.0f )
-            centipede.setRotationPercentage(
-                centipede.getRotationPercentage() - 1.0f / CELL_NORMAL_WIDTH * interval
-            );
-        else if( centipede.getRotationPercentage() < 0.0f && centipede.getRotationPercentage() >= -1.0f )
-            centipede.setRotationPercentage(
-                centipede.getRotationPercentage() + 1.0f / CELL_NORMAL_WIDTH * interval
-            );
+        // Get its rotation percentage and the factor to add or subtract from it for the time slice.
+        float rotationPercentage = centipede.getRotationPercentage();
+        float rotationFactor = 1.0f / CELL_NORMAL_WIDTH * interval;
 
-        centipede.setRotation(
-            centipede.getTargetRotation() - 90.0f * centipede.getRotationPercentage()
-        );
+        // Increase or decrease the rotation percentage by the factor based on rotation trajectory.
+        if( rotationPercentage > 0.0f && rotationPercentage <= 1.0f )
+            centipede.setRotationPercentage( rotationPercentage - rotationFactor );
+        else if( rotationPercentage < 0.0f && rotationPercentage >= -1.0f )
+            centipede.setRotationPercentage( rotationPercentage + rotationFactor );
+
+        // Rotate it by it target rotation less the percentage 90 degrees for the time slice.
+        centipede.setRotation( centipede.getTargetRotation() - 90.0f * rotationPercentage );
     }
 
+    // Get a new direction from a turn as the centipede approaches it so it can begin rotation.
     private void approachTurns( Centipede centipede, Point nextPosition, float interval ) {
         // Cache previous position for speedier access.
         Point previousPosition = centipede.getPosition();
@@ -601,7 +607,7 @@ public class GameViewModel extends ViewModel {
         Point previousApproach = null;
         Point nextApproach = null;
 
-        // Find the approach based on the centipede's current direction.
+        // Find the approach or leading edge based on the centipede's current direction.
         if( direction == Vector.down ) {
             previousApproach = new Point( previousPosition.x, previousPosition.y - CELL_NORMAL_RADIUS );
             nextApproach = new Point( nextPosition.x, nextPosition.y - CELL_NORMAL_RADIUS );
@@ -630,7 +636,7 @@ public class GameViewModel extends ViewModel {
             // Get the centipede's next direction after changing it.
             Vector nextDirection = centipede.getNextDirection();
 
-            centipede.setTargetRotation( Vector.getTargetRotation( nextDirection ) );
+            // Default not to rotate in case heading remains the same.
             centipede.setRotationPercentage( 0.0f );
 
             // The centipede's current direction matches the new one, no need to rotate.
@@ -661,7 +667,7 @@ public class GameViewModel extends ViewModel {
         }
     }
 
-    // Animate the centipede through any turn it encountered on its heading.
+    // Change the centipede's trajectory through any turn it encountered on its heading.
     private void animateThroughTurns( Centipede centipede, Point nextPosition ) {
         // Cache previous position for speedier access.
         Point previousPosition = centipede.getPosition();

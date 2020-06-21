@@ -195,13 +195,12 @@ public class GameRenderer implements GLSurfaceView.Renderer {
                 centipede.getPosition().x, centipede.getPosition().y, centipede.getRotation()
             );
 
-            int texture;
-
-            // Get the right texture for the segment.
-            if( centipede.getIsAbove() )
-                texture = centipede.getIsHead() ? centipedeHeadAbove : centipedeBodyAbove;
-            else
-                texture = centipede.getIsHead() ? centipedeHeadBelow : centipedeBodyBelow;
+            // Get the right texture for the segment type and ground layer.
+            int texture = centipede.getIsAbove() ? (
+                centipede.getIsHead() ? centipedeHeadAbove : centipedeBodyAbove
+            ) : (
+                centipede.getIsHead() ? centipedeHeadBelow : centipedeBodyBelow
+            );
 
             textureShader.setUniforms( modelViewMatrix, texture );
 
