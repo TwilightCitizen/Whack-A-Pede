@@ -26,17 +26,17 @@ Whack-A-Pede is a modern arcade game for Android phones and tablets.
 
 ### Hardware and Emulators Tested On
 
-- Testing has not yet occurred as development has only just commenced.
+- Tested on Nexus 5 Emulators, Android 6.0 through 10.0 (API 23 through 29).
 
-- Anticipate testing on Nexus 5 Emulators, Android 6.0 through 10.0 (API 23 through 29).
+- Tested on Nexus 9 and Pixel C Emulator, Android 7.0 (API 27).
 
-- Anticipate testing on Nexus 9 and Pixel C Emulator, Android 7.0 (API 27).
-
-- Anticipate testing on Pixel 3 Hardware, Android 10.0 (API 29).
+- Tested on Pixel 3 Hardware, Android 10.0 (API 29).
 
 ## Log in Requirements & Credentials for Testing
 
-- No log in credentials are presently required for testing.
+- No log in credentials are presently required for testing most features.
+
+- Google account required for testing Sign In with Google.
 
 ## Known Bugs
 
