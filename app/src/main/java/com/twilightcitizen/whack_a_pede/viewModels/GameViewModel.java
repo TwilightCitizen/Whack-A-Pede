@@ -143,7 +143,7 @@ public class GameViewModel extends ViewModel {
     }
 
     // Player scoring and timing constants.
-    private static final long ROUND_TIME_MILLIS = 100_000L;
+    private static final long ROUND_TIME_MILLIS = 10_000L;
     private static final int POINTS_PER_CENTIPEDE = 100;
     private static final long BONUS_MILLIS_PER_CENTIPEDE = ROUND_TIME_MILLIS;
     private static final int BONUS_POINTS_PER_SECOND = 10;
@@ -154,7 +154,7 @@ public class GameViewModel extends ViewModel {
 
     // Centipede speed constants.
     private static final float CENTIPEDE_START_SPEED = CELL_NORMAL_WIDTH * 3.0f;
-    private static final float CENTIPEDE_MAX_SPEED = CELL_NORMAL_WIDTH * 12.0f;
+    private static final float CENTIPEDE_MAX_SPEED = CELL_NORMAL_WIDTH * 7.0f;
 
     // This more or less determines the number of rounds before max speed is reached.
     private static final float CENTIPEDE_SPEED_INCREASE =
