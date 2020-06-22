@@ -1,5 +1,9 @@
 # Whack-A-Pede
 
+## Repository Location
+
+[https://github.com/daclark1/Whack-A-Pede](https://github.com/daclark1/Whack-A-Pede)
+
 ## Summary
 
 Whack-A-Pede is a modern arcade game for Android phones and tablets.
