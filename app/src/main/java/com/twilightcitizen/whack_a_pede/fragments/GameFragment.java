@@ -9,6 +9,7 @@ package com.twilightcitizen.whack_a_pede.fragments;
 
 import android.annotation.SuppressLint;
 import android.app.AlertDialog;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.PixelFormat;
@@ -42,6 +43,7 @@ import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
 import com.google.android.gms.common.api.ApiException;
 import com.google.android.gms.tasks.Task;
 import com.twilightcitizen.whack_a_pede.R;
+import com.twilightcitizen.whack_a_pede.activities.GameActivity;
 import com.twilightcitizen.whack_a_pede.renderers.GameRenderer;
 import com.twilightcitizen.whack_a_pede.utilities.TimeUtil;
 import com.twilightcitizen.whack_a_pede.viewModels.AccountViewModel;
@@ -58,6 +60,9 @@ displaying the Lawn where all the game's animations and inputs occur.
 public class GameFragment extends Fragment {
     private static final int REQUEST_GOOGLE_SIGN_IN = 100;
 
+    // Context needed for some actions.
+    private GameActivity gameActivity;
+    
     // SurfaceView where OpenGL will draw graphics.
     private GLSurfaceView gameSurfaceView;
     // Renderer that OpenGL will use to draw graphics to the SurfaceView.
@@ -89,10 +94,24 @@ public class GameFragment extends Fragment {
         setHasOptionsMenu( true );
     }
 
+    // Check the host context on attachment.
+    @Override public void onAttach( @NonNull Context context ) {
+        super.onAttach( context );
+        checkGameActivityHost( context );
+    }
+
+    // Ensure that the host context is a Game Activity.
+    private void checkGameActivityHost( Context context ) {
+        if( ! ( context instanceof GameActivity ) )
+            throw new ClassCastException( "GameActivity must host GameFragment" );
+
+        gameActivity = (GameActivity) context;
+    }
+
     /*
-    At view creation, find the frame for the Lawn within the layout, create the GLSurfaceView to go
-    into it, set it up with a renderer, and then add it to the frame, returning the modified view.
-    */
+        At view creation, find the frame for the Lawn within the layout, create the GLSurfaceView to go
+        into it, set it up with a renderer, and then add it to the frame, returning the modified view.
+        */
     @SuppressLint( "ClickableViewAccessibility" ) @Override public View onCreateView(
         LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState
     ) {
@@ -101,10 +120,10 @@ public class GameFragment extends Fragment {
         FrameLayout frame = view.findViewById( R.id.frame_game );
 
         // Create the SurfaceView where OpenGL will draw graphics.
-        gameSurfaceView = new GLSurfaceView( requireActivity() );
+        gameSurfaceView = new GLSurfaceView( gameActivity );
 
         // Create the renderer that OpenGL will use to draw graphics to the SurfaceView.
-        gameRenderer = new GameRenderer( requireActivity() );
+        gameRenderer = new GameRenderer( gameActivity );
 
         // Use OpenGL 2.0, and GameRenderer will do the drawing.
         gameSurfaceView.setEGLContextClientVersion( 2 );
@@ -158,6 +177,13 @@ public class GameFragment extends Fragment {
         // Pause the game.
         gameViewModel.pause();
 
+        gameViewModel.getState().removeObservers( gameActivity );
+        gameViewModel.getScore().removeObservers( gameActivity );
+        gameViewModel.getRemainingTimeMillis().removeObservers( gameActivity );
+        accountViewModel.getProfilePicUri().removeObservers( gameActivity );
+        accountViewModel.getDisplayName().removeObservers( gameActivity );
+        accountViewModel.getSignedIn().removeObservers( gameActivity );
+
         // Pause the SurfaceView when GameFragment stops.
         if( rendererSet ) gameSurfaceView.onPause();
     }
@@ -167,12 +193,12 @@ public class GameFragment extends Fragment {
         super.onResume();
 
         // Restore view models.
-        gameViewModel = new ViewModelProvider( requireActivity() ).get( GameViewModel.class );
-        accountViewModel = new ViewModelProvider( requireActivity() ).get( AccountViewModel.class );
+        gameViewModel = new ViewModelProvider( gameActivity ).get( GameViewModel.class );
+        accountViewModel = new ViewModelProvider( gameActivity ).get( AccountViewModel.class );
 
         // Setup observers that will act on changes to score and time remaining in game view model.
-        gameViewModel.getScore().observe( requireActivity(), this::onScoreChanged );
-        gameViewModel.getRemainingTimeMillis().observe( requireActivity(), this::onTimeRemainingChanged );
+        gameViewModel.getScore().observe( gameActivity, this::onScoreChanged );
+        gameViewModel.getRemainingTimeMillis().observe( gameActivity, this::onTimeRemainingChanged );
 
         // Resume the SurfaceView when GameFragment starts or resumes.
         if( rendererSet ) gameSurfaceView.onResume();
@@ -204,10 +230,10 @@ public class GameFragment extends Fragment {
         must be established here rather than at resume because the observers change the visibility
         of key menu options that do not exist at start, but here.
         */
-        gameViewModel.getState().observe( requireActivity(), this::onGameStateChanged );
-        accountViewModel.getProfilePicUri().observe( requireActivity(), this::onProfilePicUriChanged );
-        accountViewModel.getDisplayName().observe( requireActivity(), this::onDisplayNameChanged );
-        accountViewModel.getSignedIn().observe( requireActivity(), this::onSignedInChanged );
+        gameViewModel.getState().observe( gameActivity, this::onGameStateChanged );
+        accountViewModel.getProfilePicUri().observe( gameActivity, this::onProfilePicUriChanged );
+        accountViewModel.getDisplayName().observe( gameActivity, this::onDisplayNameChanged );
+        accountViewModel.getSignedIn().observe( gameActivity, this::onSignedInChanged );
     }
 
     // Act on selected menu items.
@@ -244,7 +270,7 @@ public class GameFragment extends Fragment {
 
     // Confirm the player's intentions to quit.
     private void confirmQuit() {
-        new AlertDialog.Builder( requireActivity(), R.style.Whackapede_AlertDialog )
+        new AlertDialog.Builder( gameActivity, R.style.Whackapede_AlertDialog )
             .setIcon( R.drawable.icon_warning )
             .setTitle( R.string.quit_confirmation_title )
             .setMessage( R.string.quit_confirmation_body )
@@ -283,7 +309,7 @@ public class GameFragment extends Fragment {
 
     // Observer to replace the profile pic when it changes in the account view model.
     private void onProfilePicUriChanged( Uri profilePicUri ) {
-        Glide.with( requireActivity() ).load( profilePicUri )
+        Glide.with( gameActivity ).load( profilePicUri )
             .placeholder( R.drawable.icon_guest_avatar ).into( imageProfilePic );
     }
 
@@ -291,7 +317,7 @@ public class GameFragment extends Fragment {
     private void onDisplayNameChanged( String displayName ) {
         textDisplayName.setText(
             String.format( Locale.getDefault(), "%s:",
-            ( displayName == null ? requireActivity().getString( R.string.guest ) : displayName )
+            ( displayName == null ? gameActivity.getString( R.string.guest ) : displayName )
         ) );
     }
 
@@ -323,7 +349,7 @@ public class GameFragment extends Fragment {
 
         // Get a sign in client with those options.
         GoogleSignInClient googleSignInClient =
-            GoogleSignIn.getClient( requireActivity(), googleSignInOptions );
+            GoogleSignIn.getClient( gameActivity, googleSignInOptions );
 
         // Start Google Sign-In with the client's intent.
         startActivityForResult( googleSignInClient.getSignInIntent(), REQUEST_GOOGLE_SIGN_IN );

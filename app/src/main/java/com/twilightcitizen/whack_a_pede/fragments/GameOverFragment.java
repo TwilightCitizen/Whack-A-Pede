@@ -7,6 +7,7 @@ MDV4910-O, C202006-01
 
 package com.twilightcitizen.whack_a_pede.fragments;
 
+import android.content.Context;
 import android.net.Uri;
 import android.os.Bundle;
 import android.view.LayoutInflater;
@@ -35,8 +36,12 @@ Google Play Games leader boards and achievements.  It resets the game when the p
 back or up.
 */
 public class GameOverFragment extends Fragment implements GameActivity.BackFragment {
+    // Context needed for some actions.
+    private GameActivity gameActivity;
+    
     // View models for tracking game and account state.
     private GameViewModel gameViewModel;
+    private AccountViewModel accountViewModel;
 
     // Profile pic, display name, score, and time remaining shown in scoreboard.
     private ImageView imageProfilePic;
@@ -47,6 +52,20 @@ public class GameOverFragment extends Fragment implements GameActivity.BackFragm
 
     private String rounds;
     private String inTime;
+
+    // Check the host context on attachment.
+    @Override public void onAttach( @NonNull Context context ) {
+        super.onAttach( context );
+        checkGameActivityHost( context );
+    }
+
+    // Ensure that the host context is a Game Activity.
+    private void checkGameActivityHost( Context context ) {
+        if( ! ( context instanceof GameActivity ) )
+            throw new ClassCastException( "GameActivity must host GameOverFragment" );
+
+        gameActivity = (GameActivity) context;
+    }
 
     @Nullable @Override public View onCreateView(
         @NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState
@@ -73,40 +92,54 @@ public class GameOverFragment extends Fragment implements GameActivity.BackFragm
         super.onResume();
 
         // Restore view models.
-        gameViewModel = new ViewModelProvider( requireActivity() ).get( GameViewModel.class );
+        gameViewModel = new ViewModelProvider( gameActivity ).get( GameViewModel.class );
 
-        AccountViewModel accountViewModel =
-            new ViewModelProvider( requireActivity() ).get( AccountViewModel.class );
+        accountViewModel = new ViewModelProvider( gameActivity ).get( AccountViewModel.class );
 
         // Setup observers that will act on changes to score, rounds, and elapsed time.
-        gameViewModel.getScore().observe( requireActivity(), this::onScoreChanged );
-        gameViewModel.getRounds().observe( requireActivity(), this::onRoundChanged );
-        gameViewModel.getElapsedTimeMillis().observe( requireActivity(), this::onElapsedTimeChanged );
+        gameViewModel.getScore().observe( gameActivity, this::onScoreChanged );
+        gameViewModel.getRounds().observe( gameActivity, this::onRoundChanged );
+        gameViewModel.getElapsedTimeMillis().observe( gameActivity, this::onElapsedTimeChanged );
 
         // Setup observers that will action on changes to profile picture and display name.
-        accountViewModel.getProfilePicUri().observe( requireActivity(), this::onProfilePicUriChanged );
-        accountViewModel.getDisplayName().observe( requireActivity(), this::onDisplayNameChanged );
+        accountViewModel.getProfilePicUri().observe( gameActivity, this::onProfilePicUriChanged );
+        accountViewModel.getDisplayName().observe( gameActivity, this::onDisplayNameChanged );
 
         // Will eventually have achievements.
         onAchievementsChanged( 0 );
     }
 
+    @Override
+    public void onStop() {
+        gameViewModel.getScore().removeObservers( gameActivity );
+        gameViewModel.getRounds().removeObservers( gameActivity );
+        gameViewModel.getElapsedTimeMillis().removeObservers( gameActivity );
+        accountViewModel.getProfilePicUri().removeObservers( gameActivity );
+        accountViewModel.getDisplayName().removeObservers( gameActivity );
+
+        super.onStop();
+    }
+
     /*
-    Reset the game view model on back press.  This should not happen in onStop because the app can
-    be interrupted and would then show stats for a new game.
-    */
-   public boolean onBackPressed() { gameViewModel.reset(); return false; }
+        Reset the game view model on back press.  This should not happen in onStop because the app can
+        be interrupted and would then show stats for a new game.  Also stop observers in here to
+        prevent nonexistent context issues.
+        */
+   public boolean onBackPressed() {
+       gameViewModel.reset();
+       return false;
+   }
 
     // Observer to replace the profile pic when it changes in the account view model.
     private void onProfilePicUriChanged( Uri profilePicUri ) {
-        Glide.with( requireActivity() ).load( profilePicUri )
+        Glide.with( gameActivity ).load( profilePicUri )
             .placeholder( R.drawable.icon_guest_avatar ).into( imageProfilePic );
     }
 
     // Observer to replace the display name when it changes in the account view model.
     private void onDisplayNameChanged( String displayName ) {
         textDisplayName.setText(
-            displayName == null ? requireActivity().getString( R.string.guest ) : displayName
+            displayName == null ? gameActivity.getString( R.string.guest ) : displayName
         );
     }
 
