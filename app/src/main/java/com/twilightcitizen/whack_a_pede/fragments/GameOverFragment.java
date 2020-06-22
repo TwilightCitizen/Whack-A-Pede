@@ -7,7 +7,9 @@ MDV4910-O, C202006-01
 
 package com.twilightcitizen.whack_a_pede.fragments;
 
+import android.app.AlertDialog;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.net.Uri;
 import android.os.Bundle;
 import android.view.LayoutInflater;
@@ -20,6 +22,8 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
+import androidx.navigation.NavController;
+import androidx.navigation.fragment.NavHostFragment;
 
 import com.bumptech.glide.Glide;
 import com.twilightcitizen.whack_a_pede.R;
@@ -109,8 +113,8 @@ public class GameOverFragment extends Fragment implements GameActivity.BackFragm
         onAchievementsChanged( 0 );
     }
 
-    @Override
-    public void onStop() {
+    // Remove observers on stop so they do not run without context.
+    @Override public void onStop() {
         gameViewModel.getScore().removeObservers( gameActivity );
         gameViewModel.getRounds().removeObservers( gameActivity );
         gameViewModel.getElapsedTimeMillis().removeObservers( gameActivity );
@@ -121,13 +125,34 @@ public class GameOverFragment extends Fragment implements GameActivity.BackFragm
     }
 
     /*
-        Reset the game view model on back press.  This should not happen in onStop because the app can
-        be interrupted and would then show stats for a new game.  Also stop observers in here to
-        prevent nonexistent context issues.
-        */
+    Reset the game view model on back press.  This should not happen in onStop because the app can
+    be interrupted and would then show stats for a new game.  Also stop observers in here to
+    prevent nonexistent context issues.
+    */
    public boolean onBackPressed() {
-       gameViewModel.reset();
-       return false;
+       // Navigation controller for back navigation.
+       NavController navController = NavHostFragment.findNavController( GameOverFragment.this );
+
+       // Confirm the player's intentions to navigate back.
+       new AlertDialog.Builder( gameActivity, R.style.Whackapede_AlertDialog )
+           .setIcon( R.drawable.icon_warning )
+           .setTitle( R.string.back_confirmation_title )
+           .setMessage( R.string.back_confirmation_body )
+           .setNegativeButton(  R.string.back_confirmation_no, null )
+
+           .setPositiveButton(
+               R.string.back_confirmation_yes,
+
+               ( DialogInterface dialog, int id ) ->  {
+                   gameViewModel.reset();
+
+                   navController.popBackStack();
+               }
+           )
+
+           .show();
+
+       return true;
    }
 
     // Observer to replace the profile pic when it changes in the account view model.

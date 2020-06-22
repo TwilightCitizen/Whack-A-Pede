@@ -33,8 +33,8 @@ MDV4910-O, C202006-01
 
     <string name="quit_confirmation_title">Sure you want to quit?</string>
     <string name="quit_confirmation_body">If you quit now, any points or achievements you obtained will be lost.</string>
-    <string name="quit_confirmation_yes">Quit Now</string>
-    <string name="quit_confirmation_no">Keep Playing</string>
+    <string name="quit_confirmation_yes">Yes, Quit Now</string>
+    <string name="quit_confirmation_no">No, Keep Playing</string>
 
     <string name="final_score">%,d Final Score</string>
     <string name="rounds">%,d Rounds</string>
@@ -46,4 +46,9 @@ MDV4910-O, C202006-01
     <string name="syncing">Do not go back just yet.\nSyncing to the leaderboard…</string>
     <string name="synced">All synced to the leaderboard.\nIt is safe to go back now.</string>
     <string name="sync_error">Could not sync to the leaderboard.\nIt is safe to go back now.</string>
+
+    <string name="back_confirmation_title">Sure you want to go back?</string>
+    <string name="back_confirmation_body">Your game is not done syncing to the leaderboard.  You may lose your new stats if you go back now.</string>
+    <string name="back_confirmation_yes">Yes, Go Back</string>
+    <string name="back_confirmation_no">No, Stay</string>
 </resources>

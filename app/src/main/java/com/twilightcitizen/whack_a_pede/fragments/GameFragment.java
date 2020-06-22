@@ -170,7 +170,10 @@ public class GameFragment extends Fragment {
         textTimeRemaining = view.findViewById( R.id.text_time_remaining );
     }
 
-    // Pause the game and prevent rendering to GLSurfaceView when the fragment is stopped.
+    /*
+    Pause the game and prevent rendering to GLSurfaceView when the fragment is stopped.  Also
+    remove observers so they do not run without context.
+     */
     @Override public void onStop() {
         super.onStop();
 
