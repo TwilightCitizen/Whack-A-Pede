@@ -15,7 +15,6 @@ import androidx.lifecycle.ViewModelStoreOwner;
 
 import com.twilightcitizen.whack_a_pede.R;
 import com.twilightcitizen.whack_a_pede.geometry.Point;
-import com.twilightcitizen.whack_a_pede.geometry.Vector;
 import com.twilightcitizen.whack_a_pede.models.Centipede;
 import com.twilightcitizen.whack_a_pede.models.Lawn;
 import com.twilightcitizen.whack_a_pede.models.Segment;

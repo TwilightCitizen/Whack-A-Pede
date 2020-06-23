@@ -123,12 +123,16 @@ public class AccountViewModel extends ViewModel {
 
     // Convert the Google Sign In to the player account.
     private void onGetPlayer( @NonNull Task< Player > task ) {
-        if( task.isSuccessful() ) {
-            this.playerId = task.getResult().getPlayerId();
-            profilePicUri.setValue( task.getResult().getHiResImageUri() );
-            displayName.setValue( task.getResult().getDisplayName() );
+        if( !task.isSuccessful() ) return;
 
-            signedIn.setValue( true );
+        if( task.getResult() == null ) {
+            signOut(); return;
         }
+
+        this.playerId = task.getResult().getPlayerId();
+        profilePicUri.setValue( task.getResult().getHiResImageUri() );
+        displayName.setValue( task.getResult().getDisplayName() );
+
+        signedIn.setValue( true );
     }
 }

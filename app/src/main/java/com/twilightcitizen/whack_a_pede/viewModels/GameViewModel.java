@@ -619,8 +619,8 @@ public class GameViewModel extends ViewModel {
         // Cache direction for speedier access.
         Vector direction = centipede.getDirection();
         // Point of approach is ahead of centipede center.
-        Point previousApproach = null;
-        Point nextApproach = null;
+        Point previousApproach;
+        Point nextApproach;
 
         // Find the approach or leading edge based on the centipede's current direction.
         if( direction == Vector.down ) {

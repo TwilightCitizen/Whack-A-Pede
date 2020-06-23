@@ -205,7 +205,7 @@ public class GameOverFragment extends Fragment implements GameActivity.BackFragm
     }
 
     // Observer to format the total achievements when it changes.
-    private void onAchievementsChanged( int achievements ) {
+    @SuppressWarnings( "SameParameterValue" ) private void onAchievementsChanged( int achievements ) {
         // Format the final score.
         textAchievements.setText(
             String.format( Locale.getDefault(), getString( R.string.achievements ), achievements )

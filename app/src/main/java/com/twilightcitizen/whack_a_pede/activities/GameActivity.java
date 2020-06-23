@@ -29,7 +29,7 @@ public class GameActivity extends AppCompatActivity {
     // Interface for fragments that need to act on or consume a back press.
     public interface BackFragment {
         // Return true for consuming back presses or false if not.
-        boolean onBackPressed();
+        @SuppressWarnings( "SameReturnValue" ) boolean onBackPressed();
     }
 
     // Setup content view and action bar at creation.
