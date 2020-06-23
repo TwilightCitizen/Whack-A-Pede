@@ -35,13 +35,10 @@ import androidx.lifecycle.ViewModelProvider;
 import androidx.navigation.NavController;
 import androidx.navigation.fragment.NavHostFragment;
 
-import com.bumptech.glide.Glide;
 import com.google.android.gms.auth.api.signin.GoogleSignIn;
-import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
 import com.google.android.gms.auth.api.signin.GoogleSignInClient;
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
-import com.google.android.gms.common.api.ApiException;
-import com.google.android.gms.tasks.Task;
+import com.google.android.gms.common.images.ImageManager;
 import com.twilightcitizen.whack_a_pede.R;
 import com.twilightcitizen.whack_a_pede.activities.GameActivity;
 import com.twilightcitizen.whack_a_pede.renderers.GameRenderer;
@@ -58,8 +55,6 @@ avatar, current score, and time remaining; and a GLSurfaceView within a frame de
 displaying the Lawn where all the game's animations and inputs occur.
 */
 public class GameFragment extends Fragment {
-    private static final int REQUEST_GOOGLE_SIGN_IN = 100;
-
     // Context needed for some actions.
     private GameActivity gameActivity;
     
@@ -256,7 +251,7 @@ public class GameFragment extends Fragment {
                 confirmQuit(); return true;
             // Change logged in state.
             case R.id.action_sign_in:
-                startGoogleSignIn(); return true;
+                accountViewModel.startGoogleSignIn( this ); return true;
             case R.id.action_sign_out:
                 accountViewModel.signOut(); return true;
             // Navigate to other screens.
@@ -312,8 +307,9 @@ public class GameFragment extends Fragment {
 
     // Observer to replace the profile pic when it changes in the account view model.
     private void onProfilePicUriChanged( Uri profilePicUri ) {
-        Glide.with( gameActivity ).load( profilePicUri )
-            .placeholder( R.drawable.icon_guest_avatar ).into( imageProfilePic );
+        ImageManager imageManager = ImageManager.create( gameActivity );
+
+        imageManager.loadImage( imageProfilePic, profilePicUri, R.drawable.icon_guest_avatar );
     }
 
     // Observer to replace the display name when it changes in the account view model.
@@ -342,24 +338,6 @@ public class GameFragment extends Fragment {
         textTimeRemaining.setText( TimeUtil.millisToMinutesAndSeconds( timeRemaining ) );
     }
 
-    // Initiate the Google Sign-In process.
-    private void startGoogleSignIn() {
-        // Configure the sign in options.
-        GoogleSignInOptions googleSignInOptions =
-            new GoogleSignInOptions.Builder( GoogleSignInOptions.DEFAULT_SIGN_IN )
-                .requestIdToken( getString( R.string.default_web_client_id ) )
-                .build();
-
-        // Get a sign in client with those options.
-        GoogleSignInClient googleSignInClient =
-            GoogleSignIn.getClient( gameActivity, googleSignInOptions );
-
-        // Start Google Sign-In with the client's intent.
-        startActivityForResult( googleSignInClient.getSignInIntent(), REQUEST_GOOGLE_SIGN_IN );
-        // Prevent automatic reuse of the same account at next sign-in attempt.
-        googleSignInClient.signOut();
-    }
-
     // Obtain Google Sign In task for handling Google Sign In result.
     @Override public void onActivityResult(
         int requestCode, int resultCode, @Nullable Intent data
@@ -367,25 +345,7 @@ public class GameFragment extends Fragment {
         super.onActivityResult( requestCode, resultCode, data );
 
         // Handle Google Sign In request, if any, disregarding other results.
-        if( requestCode == REQUEST_GOOGLE_SIGN_IN ) handleGoogleSignInResult( data );
-    }
-
-    // Handle the result of the Google Sign In task result.
-    private void handleGoogleSignInResult( @Nullable Intent data ) {
-        // Obtain asynchronous task in which Google Sign In activity authenticates user.
-        Task< GoogleSignInAccount > googleSignInAccountTask =
-            GoogleSignIn.getSignedInAccountFromIntent( data );
-
-        try {
-            // Attempt to obtain the authenticated account from the completed Google Sign In task.
-            GoogleSignInAccount googleSignInAccount =
-                googleSignInAccountTask.getResult( ApiException.class );
-
-            // Sign the user in.
-            if( googleSignInAccount != null ) accountViewModel.signIn( googleSignInAccount );
-        } catch( ApiException e ) {
-            // Failure should not matter.  Google Sign-In intent provides feedback.
-            e.printStackTrace();
-        }
+        if( requestCode == AccountViewModel.REQUEST_GOOGLE_SIGN_IN )
+            accountViewModel.onGoogleSignInResult( data, this );
     }
 }

@@ -25,7 +25,7 @@ import androidx.lifecycle.ViewModelProvider;
 import androidx.navigation.NavController;
 import androidx.navigation.fragment.NavHostFragment;
 
-import com.bumptech.glide.Glide;
+import com.google.android.gms.common.images.ImageManager;
 import com.twilightcitizen.whack_a_pede.R;
 import com.twilightcitizen.whack_a_pede.activities.GameActivity;
 import com.twilightcitizen.whack_a_pede.utilities.TimeUtil;
@@ -157,8 +157,9 @@ public class GameOverFragment extends Fragment implements GameActivity.BackFragm
 
     // Observer to replace the profile pic when it changes in the account view model.
     private void onProfilePicUriChanged( Uri profilePicUri ) {
-        Glide.with( gameActivity ).load( profilePicUri )
-            .placeholder( R.drawable.icon_guest_avatar ).into( imageProfilePic );
+        ImageManager imageManager = ImageManager.create( gameActivity );
+
+        imageManager.loadImage( imageProfilePic, profilePicUri, R.drawable.icon_guest_avatar );
     }
 
     // Observer to replace the display name when it changes in the account view model.

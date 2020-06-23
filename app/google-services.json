@@ -1,21 +1,29 @@
 {
   "project_info": {
-    "project_number": "811328914449",
-    "firebase_url": "https://whack-a-pede-opengl.firebaseio.com",
-    "project_id": "whack-a-pede-opengl",
-    "storage_bucket": "whack-a-pede-opengl.appspot.com"
+    "project_number": "816408284503",
+    "firebase_url": "https://whack-a-pede-opengl-8855581.firebaseio.com",
+    "project_id": "whack-a-pede-opengl-8855581",
+    "storage_bucket": "whack-a-pede-opengl-8855581.appspot.com"
   },
   "client": [
     {
       "client_info": {
-        "mobilesdk_app_id": "1:811328914449:android:d8bcd01ba54e8902631db0",
+        "mobilesdk_app_id": "1:816408284503:android:a4dfc6c8869fb663f3c212",
         "android_client_info": {
           "package_name": "com.twilightcitizen.whack_a_pede"
         }
       },
       "oauth_client": [
         {
-          "client_id": "811328914449-5uogg8lefp7uaeltg1ifb6v9n53k030m.apps.googleusercontent.com",
+          "client_id": "816408284503-6824v2nk71e5h69hp14hfafillami1tk.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.twilightcitizen.whack_a_pede",
+            "certificate_hash": "bfba1af5918aed64ba01592c8e9c34e60c37d4fc"
+          }
+        },
+        {
+          "client_id": "816408284503-or77ekaub9mfdsl2npb8nsc2po0tlst7.apps.googleusercontent.com",
           "client_type": 1,
           "android_info": {
             "package_name": "com.twilightcitizen.whack_a_pede",
@@ -23,28 +31,20 @@
           }
         },
         {
-          "client_id": "811328914449-qmp4m537v7pbs65l2r7lu8pf3j53178i.apps.googleusercontent.com",
-          "client_type": 1,
-          "android_info": {
-            "package_name": "com.twilightcitizen.whack_a_pede",
-            "certificate_hash": "c5883d8748722c8b420b946b084e6eedeeaeb707"
-          }
-        },
-        {
-          "client_id": "811328914449-afjg8gskud3rid9a0c0mc04cfk5d4mm9.apps.googleusercontent.com",
+          "client_id": "816408284503-k46npsgvamlbafhufqm1tg5ij6cfju1j.apps.googleusercontent.com",
           "client_type": 3
         }
       ],
       "api_key": [
         {
-          "current_key": "AIzaSyDVtQgWhdwl--tz-7ix_neD0dGNPytn_uY"
+          "current_key": "AIzaSyArR5JbGb4gU6qxi6IhUgKF7osbdiZPgcw"
         }
       ],
       "services": {
         "appinvite_service": {
           "other_platform_oauth_client": [
             {
-              "client_id": "811328914449-mt6b15dh5hjp96tc9ff91glkubtoft9k.apps.googleusercontent.com",
+              "client_id": "816408284503-k46npsgvamlbafhufqm1tg5ij6cfju1j.apps.googleusercontent.com",
               "client_type": 3
             }
           ]
