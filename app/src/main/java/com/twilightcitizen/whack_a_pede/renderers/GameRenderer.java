@@ -42,6 +42,9 @@ public class GameRenderer implements GLSurfaceView.Renderer {
     // Context will be required by shader programs that read in GLSL resource files.
     private final Context context;
 
+    // Determine if game world should rotate with device or not.
+    private final boolean rotateForLandscape;
+
     // Game ViewModel maintains game state and the position, direction, and speed of game elements.
     private final GameViewModel gameViewModel;
 
@@ -75,6 +78,7 @@ public class GameRenderer implements GLSurfaceView.Renderer {
     public GameRenderer( Context context ) {
         this.context = context;
         gameViewModel = new ViewModelProvider( ( ViewModelStoreOwner ) context ).get( GameViewModel.class );
+        this.rotateForLandscape = context.getResources().getBoolean( R.bool.rotate_surface_for_landscape );
     }
 
     // Called when a touch event is sent from the GLSurfaceView.
@@ -137,7 +141,7 @@ public class GameRenderer implements GLSurfaceView.Renderer {
         the landscape orientation to better accommodate the screen real estate, but maintain the
         position of models in the scene with respect to each other.
         */
-        if( width > height ) {
+        if( width > height && rotateForLandscape ) {
             // Landscape orientation.
             orthoM( viewMatrix, 0, -1.0f, 1.0f, -aspectRatio, aspectRatio, -1.0f, 1.0f );
             rotateM( viewMatrix, 0, 90.0f, 0.0f, 0.0f, 1.0f );

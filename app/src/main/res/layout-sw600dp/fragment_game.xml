@@ -16,32 +16,28 @@ MDV4910-O, C202006-01
     android:keepScreenOn="true"
     tools:context=".fragments.GameFragment">
 
-    <TextView
-        android:id="@+id/textView"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="TABLET PORTRAIT"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
-
     <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/constraint_scoreboard"
         android:layout_width="0dp"
-        android:layout_height="64dp"
-        android:layout_marginStart="16dp"
-        android:layout_marginTop="16dp"
-        android:layout_marginEnd="16dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="32dp"
+        android:layout_marginTop="32dp"
+        android:layout_marginEnd="32dp"
+        android:layout_marginBottom="16dp"
+        app:layout_constraintBottom_toTopOf="@id/constraint_speedometer"
         app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent">
 
         <ImageView
             android:id="@+id/image_profile_pic"
             android:layout_width="0dp"
-            android:layout_height="64dp"
+            android:layout_height="128dp"
+            android:layout_marginEnd="16dp"
             android:contentDescription="@string/avatar"
-            app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintDimensionRatio="1:1"
+            app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
             tools:src="@tools:sample/avatars" />
@@ -60,65 +56,72 @@ MDV4910-O, C202006-01
         <TextView
             android:id="@+id/text_display_name"
             android:layout_width="0dp"
-            android:layout_height="0dp"
-            android:layout_marginStart="16dp"
-            android:layout_marginEnd="4dp"
+            android:layout_height="wrap_content"
             android:gravity="bottom|start"
             android:textAlignment="gravity"
             android:textColor="@color/earth_brown"
-            android:textSize="14sp"
+            android:textSize="24sp"
             android:textStyle="bold"
-            app:layout_constraintBottom_toTopOf="@id/text_time_remaining"
-            app:layout_constraintEnd_toStartOf="@id/text_score"
-            app:layout_constraintStart_toEndOf="@id/image_profile_pic"
-            app:layout_constraintTop_toTopOf="parent" />
+            app:layout_constraintEnd_toStartOf="@+id/text_score"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/image_profile_pic" />
 
         <TextView
             android:id="@+id/text_score"
             android:layout_width="0dp"
-            android:layout_height="0dp"
-            android:layout_marginStart="4dp"
+            android:layout_height="wrap_content"
             android:gravity="bottom|end"
             android:textAlignment="gravity"
             android:textColor="@color/earth_brown"
-            android:textSize="14sp"
+            android:textSize="24sp"
             android:textStyle="bold"
-            app:layout_constraintBottom_toTopOf="@id/text_time_remaining"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toEndOf="@id/text_display_name"
-            app:layout_constraintTop_toTopOf="parent" />
+            app:layout_constraintStart_toEndOf="@+id/text_display_name"
+            app:layout_constraintTop_toBottomOf="@+id/image_profile_pic" />
 
         <TextView
             android:id="@+id/text_time_label"
             android:layout_width="0dp"
-            android:layout_height="0dp"
-            android:layout_marginStart="16dp"
-            android:layout_marginEnd="4dp"
+            android:layout_height="wrap_content"
             android:gravity="start|top"
             android:text="@string/time_remaining"
             android:textAlignment="gravity"
             android:textColor="@color/earth_brown"
-            android:textSize="14sp"
+            android:textSize="24sp"
             android:textStyle="bold"
             app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toStartOf="@id/text_time_remaining"
-            app:layout_constraintStart_toEndOf="@id/image_profile_pic"
-            app:layout_constraintTop_toBottomOf="@id/text_score" />
+            app:layout_constraintEnd_toStartOf="@+id/text_time_remaining"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/text_display_name" />
 
         <TextView
             android:id="@+id/text_time_remaining"
             android:layout_width="0dp"
             android:layout_height="0dp"
-            android:layout_marginStart="4dp"
             android:gravity="top|end"
             android:textAlignment="gravity"
             android:textColor="@color/earth_brown"
-            android:textSize="14sp"
+            android:textSize="24sp"
             android:textStyle="bold"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toEndOf="@id/text_time_label"
-            app:layout_constraintTop_toBottomOf="@id/text_score" />
+            app:layout_constraintStart_toEndOf="@+id/text_time_label"
+            app:layout_constraintTop_toBottomOf="@+id/text_score" />
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/constraint_speedometer"
+        android:layout_width="0dp"
+        android:layout_height="128dp"
+        android:layout_marginStart="32dp"
+        android:layout_marginTop="16dp"
+        android:layout_marginEnd="32dp"
+        android:layout_marginBottom="16dp"
+        app:layout_constraintBottom_toTopOf="@+id/frame_game"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/constraint_scoreboard">
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 
@@ -126,15 +129,15 @@ MDV4910-O, C202006-01
         android:id="@+id/frame_game"
         android:layout_width="0dp"
         android:layout_height="0dp"
-        android:layout_marginStart="16dp"
+        android:layout_marginStart="32dp"
         android:layout_marginTop="16dp"
-        android:layout_marginEnd="16dp"
-        android:layout_marginBottom="16dp"
+        android:layout_marginEnd="32dp"
+        android:layout_marginBottom="32dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintDimensionRatio="7:11"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/constraint_scoreboard">
+        app:layout_constraintTop_toBottomOf="@id/constraint_speedometer">
 
     </FrameLayout>
 </androidx.constraintlayout.widget.ConstraintLayout>
