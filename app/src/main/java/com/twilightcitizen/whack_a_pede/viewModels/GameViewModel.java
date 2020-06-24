@@ -153,8 +153,8 @@ public class GameViewModel extends ViewModel {
     private static final long STARTING_ELAPSED_TIME_MILLIS = 0L;
 
     // Centipede speed constants.
-    private static final float CENTIPEDE_START_SPEED = CELL_NORMAL_WIDTH * 3.0f;
-    private static final float CENTIPEDE_MAX_SPEED = CELL_NORMAL_WIDTH * 7.0f;
+    public static final float CENTIPEDE_START_SPEED = CELL_NORMAL_WIDTH * 3.0f;
+    public static final float CENTIPEDE_MAX_SPEED = CELL_NORMAL_WIDTH * 7.0f;
 
     // This more or less determines the number of rounds before max speed is reached.
     private static final float CENTIPEDE_SPEED_INCREASE =
@@ -167,7 +167,11 @@ public class GameViewModel extends ViewModel {
     public static final List< Centipede > CENTIPEDES = new ArrayList<>();
 
     // Current speed of centipedes on the lawn.
-    private float centipedeSpeed = CENTIPEDE_START_SPEED;
+    private final MutableLiveData< Float > centipedeSpeed =
+        new MutableLiveData<>( CENTIPEDE_START_SPEED );
+
+    // Expose the mutable live data for speed.
+    public MutableLiveData< Float > getCentipedeSpeed() { return centipedeSpeed; }
 
     // Touch events received from the surface to which the game is drawn.
     private final ArrayList< Point > touchPoints = new ArrayList<>();
@@ -254,10 +258,9 @@ public class GameViewModel extends ViewModel {
     }
 
     private void setupNewGame() {
-        centipedeSpeed = CENTIPEDE_START_SPEED;
-
         CENTIPEDES.clear();
         state.setValue( State.newGame );
+        centipedeSpeed.setValue( CENTIPEDE_START_SPEED );
         score.setValue( STARTING_SCORE );
         rounds.setValue( STARTING_ROUNDS );
         remainingTimeMillis.setValue( STARTING_REMAINING_TIME_MILLIS );
@@ -366,15 +369,17 @@ public class GameViewModel extends ViewModel {
         // Guard against starting new round when centipedes still exist.
         if( !CENTIPEDES.isEmpty() ) return;
 
-        // Obtain score, rounds, and time remaining values.
+        // Obtain score, rounds, time remaining, and centipede speed values.
         Integer scoreValue = score.getValue();
         Integer roundsValue = rounds.getValue();
         Long timeRemainingValue = remainingTimeMillis.getValue();
+        Float centipedeSpeedValue = centipedeSpeed.getValue();
 
-        // Null check and coalesce score, rounds, and time remaining values.
+        // Null check and coalesce score, rounds, time remaining, and centipede speed values.
         scoreValue = scoreValue == null ? 0 : scoreValue;
         roundsValue = roundsValue == null ? 1 : roundsValue;
         timeRemainingValue = timeRemainingValue == null ? 0 : timeRemainingValue;
+        centipedeSpeedValue = centipedeSpeedValue == null ? CENTIPEDE_START_SPEED : centipedeSpeedValue;
 
         // Add points for time remaining.
         score.postValue(
@@ -388,8 +393,10 @@ public class GameViewModel extends ViewModel {
         remainingTimeMillis.postValue( ROUND_TIME_MILLIS );
 
         // Set the next round's centipede starting speed.
-        centipedeSpeed += CENTIPEDE_SPEED_INCREASE;
-        centipedeSpeed = Math.min( centipedeSpeed, CENTIPEDE_MAX_SPEED );
+        float newSpeed = centipedeSpeedValue + CENTIPEDE_SPEED_INCREASE;
+        newSpeed = Math.min( newSpeed, CENTIPEDE_MAX_SPEED );
+
+        centipedeSpeed.postValue( newSpeed );
 
         // Setup a new centipede and play an appropriate sound.
         SoundUtil.playNewRound();
@@ -415,8 +422,13 @@ public class GameViewModel extends ViewModel {
         // Update the scoreboard.
         postScoreAndTimeBonuses();
 
+        // Obtain centipede speed value.
+        Float centipedeSpeedValue = centipedeSpeed.getValue();
+        // Null check and coalesce score, rounds, time remaining, and centipede speed values.
+        centipedeSpeedValue = centipedeSpeedValue == null ? CENTIPEDE_START_SPEED : centipedeSpeedValue;
+
         // Figure out the new speed for all segments.
-        centipedeSpeed += CENTIPEDE_SPEED_INCREASE * centipedesKilled.size();
+        centipedeSpeed.postValue( centipedeSpeedValue + CENTIPEDE_SPEED_INCREASE * centipedesKilled.size() );
 
         // Play an appropriate sound.
         if( centipedesKilled.isEmpty() ) SoundUtil.playMiss(); else SoundUtil.playHit();
@@ -531,12 +543,17 @@ public class GameViewModel extends ViewModel {
         // Normalize the elapsed time as a fraction of 1 second.
         float interval = TimeUtil.millisToIntervalOfSeconds( elapsedTimeMillis );
 
+        // Obtain centipede speed value.
+        Float centipedeSpeedValue = centipedeSpeed.getValue();
+        // Null check and coalesce score, rounds, time remaining, and centipede speed values.
+        centipedeSpeedValue = centipedeSpeedValue == null ? CENTIPEDE_START_SPEED : centipedeSpeedValue;
+
         // Animate each centipede, including its tails and their tails.
         for( Centipede centipede : CENTIPEDES ) while( centipede != null ) {
             // Generate a new position for it based on current position, direction, and speed.
             Point nextPosition = new Point(
-                centipede.getPosition().x + centipedeSpeed * interval * centipede.getDirection().x,
-                centipede.getPosition().y + centipedeSpeed * interval * centipede.getDirection().y
+                centipede.getPosition().x + centipedeSpeedValue * interval * centipede.getDirection().x,
+                centipede.getPosition().y + centipedeSpeedValue * interval * centipede.getDirection().y
             );
 
             // Animate through holes to change above/below-ground layer.

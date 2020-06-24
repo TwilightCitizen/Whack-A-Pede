@@ -55,4 +55,5 @@ MDV4910-O, C202006-01
     <string name="sign_in_fail_title">Could not sign you in.</string>
     <string name="sign_in_fail_body">Servers might be down, or you man not have Internet connectivity.  Please check it and try signing in again later.</string>
     <string name="sign_in_fail_okay">Okay</string>
+    <string name="centipede_speed">Centipede Speed (LPH):</string>
 </resources>

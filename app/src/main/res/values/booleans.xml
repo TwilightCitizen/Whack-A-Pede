@@ -1,12 +1,13 @@
 <?xml version="1.0" encoding="utf-8"?>
 
-<!--
-Whack-A-Pede
-David A. Clark, Jr.
-Integrated Product Development
-MDV4910-O, C202006-01
--->
+    <!--
+    Whack-A-Pede
+    David A. Clark, Jr.
+    Integrated Product Development
+    MDV4910-O, C202006-01
+    -->
 
 <resources>
     <bool name="rotate_surface_for_landscape">true</bool>
+    <bool name="is_tablet">false</bool>
 </resources>

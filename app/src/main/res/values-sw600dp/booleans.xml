@@ -9,4 +9,5 @@ MDV4910-O, C202006-01
 
 <resources>
     <bool name="rotate_surface_for_landscape">false</bool>
+    <bool name="is_tablet">true</bool>
 </resources>

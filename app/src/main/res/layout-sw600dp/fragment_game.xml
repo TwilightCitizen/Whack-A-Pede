@@ -24,7 +24,7 @@ MDV4910-O, C202006-01
         android:layout_marginTop="32dp"
         android:layout_marginEnd="32dp"
         android:layout_marginBottom="16dp"
-        app:layout_constraintBottom_toTopOf="@id/constraint_speedometer"
+        app:layout_constraintBottom_toTopOf="@id/constraint_speed"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="parent"
@@ -111,9 +111,9 @@ MDV4910-O, C202006-01
     </androidx.constraintlayout.widget.ConstraintLayout>
 
     <androidx.constraintlayout.widget.ConstraintLayout
-        android:id="@+id/constraint_speedometer"
+        android:id="@+id/constraint_speed"
         android:layout_width="0dp"
-        android:layout_height="128dp"
+        android:layout_height="wrap_content"
         android:layout_marginStart="32dp"
         android:layout_marginTop="16dp"
         android:layout_marginEnd="32dp"
@@ -123,6 +123,46 @@ MDV4910-O, C202006-01
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/constraint_scoreboard">
 
+        <TextView
+            android:id="@+id/text_speed_label"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:gravity="center|start"
+            android:text="@string/centipede_speed"
+            android:textAlignment="gravity"
+            android:textColor="@color/earth_brown"
+            android:textSize="18sp"
+            android:textStyle="bold"
+            app:layout_constraintBottom_toTopOf="@+id/progress_speed"
+            app:layout_constraintEnd_toStartOf="@+id/text_speed"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <TextView
+            android:id="@+id/text_speed"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:gravity="center|end"
+            android:textAlignment="gravity"
+            android:textColor="@color/earth_brown"
+            android:textSize="18sp"
+            android:textStyle="bold"
+            app:layout_constraintBottom_toTopOf="@+id/progress_speed"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toEndOf="@+id/text_speed_label"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <ProgressBar
+            android:id="@+id/progress_speed"
+            style="?android:attr/progressBarStyleHorizontal"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:indeterminate="false"
+            android:max="100"
+            android:progressTint="@color/earth_brown"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent" />
     </androidx.constraintlayout.widget.ConstraintLayout>
 
     <FrameLayout
@@ -137,7 +177,7 @@ MDV4910-O, C202006-01
         app:layout_constraintDimensionRatio="7:11"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/constraint_speedometer">
+        app:layout_constraintTop_toBottomOf="@id/constraint_speed">
 
     </FrameLayout>
 </androidx.constraintlayout.widget.ConstraintLayout>

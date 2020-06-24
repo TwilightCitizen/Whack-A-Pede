@@ -25,6 +25,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
@@ -79,6 +80,10 @@ public class GameFragment extends Fragment {
     private TextView textDisplayName;
     private TextView textScore;
     private TextView textTimeRemaining;
+
+    // Speedometer views for tablets.
+    private ProgressBar progressSpeed;
+    private TextView textSpeed;
 
     // Specify existence of options menu at creation.
     @Override public void onCreate( @Nullable Bundle savedInstanceState ) {
@@ -160,6 +165,12 @@ public class GameFragment extends Fragment {
         textDisplayName = view.findViewById( R.id.text_display_name );
         textScore = view.findViewById( R.id.text_score );
         textTimeRemaining = view.findViewById( R.id.text_time_remaining );
+
+        // Keep reference to the speedometer views for tablets.
+        if( gameActivity.getResources().getBoolean( R.bool.is_tablet ) ) {
+            progressSpeed = view.findViewById( R.id.progress_speed );
+            textSpeed = view.findViewById( R.id.text_speed );
+        }
     }
 
     /*
@@ -172,12 +183,17 @@ public class GameFragment extends Fragment {
         // Pause the game.
         gameViewModel.pause();
 
+        // Remove observers to avoid them running without context.
         gameViewModel.getState().removeObservers( gameActivity );
         gameViewModel.getScore().removeObservers( gameActivity );
         gameViewModel.getRemainingTimeMillis().removeObservers( gameActivity );
         accountViewModel.getProfilePicUri().removeObservers( gameActivity );
         accountViewModel.getDisplayName().removeObservers( gameActivity );
         accountViewModel.getSignedIn().removeObservers( gameActivity );
+
+        // Remove centipede speed observer for tablets.
+        if( gameActivity.getResources().getBoolean( R.bool.is_tablet ) )
+            gameViewModel.getCentipedeSpeed().removeObservers( gameActivity );
 
         // Pause the SurfaceView when GameFragment stops.
         if( rendererSet ) gameSurfaceView.onPause();
@@ -194,6 +210,10 @@ public class GameFragment extends Fragment {
         // Setup observers that will act on changes to score and time remaining in game view model.
         gameViewModel.getScore().observe( gameActivity, this::onScoreChanged );
         gameViewModel.getRemainingTimeMillis().observe( gameActivity, this::onTimeRemainingChanged );
+
+        // Setup centipede speed observer for tablets.
+        if( gameActivity.getResources().getBoolean( R.bool.is_tablet ) )
+            gameViewModel.getCentipedeSpeed().observe( gameActivity, this::onCentipedeSpeedChanged );
 
         // Resume the SurfaceView when GameFragment starts or resumes.
         if( rendererSet ) gameSurfaceView.onResume();
@@ -333,6 +353,17 @@ public class GameFragment extends Fragment {
     private void onTimeRemainingChanged( long timeRemaining ) {
         // Format time remaining as MM:SS.
         textTimeRemaining.setText( TimeUtil.millisToMinutesAndSeconds( timeRemaining ) );
+    }
+
+    // Observer to update the speedometer for tablets when it changes in the view model.
+    private void onCentipedeSpeedChanged( float centipedeSpeed ) {
+        float centipedeRange = GameViewModel.CENTIPEDE_MAX_SPEED - GameViewModel.CENTIPEDE_START_SPEED;
+        float lawnsPerHourRange = 100.0f - 5.0f;
+        float lawnsPerHourSpeed = ( ( ( centipedeSpeed - GameViewModel.CENTIPEDE_START_SPEED ) * lawnsPerHourRange ) / centipedeRange ) + 5.0f;
+
+        // Update the speedometer gauge and readout.
+        progressSpeed.setProgress( (int) lawnsPerHourSpeed );
+        textSpeed.setText( String.format( Locale.getDefault(), "%d", (int) lawnsPerHourSpeed ) );
     }
 
     // Obtain Google Sign In task for handling Google Sign In result.
