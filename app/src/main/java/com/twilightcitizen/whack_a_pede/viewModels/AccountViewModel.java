@@ -8,6 +8,8 @@ MDV4910-O, C202006-01
 package com.twilightcitizen.whack_a_pede.viewModels;
 
 import android.app.Activity;
+import android.app.AlertDialog;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.net.Uri;
 
@@ -24,6 +26,7 @@ import com.google.android.gms.games.Games;
 import com.google.android.gms.games.Player;
 import com.google.android.gms.games.PlayersClient;
 import com.google.android.gms.tasks.Task;
+import com.twilightcitizen.whack_a_pede.R;
 import com.twilightcitizen.whack_a_pede.fragments.GameFragment;
 
 /*
@@ -79,14 +82,14 @@ public class AccountViewModel extends ViewModel {
         GoogleSignInClient googleSignInClient =
             GoogleSignIn.getClient( activity, googleSignInOptions );
 
-        // Prevent automatic reuse of the same account at next sign-in attempt.
-        googleSignInClient.signOut();
-        googleSignInClient.revokeAccess();
-
         // Start Google Sign-In with the client's intent.
         gameFragment.startActivityForResult(
             googleSignInClient.getSignInIntent(), REQUEST_GOOGLE_SIGN_IN
         );
+
+        // Prevent automatic reuse of the same account at next sign-in attempt.
+        googleSignInClient.signOut();
+        googleSignInClient.revokeAccess();
     }
 
     // Handle the result of the Google Sign In task result.
@@ -116,9 +119,23 @@ public class AccountViewModel extends ViewModel {
                 playersClient.getCurrentPlayer().addOnCompleteListener( this::onGetPlayer );
             }
         } catch( ApiException e ) {
-            // Failure should not matter.  Google Sign-In intent provides feedback.
-            e.printStackTrace();
+            // Alert the player to sign in failure.
+            alertSignInFailure( activity );
         }
+    }
+
+    // Alert the player to sign in failure.
+    private void alertSignInFailure( Activity activity ) {
+        new AlertDialog.Builder( activity, R.style.Whackapede_AlertDialog )
+            .setIcon( R.drawable.icon_warning )
+            .setTitle( R.string.sign_in_fail_title )
+            .setMessage( R.string.sign_in_fail_body )
+
+            .setPositiveButton(
+                R.string.sign_in_fail_okay, ( DialogInterface dialog, int id ) ->  {}
+            )
+
+            .show();
     }
 
     // Convert the Google Sign In to the player account.

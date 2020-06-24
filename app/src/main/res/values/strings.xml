@@ -51,4 +51,8 @@ MDV4910-O, C202006-01
     <string name="back_confirmation_body">Your game is not done syncing to the leaderboard.  You may lose new progress if you go back now.</string>
     <string name="back_confirmation_yes">Yes, Go Back</string>
     <string name="back_confirmation_no">No, Stay</string>
+
+    <string name="sign_in_fail_title">Could not sign you in.</string>
+    <string name="sign_in_fail_body">Servers might be down, or you man not have Internet connectivity.  Please check it and try signing in again later.</string>
+    <string name="sign_in_fail_okay">Okay</string>
 </resources>
