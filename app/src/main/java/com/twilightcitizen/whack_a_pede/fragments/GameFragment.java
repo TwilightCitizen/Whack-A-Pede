@@ -321,6 +321,8 @@ public class GameFragment extends Fragment {
         itemResume.setVisible( state == GameViewModel.State.paused );
         itemQuit.setVisible( state == GameViewModel.State.paused );
 
+        if( !gameActivity.getResources().getBoolean( R.bool.is_tablet ) ) return;
+
         if( state != GameViewModel.State.running )
             onCentipedeSpeedChanged( 0.0f );
         else
