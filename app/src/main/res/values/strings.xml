@@ -8,11 +8,14 @@ MDV4910-O, C202006-01
 -->
 
 <resources>
+    <!-- Application name. -->
     <string name="app_name">Whack-A-Pede</string>
 
+    <!-- Avatar and overlay accessibility descriptions. -->
     <string name="avatar">Player or Guest Avatar</string>
     <string name="overlay">Circular Overlay</string>
 
+    <!-- Game menu actions. -->
     <string name="play_game">Play Game</string>
     <string name="pause_game">Pause Game</string>
     <string name="resume_game">Resume Game</string>
@@ -23,37 +26,80 @@ MDV4910-O, C202006-01
     <string name="change_settings">Change Settings</string>
     <string name="view_credits">View Credits</string>
 
+    <!-- Fragment labels. -->
     <string name="credits">Credits</string>
     <string name="leaderboard">Leaderboard</string>
     <string name="settings">Settings</string>
     <string name="game_over">Game Over</string>
 
+    <!-- Game screen scoreboard static labels. -->
     <string name="guest">Guest</string>
     <string name="time_remaining">Time Remaining:</string>
 
+    <!-- Game screen quit confirmation dialog. -->
     <string name="quit_confirmation_title">Sure you want to quit?</string>
     <string name="quit_confirmation_body">If you quit now, any points or achievements you obtained will be lost.</string>
     <string name="quit_confirmation_yes">Yes, Quit</string>
     <string name="quit_confirmation_no">No, Keep Playing</string>
 
+    <!-- Game over screen score summary. -->
     <string name="final_score">%,d Final Score</string>
     <string name="rounds">%,d Rounds</string>
     <string name="in_time">in %s</string>
     <string name="rounds_in_time">%s %s</string>
     <string name="achievements">%,d Achievements</string>
 
+    <!-- Game over screen leaderboard sync status. -->
     <string name="sync_image">Sync Status Image</string>
     <string name="syncing">Do not go back just yet.\nSyncing to the leaderboard…</string>
     <string name="synced">All synced to the leaderboard.\nIt is safe to go back now.</string>
     <string name="sync_error">Could not sync to the leaderboard.\nIt is safe to go back now.</string>
 
+    <!-- Game over screen back confirmation dialog. -->
     <string name="back_confirmation_title">Sure you want to go back?</string>
     <string name="back_confirmation_body">Your game is not done syncing to the leaderboard.  You may lose new progress if you go back now.</string>
     <string name="back_confirmation_yes">Yes, Go Back</string>
     <string name="back_confirmation_no">No, Stay</string>
 
+    <!-- Game screen Google Play Games Sign In failure. -->
     <string name="sign_in_fail_title">Could not sign you in.</string>
     <string name="sign_in_fail_body">Servers might be down, or you man not have Internet connectivity.  Please check it and try signing in again later.</string>
     <string name="sign_in_fail_okay">Okay</string>
+
+    <!-- Game screen speedometer static labels for tablets. -->
     <string name="centipede_speed">Centipede Speed (LPH):</string>
+
+    <!-- Game settings. -->
+    <string name="sounds">Sounds</string>
+    <string name="music_volume">Music Volume</string>
+    <string name="music_volume_summary">Adjust the volume of the background music.</string>
+    <string name="music_volume_key">music_volume_key</string>
+    <string name="effects_volume">Effects Volume</string>
+    <string name="effects_volume_summary">Adjust the volume of in-game sound effects.</string>
+    <string name="effects_volume_key">effects_volume_key</string>
+    <string name="music_track">Music Track</string>
+    <string name="music_track_summary">&#8220;%s&#8221; is the music track that will play in the background.</string>
+    <string name="music_track_key">music_track_key</string>
+    <string name="colors">Colors</string>
+    <string name="color_theme">Color Theme</string>
+    <string name="color_theme_summary">&#8220;%s&#8221; is the color theme for the lawn and centipedes.</string>
+    <string name="color_theme_key">color_theme_key</string>
+
+    <!-- Music track selection. -->
+    <string-array name="music_tracks">
+        <item>Mind Bender</item>
+        <item>Electric Raindrops</item>
+        <item>Pong-A-Long</item>
+    </string-array>
+
+    <!-- Color theme selection. -->
+    <string-array name="color_themes">
+        <item>Sunny Day</item>
+        <item>High Contrast</item>
+        <item>Patriotic</item>
+        <item>Camouflage</item>
+        <item>Zebra Stripes</item>
+        <item>Tiger Stripes</item>
+        <item>Leopard Spots</item>
+    </string-array>
 </resources>

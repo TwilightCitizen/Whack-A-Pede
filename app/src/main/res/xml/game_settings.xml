@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<!--
+Whack-A-Pede
+David A. Clark, Jr.
+Integrated Product Development
+MDV4910-O, C202006-01
+-->
+
+<PreferenceScreen
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <PreferenceCategory android:title="@string/sounds">
+        <SeekBarPreference
+            android:key="@string/music_volume_key"
+            android:title="@string/music_volume"
+            android:summary="@string/music_volume_summary"
+            app:min="@integer/volume_min"
+            android:max="@integer/volume_max"
+            android:defaultValue="@integer/volume_music"
+            app:showSeekBarValue="true" />
+
+        <SeekBarPreference
+            android:key="@string/effects_volume_key"
+            android:title="@string/effects_volume"
+            android:summary="@string/effects_volume_summary"
+            app:min="@integer/volume_min"
+            android:max="@integer/volume_max"
+            android:defaultValue="@integer/volume_effects"
+            app:showSeekBarValue="true" />
+
+        <ListPreference
+            android:defaultValue="Mind Bender"
+            android:entries="@array/music_tracks"
+            android:entryValues="@array/music_tracks"
+            android:key="@string/music_track_key"
+            android:title="@string/music_track"
+            android:summary="@string/music_track_summary" />
+    </PreferenceCategory>
+
+    <PreferenceCategory android:title="@string/colors">
+        <ListPreference
+            android:defaultValue="Sunny Day"
+            android:entries="@array/color_themes"
+            android:entryValues="@array/color_themes"
+            android:key="@string/color_theme_key"
+            android:title="@string/color_theme"
+            android:summary="@string/color_theme_summary" />
+    </PreferenceCategory>
+</PreferenceScreen>

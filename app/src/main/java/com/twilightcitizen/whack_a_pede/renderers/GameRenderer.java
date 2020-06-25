@@ -109,6 +109,7 @@ public class GameRenderer implements GLSurfaceView.Renderer {
         textureShader = new TextureShader( context );
 
         // Load textures to be used by the TextureShader program.
+        // TODO: Hook into default shared preferences for these.
         centipedeHeadAbove = TextureUtil.LoadTexture( context, R.drawable.centipede_head_above_high_contrast );
         centipedeHeadBelow = TextureUtil.LoadTexture( context, R.drawable.centipede_head_below_high_contrast );
         centipedeBodyAbove = TextureUtil.LoadTexture( context, R.drawable.centipede_body_above_high_contrast );
