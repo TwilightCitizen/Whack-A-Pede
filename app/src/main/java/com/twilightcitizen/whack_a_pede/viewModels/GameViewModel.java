@@ -172,6 +172,7 @@ public class GameViewModel extends ViewModel {
 
     // Expose the mutable live data for speed.
     public MutableLiveData< Float > getCentipedeSpeed() { return centipedeSpeed; }
+    public void refreshCentipedeSpeed() { centipedeSpeed.postValue( centipedeSpeed.getValue() ); }
 
     // Touch events received from the surface to which the game is drawn.
     private final ArrayList< Point > touchPoints = new ArrayList<>();

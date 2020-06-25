@@ -320,6 +320,11 @@ public class GameFragment extends Fragment {
         itemPause.setVisible( state == GameViewModel.State.running );
         itemResume.setVisible( state == GameViewModel.State.paused );
         itemQuit.setVisible( state == GameViewModel.State.paused );
+
+        if( state != GameViewModel.State.running )
+            onCentipedeSpeedChanged( 0.0f );
+        else
+            gameViewModel.refreshCentipedeSpeed();
     }
 
     // Observer to replace the profile pic when it changes in the account view model.
@@ -357,13 +362,20 @@ public class GameFragment extends Fragment {
 
     // Observer to update the speedometer for tablets when it changes in the view model.
     private void onCentipedeSpeedChanged( float centipedeSpeed ) {
-        float centipedeRange = GameViewModel.CENTIPEDE_MAX_SPEED - GameViewModel.CENTIPEDE_START_SPEED;
+        float centipedeRange =
+            GameViewModel.CENTIPEDE_MAX_SPEED - GameViewModel.CENTIPEDE_START_SPEED;
+
         float lawnsPerHourRange = 100.0f - 5.0f;
-        float lawnsPerHourSpeed = ( ( ( centipedeSpeed - GameViewModel.CENTIPEDE_START_SPEED ) * lawnsPerHourRange ) / centipedeRange ) + 5.0f;
+
+        float lawnsPerHourSpeed = (
+            centipedeSpeed - GameViewModel.CENTIPEDE_START_SPEED
+        ) * lawnsPerHourRange / centipedeRange + 5.0f;
+
+        int speedToReport = (int) ( centipedeSpeed == 0.0f ? centipedeSpeed :  lawnsPerHourSpeed );
 
         // Update the speedometer gauge and readout.
-        progressSpeed.setProgress( (int) lawnsPerHourSpeed );
-        textSpeed.setText( String.format( Locale.getDefault(), "%d", (int) lawnsPerHourSpeed ) );
+        progressSpeed.setProgress( speedToReport );
+        textSpeed.setText( String.format( Locale.getDefault(), "%d", speedToReport ) );
     }
 
     // Obtain Google Sign In task for handling Google Sign In result.
