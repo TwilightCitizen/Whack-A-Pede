@@ -180,7 +180,7 @@ public class GameOverFragment extends Fragment implements GameActivity.BackFragm
     // Observer to format the total rounds when it changes in the game view model.
     private void onRoundChanged( int rounds ) {
         // Format the final score.
-        this.rounds = String.format( Locale.getDefault(), getString( R.string.rounds ), rounds );
+        this.rounds = getResources().getQuantityString( R.plurals.rounds, rounds, rounds );
 
         onRoundsInTimeChanged();
     }
@@ -208,7 +208,7 @@ public class GameOverFragment extends Fragment implements GameActivity.BackFragm
     @SuppressWarnings( "SameParameterValue" ) private void onAchievementsChanged( int achievements ) {
         // Format the final score.
         textAchievements.setText(
-            String.format( Locale.getDefault(), getString( R.string.achievements ), achievements )
+            getResources().getQuantityString( R.plurals.achievements, achievements, achievements )
         );
     }
 }

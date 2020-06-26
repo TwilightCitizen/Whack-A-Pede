@@ -101,7 +101,6 @@ MDV4910-O, C202006-01
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_marginTop="4dp"
-            android:text="@string/achievements"
             android:textAlignment="center"
             android:textColor="@color/earth_brown"
             app:layout_constraintBottom_toBottomOf="parent"

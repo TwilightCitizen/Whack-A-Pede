@@ -44,10 +44,19 @@ MDV4910-O, C202006-01
 
     <!-- Game over screen score summary. -->
     <string name="final_score">%,d Final Score</string>
-    <string name="rounds">%,d Rounds</string>
+
+    <plurals name="rounds">
+        <item quantity="one">%d Round</item>
+        <item quantity="other">%,d Rounds</item>
+    </plurals>
+
     <string name="in_time">in %s</string>
     <string name="rounds_in_time">%s %s</string>
-    <string name="achievements">%,d Achievements</string>
+
+    <plurals name="achievements">
+        <item quantity="one">%d Achievement</item>
+        <item quantity="other">%,d Achievements</item>
+    </plurals>
 
     <!-- Game over screen leaderboard sync status. -->
     <string name="sync_image">Sync Status Image</string>
