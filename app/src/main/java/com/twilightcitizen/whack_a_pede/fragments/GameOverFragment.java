@@ -23,6 +23,7 @@ import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.navigation.NavController;
+import androidx.navigation.Navigation;
 import androidx.navigation.fragment.NavHostFragment;
 
 import com.google.android.gms.common.images.ImageManager;
@@ -57,6 +58,9 @@ public class GameOverFragment extends Fragment implements GameActivity.BackFragm
     private String rounds;
     private String inTime;
 
+    // Flag for confirmation of back press.
+    private boolean confirmedBackPress;
+
     // Check the host context on attachment.
     @Override public void onAttach( @NonNull Context context ) {
         super.onAttach( context );
@@ -79,7 +83,7 @@ public class GameOverFragment extends Fragment implements GameActivity.BackFragm
 
     // After view creation, keep references to the profile pic and display name views.
     @Override public void onViewCreated(
-            @NonNull View view, @Nullable Bundle savedInstanceState
+        @NonNull View view, @Nullable Bundle savedInstanceState
     ) {
         super.onViewCreated( view, savedInstanceState );
 
@@ -130,8 +134,10 @@ public class GameOverFragment extends Fragment implements GameActivity.BackFragm
     prevent nonexistent context issues.
     */
    public boolean onBackPressed() {
+       if( confirmedBackPress ) return false;
+
        // Navigation controller for back navigation.
-       NavController navController = NavHostFragment.findNavController( GameOverFragment.this );
+       NavController navController = Navigation.findNavController( gameActivity, R.id.nav_host_fragment );
 
        // Confirm the player's intentions to navigate back.
        new AlertDialog.Builder( gameActivity, R.style.Whackapede_AlertDialog )
@@ -144,9 +150,10 @@ public class GameOverFragment extends Fragment implements GameActivity.BackFragm
                R.string.back_confirmation_yes,
 
                ( DialogInterface dialog, int id ) ->  {
-                   gameViewModel.reset();
+                   confirmedBackPress = true;
 
-                   navController.popBackStack();
+                   gameViewModel.reset();
+                   navController.navigateUp();
                }
            )
 

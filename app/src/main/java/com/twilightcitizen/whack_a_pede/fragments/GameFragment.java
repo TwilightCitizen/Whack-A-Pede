@@ -34,6 +34,7 @@ import androidx.appcompat.view.menu.MenuBuilder;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.navigation.NavController;
+import androidx.navigation.Navigation;
 import androidx.navigation.fragment.NavHostFragment;
 
 import com.google.android.gms.common.images.ImageManager;
@@ -272,7 +273,7 @@ public class GameFragment extends Fragment {
     // Act on selected menu items.
     @Override public boolean onOptionsItemSelected( @NonNull MenuItem item ) {
         // Navigation controller for navigation items.
-        NavController navController = NavHostFragment.findNavController( GameFragment.this );
+        // NavController navController = Navigation.findNavController( gameActivity, R.id.nav_host_fragment );
 
         switch( item.getItemId() ) {
             // Change game state.
@@ -291,11 +292,11 @@ public class GameFragment extends Fragment {
                 accountViewModel.signOut(); return true;
             // Navigate to other screens.
             case R.id.action_change_settings:
-                navController.navigate( R.id.action_game_to_settings ); return true;
+                gameActivity.getNavController().navigate( R.id.action_game_to_settings ); return true;
             case R.id.action_view_credits:
-                navController.navigate( R.id.action_game_to_credits ); return true;
+                gameActivity.getNavController().navigate( R.id.action_game_to_credits ); return true;
             case R.id.action_view_leaderboard:
-                navController.navigate( R.id.action_game_to_leaderboard ); return true;
+                gameActivity.getNavController().navigate( R.id.action_game_to_leaderboard ); return true;
         }
 
         return super.onOptionsItemSelected( item );
@@ -329,15 +330,19 @@ public class GameFragment extends Fragment {
     // Observer to set the visibility of game state menu items depending on its view model state.
     private void onGameStateChanged( GameViewModel.State state ) {
         // Navigation controller for game over navigation.
-        NavController navController = NavHostFragment.findNavController( GameFragment.this );
-
-        if( state == GameViewModel.State.gameOver )
-            navController.navigate( R.id.action_game_to_game_over );
+        // NavController navController = Navigation.findNavController( gameActivity, R.id.nav_host_fragment );
 
         itemPlay.setVisible( state == GameViewModel.State.newGame );
         itemPause.setVisible( state == GameViewModel.State.running );
         itemResume.setVisible( state == GameViewModel.State.paused );
         itemQuit.setVisible( state == GameViewModel.State.paused );
+
+        if( state == GameViewModel.State.gameOver )
+            try {
+                gameActivity.getNavController().navigate( R.id.action_game_to_game_over );
+            } catch( Exception e ) {
+                e.printStackTrace();
+            }
 
         if( !gameActivity.getResources().getBoolean( R.bool.is_tablet ) ) return;
 

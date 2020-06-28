@@ -15,6 +15,7 @@ import androidx.appcompat.widget.Toolbar;
 import androidx.fragment.app.Fragment;
 import androidx.navigation.NavController;
 import androidx.navigation.Navigation;
+import androidx.navigation.fragment.NavHostFragment;
 import androidx.navigation.ui.NavigationUI;
 
 import com.twilightcitizen.whack_a_pede.R;
@@ -26,6 +27,11 @@ navigation host, loading subordinate fragments to display and manage.  GameFragm
 default navigation target and the first fragment users will see at launch.
 */
 public class GameActivity extends AppCompatActivity {
+    // Navigation controller.
+    private NavController navController;
+
+    public NavController getNavController() { return navController; }
+
     // Interface for fragments that need to act on or consume a back press.
     public interface BackFragment {
         // Return true for consuming back presses or false if not.
@@ -56,12 +62,12 @@ public class GameActivity extends AppCompatActivity {
     // Setup action bar navigation on start.
     @Override protected void onStart() {
         super.onStart();
-        setupActionBarNav();
+        setupNavController();
     }
 
     // Provide back/up navigation controller access in action bar.
-    private void setupActionBarNav() {
-        NavController navController = Navigation.findNavController( this, R.id.nav_host_fragment );
+    private void setupNavController() {
+        navController = Navigation.findNavController( this, R.id.nav_host_fragment );
 
         NavigationUI.setupActionBarWithNavController( this, navController );
     }
@@ -83,13 +89,13 @@ public class GameActivity extends AppCompatActivity {
 
         // Guard against non-BackFragment.
         if( !( fragment instanceof BackFragment ) ) {
-            super.onBackPressed(); return;
+            navController.navigateUp(); return;
         }
 
         // Cast it to a BackFragment.
         BackFragment backFragment = (BackFragment) fragment;
 
         // Notify it of a back press and see if it consumes it.
-        if( !backFragment.onBackPressed() ) super.onBackPressed();
+        if( !backFragment.onBackPressed() ) navController.navigateUp();
     }
 }
