@@ -71,6 +71,9 @@ public class GameFragment extends Fragment {
     private MenuItem itemSignIn;
     private MenuItem itemSignOut;
 
+    // Flag for options menu creation.
+    private boolean optionsMenuIsCreated;
+
     // View models for tracking game and account state.
     private GameViewModel gameViewModel;
     private AccountViewModel accountViewModel;
@@ -178,8 +181,6 @@ public class GameFragment extends Fragment {
     remove observers so they do not run without context.
      */
     @Override public void onStop() {
-        super.onStop();
-
         // Pause the game.
         gameViewModel.pause();
 
@@ -197,12 +198,12 @@ public class GameFragment extends Fragment {
 
         // Pause the SurfaceView when GameFragment stops.
         if( rendererSet ) gameSurfaceView.onPause();
+
+        super.onStop();
     }
 
     // Restore view models and allow rendering to the GLSurfaceView when the fragment is resumed.
     @Override public void onResume() {
-        super.onResume();
-
         // Restore view models.
         gameViewModel = new ViewModelProvider( gameActivity ).get( GameViewModel.class );
         accountViewModel = new ViewModelProvider( gameActivity ).get( AccountViewModel.class );
@@ -217,6 +218,15 @@ public class GameFragment extends Fragment {
 
         // Resume the SurfaceView when GameFragment starts or resumes.
         if( rendererSet ) gameSurfaceView.onResume();
+
+        /*
+        Setup observers that will act on changes initiated by the menu items when selected.  These
+        must be reestablished here after first setup in onCreateOptionsMenu because the observers
+        change the visibility of key menu options that do not exist at first start.
+        */
+        if( optionsMenuIsCreated ) setupObservers();
+
+        super.onResume();
     }
 
     /*
@@ -242,9 +252,17 @@ public class GameFragment extends Fragment {
 
         /*
         Setup observers that will act on changes initiated by the menu items when selected.  These
-        must be established here rather than at resume because the observers change the visibility
-        of key menu options that do not exist at start, but here.
+        must be established here first rather than at resume because the observers change the
+        visibility of key menu options that do not exist at start, but here.
         */
+        setupObservers();
+
+        // Flag the menu as created.
+        optionsMenuIsCreated = true;
+    }
+
+    // Setup observers for the game and account view models.
+    private void setupObservers() {
         gameViewModel.getState().observe( gameActivity, this::onGameStateChanged );
         accountViewModel.getProfilePicUri().observe( gameActivity, this::onProfilePicUriChanged );
         accountViewModel.getDisplayName().observe( gameActivity, this::onDisplayNameChanged );

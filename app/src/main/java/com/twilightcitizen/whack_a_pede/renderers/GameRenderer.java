@@ -110,12 +110,12 @@ public class GameRenderer implements GLSurfaceView.Renderer {
 
         // Load textures to be used by the TextureShader program.
         // TODO: Hook into default shared preferences for these.
-        centipedeHeadAbove = TextureUtil.LoadTexture( context, R.drawable.centipede_head_above_high_contrast );
-        centipedeHeadBelow = TextureUtil.LoadTexture( context, R.drawable.centipede_head_below_high_contrast );
-        centipedeBodyAbove = TextureUtil.LoadTexture( context, R.drawable.centipede_body_above_high_contrast );
-        centipedeBodyBelow = TextureUtil.LoadTexture( context, R.drawable.centipede_body_below_high_contrast );
-        lawnTop = TextureUtil.LoadTexture( context, R.drawable.lawn_top_high_contrast );
-        lawnBottom = TextureUtil.LoadTexture( context, R.drawable.lawn_bottom_high_contrast );
+        centipedeHeadAbove = TextureUtil.LoadTexture( context, R.drawable.centipede_head_above_sunny_day );
+        centipedeHeadBelow = TextureUtil.LoadTexture( context, R.drawable.centipede_head_below_sunny_day );
+        centipedeBodyAbove = TextureUtil.LoadTexture( context, R.drawable.centipede_body_above_sunny_day );
+        centipedeBodyBelow = TextureUtil.LoadTexture( context, R.drawable.centipede_body_below_sunny_day );
+        lawnTop = TextureUtil.LoadTexture( context, R.drawable.lawn_top_sunny_day );
+        lawnBottom = TextureUtil.LoadTexture( context, R.drawable.lawn_bottom_sunny_day );
     }
 
     // Called when GLSurfaceView dimensions change. Parameter gl is ignored.
