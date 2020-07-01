@@ -1,0 +1,106 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<!--
+Whack-A-Pede
+David A. Clark, Jr.
+Integrated Product Development
+MDV4910-O, C202006-01
+-->
+
+<androidx.constraintlayout.widget.ConstraintLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:id="@+id/constraint_scoreboard"
+    app:layout_constraintEnd_toEndOf="parent"
+    app:layout_constraintStart_toStartOf="parent"
+    app:layout_constraintTop_toTopOf="parent">
+
+    <ImageView
+        android:id="@+id/image_profile_pic"
+        android:layout_width="@dimen/profile_pic_game"
+        android:layout_height="0dp"
+        android:contentDescription="@string/avatar"
+        app:layout_constraintDimensionRatio="1:1"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        tools:src="@tools:sample/avatars" />
+
+    <ImageView
+        android:id="@+id/image_overlay"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:contentDescription="@string/overlay"
+        android:src="@drawable/profile_pic_frame"
+        app:layout_constraintBottom_toBottomOf="@+id/image_profile_pic"
+        app:layout_constraintEnd_toEndOf="@+id/image_profile_pic"
+        app:layout_constraintStart_toStartOf="@id/image_profile_pic"
+        app:layout_constraintTop_toTopOf="@+id/image_profile_pic" />
+
+    <TextView
+        android:id="@+id/text_display_name"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/default_margin"
+        android:layout_marginBottom="@dimen/close_margin"
+        android:gravity="bottom|center"
+        android:textAlignment="gravity"
+        android:textColor="@color/earth_brown"
+        android:textSize="@dimen/text_medium"
+        android:textStyle="bold"
+        app:layout_constraintBottom_toTopOf="@+id/text_score"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/image_profile_pic" />
+
+    <TextView
+        android:id="@+id/text_score"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:layout_marginTop="@dimen/close_margin"
+        android:layout_marginBottom="@dimen/default_margin"
+        android:gravity="center|top"
+        android:textAlignment="gravity"
+        android:textColor="@color/earth_brown"
+        android:textSize="@dimen/text_medium"
+        android:textStyle="bold"
+        app:layout_constraintBottom_toTopOf="@+id/text_time_label"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/text_display_name" />
+
+    <TextView
+        android:id="@+id/text_time_label"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/default_margin"
+        android:layout_marginBottom="@dimen/close_margin"
+        android:gravity="bottom|center"
+        android:text="@string/time_remaining"
+        android:textAlignment="gravity"
+        android:textColor="@color/earth_brown"
+        android:textSize="@dimen/text_medium"
+        android:textStyle="bold"
+        app:layout_constraintBottom_toTopOf="@+id/text_time_remaining"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/text_score" />
+
+    <TextView
+        android:id="@+id/text_time_remaining"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:layout_marginTop="@dimen/close_margin"
+        android:gravity="center|top"
+        android:textAlignment="gravity"
+        android:textColor="@color/earth_brown"
+        android:textSize="@dimen/text_medium"
+        android:textStyle="bold"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/text_time_label" />
+</androidx.constraintlayout.widget.ConstraintLayout>

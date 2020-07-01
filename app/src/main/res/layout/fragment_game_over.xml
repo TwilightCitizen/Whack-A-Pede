@@ -17,8 +17,8 @@ MDV4910-O, C202006-01
 
     <ImageView
         android:id="@+id/image_profile_pic"
-        android:layout_width="@dimen/profile_pic_size"
-        android:layout_height="@dimen/profile_pic_size"
+        android:layout_width="@dimen/profile_pic_game_over"
+        android:layout_height="@dimen/profile_pic_game_over"
         android:layout_marginStart="@dimen/default_margin"
         android:layout_marginTop="@dimen/default_margin"
         android:layout_marginEnd="@dimen/default_margin"

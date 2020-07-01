@@ -8,8 +8,10 @@ MDV4910-O, C202006-01
 -->
 
 <resources>
-    <dimen name="profile_pic_size">256dp</dimen>
+    <dimen name="profile_pic_game_over">256dp</dimen>
+    <dimen name="profile_pic_game">196dp</dimen>
     <dimen name="default_margin">32dp</dimen>
+    <dimen name="default_between">16dp</dimen>
     <dimen name="close_margin">8dp</dimen>
     <dimen name="sync_icon_size">96dp</dimen>
     <dimen name="text_small">14sp</dimen>
