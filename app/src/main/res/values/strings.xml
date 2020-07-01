@@ -60,9 +60,10 @@ MDV4910-O, C202006-01
 
     <!-- Game over screen leaderboard sync status. -->
     <string name="sync_image">Sync Status Image</string>
-    <string name="syncing">Do not go back just yet.\nSyncing to the leaderboard…</string>
-    <string name="synced">All synced to the leaderboard.\nIt is safe to go back now.</string>
-    <string name="sync_error">Could not sync to the leaderboard.\nIt is safe to go back now.</string>
+    <string name="syncing">Do not go back just yet.  Syncing to the leaderboard…</string>
+    <string name="synced">All synced to the leaderboard.  It is safe to go back now.</string>
+    <string name="sync_error">Could not sync to the leaderboard.  Check your Internet connectivity and retry.</string>
+    <string name="retry">Retry</string>
 
     <!-- Game over screen back confirmation dialog. -->
     <string name="back_confirmation_title">Sure you want to go back?</string>
@@ -111,4 +112,6 @@ MDV4910-O, C202006-01
         <item>Tiger Stripes</item>
         <item>Leopard Spots</item>
     </string-array>
+
+    <string name="rounds_and_time">%d_%d</string>
 </resources>

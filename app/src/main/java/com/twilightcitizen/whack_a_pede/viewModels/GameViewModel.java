@@ -34,6 +34,9 @@ public class GameViewModel extends ViewModel {
     // States that the game can be in.
     public enum State { newGame, paused, running, gameOver }
 
+    // States for the game sync to leaderboard.
+    public enum Sync { notSynced, syncing, synced, errorSyncing, nothingToSync }
+
     /*
     The Whack-A-Pede Lawn assumes a square cellular construction, 7 cells across the X axis by 11
     cells across the Y axis.  This accommodates a grid of 3 holes across the X axis by 5 holes across
@@ -57,8 +60,8 @@ public class GameViewModel extends ViewModel {
     public static final float CELL_NORMAL_RADIUS = CELL_NORMAL_HEIGHT / 2.0f;
 
     public static final float CENTIPEDE_NORMAL_RADIUS = CELL_NORMAL_RADIUS * 0.8f;
-    public static final float CENTIPEDE_NORMAL_WIDTH =  CELL_NORMAL_WIDTH * 0.8f; //CENTIPEDE_NORMAL_RADIUS * 2.0f;
-    public static final float CENTIPEDE_NORMAL_HEIGHT = CELL_NORMAL_HEIGHT * 0.8f; // CENTIPEDE_NORMAL_RADIUS * 2.0f;
+    public static final float CENTIPEDE_NORMAL_WIDTH =  CELL_NORMAL_WIDTH * 0.8f;
+    public static final float CENTIPEDE_NORMAL_HEIGHT = CELL_NORMAL_HEIGHT * 0.8f;
 
     /*
     Lines along the X and Y axes where the grid of Holes on the Lawn will be placed.
@@ -166,6 +169,13 @@ public class GameViewModel extends ViewModel {
     // Centipedes on the lawn at any given time.
     public static final List< Centipede > CENTIPEDES = new ArrayList<>();
 
+    // Null coalesce mutable live data as a value.
+    public static <T> T getNullCoalescedValue( MutableLiveData< T > mutableLiveData, T fallback ) {
+        T value = mutableLiveData.getValue();
+
+        return value == null ? fallback : value;
+    }
+
     // Current speed of centipedes on the lawn.
     private final MutableLiveData< Float > centipedeSpeed =
         new MutableLiveData<>( CENTIPEDE_START_SPEED );
@@ -200,11 +210,15 @@ public class GameViewModel extends ViewModel {
     private final MutableLiveData< Long > elapsedTimeMillis =
         new MutableLiveData<>( STARTING_ELAPSED_TIME_MILLIS );
 
+    private final MutableLiveData< Sync > leaderboardSync = new MutableLiveData<>( Sync.notSynced );
+
     // Expose the mutable live data for score, rounds, time remaining, and elapsed time.
     public MutableLiveData< Integer > getScore() { return score; }
     public MutableLiveData< Integer > getRounds() { return rounds; }
     public MutableLiveData< Long > getRemainingTimeMillis() { return remainingTimeMillis; }
     public MutableLiveData< Long > getElapsedTimeMillis() { return elapsedTimeMillis; }
+    public MutableLiveData< Sync > getLeaderboardSync() { return leaderboardSync; }
+    public void setSyncedToLeaderboard( Sync sync ) { leaderboardSync.setValue( sync ); }
 
     /*
     Mutable live data for the game's overall state allows external observers to update as needed
@@ -266,6 +280,7 @@ public class GameViewModel extends ViewModel {
         rounds.setValue( STARTING_ROUNDS );
         remainingTimeMillis.setValue( STARTING_REMAINING_TIME_MILLIS );
         elapsedTimeMillis.setValue( STARTING_ELAPSED_TIME_MILLIS );
+        leaderboardSync.setValue( Sync.notSynced );
     }
 
     // Loop the game through the provided time slice.
@@ -274,12 +289,8 @@ public class GameViewModel extends ViewModel {
         if( state.getValue() != State.running ) return;
 
         // Obtain elapsed time and time remaining values.
-        Long timeElapsedValue = this.elapsedTimeMillis.getValue();
-        Long timeRemainingValue = remainingTimeMillis.getValue();
-
-        // Null check and coalesce elapsed time and time remaining values.
-        timeElapsedValue = timeElapsedValue == null ? 0 : timeElapsedValue;
-        timeRemainingValue = timeRemainingValue == null ? 0 : timeRemainingValue;
+        Long timeElapsedValue =  getNullCoalescedValue( this.elapsedTimeMillis, 0L );
+        Long timeRemainingValue = getNullCoalescedValue( remainingTimeMillis, 0L );
 
         // Update the time elapsed and time remaining with the provided slice.
         this.elapsedTimeMillis.postValue( timeElapsedValue + elapsedTimeMillis );
@@ -347,10 +358,7 @@ public class GameViewModel extends ViewModel {
     // Check for game over conditions and switch state as needed.
     private void checkForGameOver() {
         // Obtain time remaining value.
-        Long timeRemainingValue = remainingTimeMillis.getValue();
-
-        // Null check and coalesce time remaining value.
-        timeRemainingValue = timeRemainingValue == null ? 0 : timeRemainingValue;
+        Long timeRemainingValue = getNullCoalescedValue( remainingTimeMillis, 0L );
 
         // Game is over if timer reaches zero.
         if( timeRemainingValue <= 0 ) {
@@ -371,16 +379,10 @@ public class GameViewModel extends ViewModel {
         if( !CENTIPEDES.isEmpty() ) return;
 
         // Obtain score, rounds, time remaining, and centipede speed values.
-        Integer scoreValue = score.getValue();
-        Integer roundsValue = rounds.getValue();
-        Long timeRemainingValue = remainingTimeMillis.getValue();
-        Float centipedeSpeedValue = centipedeSpeed.getValue();
-
-        // Null check and coalesce score, rounds, time remaining, and centipede speed values.
-        scoreValue = scoreValue == null ? 0 : scoreValue;
-        roundsValue = roundsValue == null ? 1 : roundsValue;
-        timeRemainingValue = timeRemainingValue == null ? 0 : timeRemainingValue;
-        centipedeSpeedValue = centipedeSpeedValue == null ? CENTIPEDE_START_SPEED : centipedeSpeedValue;
+        Integer scoreValue = getNullCoalescedValue( score, 0 );
+        Integer roundsValue = getNullCoalescedValue( rounds, 1 );
+        Long timeRemainingValue = getNullCoalescedValue( remainingTimeMillis, 0L );
+        Float centipedeSpeedValue = getNullCoalescedValue( centipedeSpeed, CENTIPEDE_START_SPEED );
 
         // Add points for time remaining.
         score.postValue(
@@ -424,9 +426,7 @@ public class GameViewModel extends ViewModel {
         postScoreAndTimeBonuses();
 
         // Obtain centipede speed value.
-        Float centipedeSpeedValue = centipedeSpeed.getValue();
-        // Null check and coalesce score, rounds, time remaining, and centipede speed values.
-        centipedeSpeedValue = centipedeSpeedValue == null ? CENTIPEDE_START_SPEED : centipedeSpeedValue;
+        Float centipedeSpeedValue = getNullCoalescedValue( centipedeSpeed, CENTIPEDE_START_SPEED );
 
         // Figure out the new speed for all segments.
         centipedeSpeed.postValue( centipedeSpeedValue + CENTIPEDE_SPEED_INCREASE * centipedesKilled.size() );
@@ -446,12 +446,8 @@ public class GameViewModel extends ViewModel {
     // Update the score and time remaining with points and/or time bonuses.
     private void postScoreAndTimeBonuses() {
         // Obtain score and time remaining values.
-        Integer scoreValue = score.getValue();
-        Long timeRemainingValue = remainingTimeMillis.getValue();
-
-        // Null check and coalesce score and time remaining values.
-        scoreValue = scoreValue == null ? 0 : scoreValue;
-        timeRemainingValue = timeRemainingValue == null ? 0 : timeRemainingValue;
+        Integer scoreValue = getNullCoalescedValue( score, 0 );
+        Long timeRemainingValue = getNullCoalescedValue( remainingTimeMillis, 0L );
 
         // Add points for each segment killed to the player's score.
         score.postValue( scoreValue + centipedesKilled.size() * POINTS_PER_CENTIPEDE );
@@ -516,13 +512,13 @@ public class GameViewModel extends ViewModel {
 
                 // Touch X falls within X bounds of centipede.
                 boolean touchedX =
-                        x >= position.x - CENTIPEDE_NORMAL_RADIUS &&
-                                x <= position.x + CENTIPEDE_NORMAL_RADIUS;
+                    x >= position.x - CENTIPEDE_NORMAL_RADIUS &&
+                    x <= position.x + CENTIPEDE_NORMAL_RADIUS;
 
                 // Touch Y falls within Y bounds of centipede.
                 boolean touchedY =
-                        y >= position.y - CENTIPEDE_NORMAL_RADIUS &&
-                                y <= position.y + CENTIPEDE_NORMAL_RADIUS;
+                    y >= position.y - CENTIPEDE_NORMAL_RADIUS &&
+                    y <= position.y + CENTIPEDE_NORMAL_RADIUS;
 
                 // Touch falls in bounds of centipede and centipede is above ground.
                 boolean touched = touchedX && touchedY && centipede.getIsAbove();
@@ -545,9 +541,7 @@ public class GameViewModel extends ViewModel {
         float interval = TimeUtil.millisToIntervalOfSeconds( elapsedTimeMillis );
 
         // Obtain centipede speed value.
-        Float centipedeSpeedValue = centipedeSpeed.getValue();
-        // Null check and coalesce score, rounds, time remaining, and centipede speed values.
-        centipedeSpeedValue = centipedeSpeedValue == null ? CENTIPEDE_START_SPEED : centipedeSpeedValue;
+        Float centipedeSpeedValue = getNullCoalescedValue( centipedeSpeed, CENTIPEDE_START_SPEED );
 
         // Animate each centipede, including its tails and their tails.
         for( Centipede centipede : CENTIPEDES ) while( centipede != null ) {

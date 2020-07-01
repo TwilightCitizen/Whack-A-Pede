@@ -31,4 +31,11 @@ MDV4910-O, C202006-01
         <item name="android:textColorPrimary">@color/earth_brown</item>
         <item name="android:background">@color/sun_bleached</item>
     </style>
+
+    <style name="Whackapede.Button">
+        <item name="android:background">@drawable/button</item>
+        <item name="android:textSize">@dimen/text_small</item>
+        <item name="android:textAllCaps">true</item>
+        <item name="android:textColor">@color/plain_white</item>
+    </style>
 </resources>

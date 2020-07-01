@@ -33,9 +33,6 @@ import androidx.annotation.Nullable;
 import androidx.appcompat.view.menu.MenuBuilder;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
-import androidx.navigation.NavController;
-import androidx.navigation.Navigation;
-import androidx.navigation.fragment.NavHostFragment;
 
 import com.google.android.gms.common.images.ImageManager;
 import com.twilightcitizen.whack_a_pede.R;
@@ -44,6 +41,8 @@ import com.twilightcitizen.whack_a_pede.renderers.GameRenderer;
 import com.twilightcitizen.whack_a_pede.utilities.TimeUtil;
 import com.twilightcitizen.whack_a_pede.viewModels.AccountViewModel;
 import com.twilightcitizen.whack_a_pede.viewModels.GameViewModel;
+
+import static com.twilightcitizen.whack_a_pede.viewModels.GameViewModel.State;
 
 import java.util.Locale;
 
@@ -186,12 +185,7 @@ public class GameFragment extends Fragment {
         gameViewModel.pause();
 
         // Remove observers to avoid them running without context.
-        gameViewModel.getState().removeObservers( gameActivity );
-        gameViewModel.getScore().removeObservers( gameActivity );
-        gameViewModel.getRemainingTimeMillis().removeObservers( gameActivity );
-        accountViewModel.getProfilePicUri().removeObservers( gameActivity );
-        accountViewModel.getDisplayName().removeObservers( gameActivity );
-        accountViewModel.getSignedIn().removeObservers( gameActivity );
+        removeObservers();
 
         // Remove centipede speed observer for tablets.
         if( gameActivity.getResources().getBoolean( R.bool.is_tablet ) )
@@ -267,14 +261,21 @@ public class GameFragment extends Fragment {
         gameViewModel.getState().observe( gameActivity, this::onGameStateChanged );
         accountViewModel.getProfilePicUri().observe( gameActivity, this::onProfilePicUriChanged );
         accountViewModel.getDisplayName().observe( gameActivity, this::onDisplayNameChanged );
-        accountViewModel.getSignedIn().observe( gameActivity, this::onSignedInChanged );
+        accountViewModel.getIsSignedIn().observe( gameActivity, this::onSignedInChanged );
+    }
+
+    // Remove observers to avoid them running without context.
+    private void removeObservers() {
+        gameViewModel.getState().removeObservers( gameActivity );
+        gameViewModel.getScore().removeObservers( gameActivity );
+        gameViewModel.getRemainingTimeMillis().removeObservers( gameActivity );
+        accountViewModel.getProfilePicUri().removeObservers( gameActivity );
+        accountViewModel.getDisplayName().removeObservers( gameActivity );
+        accountViewModel.getIsSignedIn().removeObservers( gameActivity );
     }
 
     // Act on selected menu items.
     @Override public boolean onOptionsItemSelected( @NonNull MenuItem item ) {
-        // Navigation controller for navigation items.
-        // NavController navController = Navigation.findNavController( gameActivity, R.id.nav_host_fragment );
-
         switch( item.getItemId() ) {
             // Change game state.
             case R.id.action_play_game:
@@ -327,17 +328,11 @@ public class GameFragment extends Fragment {
         gameViewModel.pause();
     }
 
-    // Observer to set the visibility of game state menu items depending on its view model state.
-    private void onGameStateChanged( GameViewModel.State state ) {
-        // Navigation controller for game over navigation.
-        // NavController navController = Navigation.findNavController( gameActivity, R.id.nav_host_fragment );
+    // Observer to manage actions based on GameViewModel state.
+    private void onGameStateChanged( State state ) {
+        toggleMenuItemVisibility( state );
 
-        itemPlay.setVisible( state == GameViewModel.State.newGame );
-        itemPause.setVisible( state == GameViewModel.State.running );
-        itemResume.setVisible( state == GameViewModel.State.paused );
-        itemQuit.setVisible( state == GameViewModel.State.paused );
-
-        if( state == GameViewModel.State.gameOver )
+        if( state == State.gameOver )
             try {
                 gameActivity.getNavController().navigate( R.id.action_game_to_game_over );
             } catch( Exception e ) {
@@ -346,10 +341,18 @@ public class GameFragment extends Fragment {
 
         if( !gameActivity.getResources().getBoolean( R.bool.is_tablet ) ) return;
 
-        if( state != GameViewModel.State.running )
+        if( state != State.running )
             onCentipedeSpeedChanged( 0.0f );
         else
             gameViewModel.refreshCentipedeSpeed();
+    }
+
+    // Toggle menu item visibility based on GameViewModel state.
+    private void toggleMenuItemVisibility( State state ) {
+        itemPlay.setVisible( state == State.newGame );
+        itemPause.setVisible( state == State.running );
+        itemResume.setVisible( state == State.paused );
+        itemQuit.setVisible( state == State.paused );
     }
 
     // Observer to replace the profile pic when it changes in the account view model.

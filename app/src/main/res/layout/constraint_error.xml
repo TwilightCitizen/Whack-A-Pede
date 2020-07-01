@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<!--
+Whack-A-Pede
+David A. Clark, Jr.
+Integrated Product Development
+MDV4910-O, C202006-01
+-->
+
+<androidx.constraintlayout.widget.ConstraintLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/constraint_error"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    app:layout_constraintBottom_toBottomOf="parent"
+    app:layout_constraintEnd_toEndOf="parent"
+    app:layout_constraintStart_toStartOf="parent"
+    app:layout_constraintTop_toBottomOf="@id/constraint_score">
+
+    <ImageView
+        android:id="@+id/image_error"
+        android:layout_width="@dimen/sync_icon_size"
+        android:layout_height="@dimen/sync_icon_size"
+        android:layout_marginBottom="@dimen/close_margin"
+        android:contentDescription="@string/sync_image"
+        android:src="@drawable/icon_warning"
+        app:layout_constraintBottom_toTopOf="@id/text_error"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <TextView
+        android:id="@+id/text_error"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/close_margin"
+        android:layout_marginBottom="@dimen/close_margin"
+        android:text="@string/sync_error"
+        android:textAlignment="center"
+        android:textColor="@color/earth_brown"
+        android:textSize="@dimen/text_medium"
+        android:textStyle="bold"
+        app:layout_constraintBottom_toTopOf="@id/button_retry"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/image_error" />
+
+    <Button
+        android:id="@+id/button_retry"
+        style="@style/Whackapede.Button"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/close_margin"
+        android:text="@string/retry"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/text_error" />
+</androidx.constraintlayout.widget.ConstraintLayout>

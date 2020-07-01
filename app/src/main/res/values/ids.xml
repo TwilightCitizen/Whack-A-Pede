@@ -8,5 +8,9 @@ MDV4910-O, C202006-01
 -->
 
 <resources>
+    <!-- Play Games Application ID -->
     <string name="app_id">816408284503</string>
+
+    <!-- Play Games Leaderboard IDs -->
+    <string name="leaderboard_score_id">CgkI15rnreEXEAIQAg</string>
 </resources>

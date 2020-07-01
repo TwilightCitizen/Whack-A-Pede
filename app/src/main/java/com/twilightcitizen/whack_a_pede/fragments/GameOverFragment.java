@@ -15,23 +15,27 @@ import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
-import androidx.navigation.NavController;
-import androidx.navigation.Navigation;
-import androidx.navigation.fragment.NavHostFragment;
 
+import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
 import com.google.android.gms.common.images.ImageManager;
+import com.google.android.gms.games.leaderboard.ScoreSubmissionData;
 import com.twilightcitizen.whack_a_pede.R;
 import com.twilightcitizen.whack_a_pede.activities.GameActivity;
+import com.twilightcitizen.whack_a_pede.utilities.PlayGamesUtil;
 import com.twilightcitizen.whack_a_pede.utilities.TimeUtil;
 import com.twilightcitizen.whack_a_pede.viewModels.AccountViewModel;
 import com.twilightcitizen.whack_a_pede.viewModels.GameViewModel;
+
+import static com.twilightcitizen.whack_a_pede.viewModels.GameViewModel.Sync;
 
 import java.util.Locale;
 
@@ -58,8 +62,13 @@ public class GameOverFragment extends Fragment implements GameActivity.BackFragm
     private String rounds;
     private String inTime;
 
+    // Syncing, Synced, and Error Syning constraint views.
+    private ConstraintLayout constraintSyncing;
+    private ConstraintLayout constraintSynced;
+    private ConstraintLayout constraintError;
+
     // Flag for confirmation of back press.
-    private boolean confirmedBackPress;
+    private boolean confirmedBackPress = false;
 
     // Check the host context on attachment.
     @Override public void onAttach( @NonNull Context context ) {
@@ -81,18 +90,43 @@ public class GameOverFragment extends Fragment implements GameActivity.BackFragm
         return inflater.inflate( R.layout.fragment_game_over, container, false );
     }
 
-    // After view creation, keep references to the profile pic and display name views.
+    // After view creation, keep references to the score summary, sync messaging, and retry button views.
     @Override public void onViewCreated(
         @NonNull View view, @Nullable Bundle savedInstanceState
     ) {
         super.onViewCreated( view, savedInstanceState );
+        setupScoreSummary( view );
+        setupSyncMessages( view );
+        setupRetryButton( view );
+    }
 
-        // Keep references to the profile pic, display name, score, and time remaining views.
+    // Keep references to the profile pic, display name, score, and time remaining views.
+    private void setupScoreSummary( View view ) {
         imageProfilePic = view.findViewById( R.id.image_profile_pic );
         textDisplayName = view.findViewById( R.id.text_display_name );
         textScore = view.findViewById( R.id.text_score );
         textRoundsInTime = view.findViewById( R.id.text_rounds_in_time );
         textAchievements = view.findViewById( R.id.text_achievements );
+    }
+
+    // Keep references to constraint views for syncing status.
+    private void setupSyncMessages( View view ) {
+        constraintSyncing = view.findViewById( R.id.constraint_syncing );
+        constraintSynced = view.findViewById( R.id.constraint_synced );
+        constraintError = view.findViewById( R.id.constraint_error );
+    }
+
+    // Keep reference to the retry button and set it up for taps.
+    private void setupRetryButton( View view ) {
+        // Button to retry syncing after sync failure.
+        Button buttonRetry = view.findViewById( R.id.button_retry );
+
+        buttonRetry.setOnClickListener( this::onRetryClick );
+    }
+
+    // Setup the retry button for taps.
+    private void onRetryClick( View view ) {
+        gameViewModel.setSyncedToLeaderboard( Sync.notSynced );
     }
 
     // Restore view models and allow rendering to the GLSurfaceView when the fragment is resumed.
@@ -101,31 +135,41 @@ public class GameOverFragment extends Fragment implements GameActivity.BackFragm
 
         // Restore view models.
         gameViewModel = new ViewModelProvider( gameActivity ).get( GameViewModel.class );
-
         accountViewModel = new ViewModelProvider( gameActivity ).get( AccountViewModel.class );
 
-        // Setup observers that will act on changes to score, rounds, and elapsed time.
-        gameViewModel.getScore().observe( gameActivity, this::onScoreChanged );
-        gameViewModel.getRounds().observe( gameActivity, this::onRoundChanged );
-        gameViewModel.getElapsedTimeMillis().observe( gameActivity, this::onElapsedTimeChanged );
-
-        // Setup observers that will action on changes to profile picture and display name.
-        accountViewModel.getProfilePicUri().observe( gameActivity, this::onProfilePicUriChanged );
-        accountViewModel.getDisplayName().observe( gameActivity, this::onDisplayNameChanged );
+        // Setup observers on the view models.
+        setupObservers();
 
         // Will eventually have achievements.
         onAchievementsChanged( 0 );
     }
 
+    private void setupObservers() {
+        // Setup observers that will act on changes to score, rounds, and elapsed time.
+        gameViewModel.getScore().observe( gameActivity, this::onScoreChanged );
+        gameViewModel.getRounds().observe( gameActivity, this::onRoundChanged );
+        gameViewModel.getElapsedTimeMillis().observe( gameActivity, this::onElapsedTimeChanged );
+        gameViewModel.getLeaderboardSync().observe( gameActivity, this::onLeaderboardSyncChanged );
+
+        // Setup observers that will action on changes to profile picture and display name.
+        accountViewModel.getProfilePicUri().observe( gameActivity, this::onProfilePicUriChanged );
+        accountViewModel.getDisplayName().observe( gameActivity, this::onDisplayNameChanged );
+    }
+
     // Remove observers on stop so they do not run without context.
     @Override public void onStop() {
+        removeObservers();
+        super.onStop();
+    }
+
+    // Remove observers .
+    private void removeObservers() {
         gameViewModel.getScore().removeObservers( gameActivity );
         gameViewModel.getRounds().removeObservers( gameActivity );
         gameViewModel.getElapsedTimeMillis().removeObservers( gameActivity );
+        gameViewModel.getLeaderboardSync().removeObservers( gameActivity );
         accountViewModel.getProfilePicUri().removeObservers( gameActivity );
         accountViewModel.getDisplayName().removeObservers( gameActivity );
-
-        super.onStop();
     }
 
     /*
@@ -133,33 +177,33 @@ public class GameOverFragment extends Fragment implements GameActivity.BackFragm
     be interrupted and would then show stats for a new game.  Also stop observers in here to
     prevent nonexistent context issues.
     */
-   public boolean onBackPressed() {
-       if( confirmedBackPress ) return false;
+    public boolean onBackPressed() {
+        if( !confirmedBackPress ) { confirmBackPress(); return true; }
 
-       // Navigation controller for back navigation.
-       NavController navController = Navigation.findNavController( gameActivity, R.id.nav_host_fragment );
+        removeObservers();
+        gameViewModel.reset();
 
-       // Confirm the player's intentions to navigate back.
+        return false;
+    }
+
+   // Confirm the player's intentions to navigate back.
+   private void confirmBackPress() {
        new AlertDialog.Builder( gameActivity, R.style.Whackapede_AlertDialog )
            .setIcon( R.drawable.icon_warning )
            .setTitle( R.string.back_confirmation_title )
            .setMessage( R.string.back_confirmation_body )
            .setNegativeButton(  R.string.back_confirmation_no, null )
-
-           .setPositiveButton(
-               R.string.back_confirmation_yes,
-
-               ( DialogInterface dialog, int id ) ->  {
-                   confirmedBackPress = true;
-
-                   gameViewModel.reset();
-                   navController.navigateUp();
-               }
-           )
-
+           .setPositiveButton( R.string.back_confirmation_yes, this::onConfirmBackPress )
            .show();
+   }
 
-       return true;
+   // Confirm back press and navigate up.
+   private void onConfirmBackPress( DialogInterface dialogInterface, int id ) {
+       confirmedBackPress = true;
+
+       removeObservers();
+       gameViewModel.reset();
+       gameActivity.getNavController().navigateUp();
    }
 
     // Observer to replace the profile pic when it changes in the account view model.
@@ -217,5 +261,59 @@ public class GameOverFragment extends Fragment implements GameActivity.BackFragm
         textAchievements.setText(
             getResources().getQuantityString( R.plurals.achievements, achievements, achievements )
         );
+    }
+
+    private void onLeaderboardSyncChanged( Sync sync ) {
+        // Toggle the visibility of sync status messages.
+        toggleSyncMessageVisibility( sync );
+
+        // Get the Google Sign In account.
+        GoogleSignInAccount googleSignInAccount = accountViewModel.getGoogleSignInAccount();
+
+        // Guard against syncing more than once.
+        if( sync != Sync.notSynced ) return;
+
+        // Guard against syncing a guest player.
+        if( googleSignInAccount == null ) {
+            gameViewModel.setSyncedToLeaderboard( Sync.nothingToSync );
+
+            confirmedBackPress = true;
+
+            return;
+        }
+
+        // Otherwise start syncing to the leaderboard.
+        gameViewModel.setSyncedToLeaderboard( Sync.syncing );
+
+        // Obtain score, rounds, and elapsed time values.
+        Integer scoreValue =  GameViewModel.getNullCoalescedValue( gameViewModel.getScore(), 0 );
+        Integer roundsValue = GameViewModel.getNullCoalescedValue( gameViewModel.getRounds(), 1 );
+        Long elapsedTimeValue =  GameViewModel.getNullCoalescedValue( gameViewModel.getElapsedTimeMillis(), 0L );
+
+        // Sync the score, rounds, and time to the leaderboard.
+        PlayGamesUtil.syncLeaderboards(
+            gameActivity, googleSignInAccount, scoreValue, roundsValue, elapsedTimeValue,
+            this::onSyncSuccess, this::onSyncFailure
+        );
+    }
+
+    // Flag the sync as complete, message it, and remove back navigation confirmation.
+    private void onSyncSuccess( ScoreSubmissionData scoreSubmissionData ) {
+        gameViewModel.setSyncedToLeaderboard( Sync.synced );
+
+        confirmedBackPress = true;
+    }
+
+    // Flag the sync as incomplete, message it, and remove back navigation confirmation.
+    private void onSyncFailure( Exception e ) {
+        gameViewModel.setSyncedToLeaderboard( Sync.errorSyncing );
+        e.printStackTrace();
+    }
+
+    // Toggle the visibility of sync status messages.
+    private void toggleSyncMessageVisibility( Sync sync ) {
+        constraintSyncing.setVisibility( sync == Sync.syncing ? View.VISIBLE : View.GONE );
+        constraintSynced.setVisibility( sync == Sync.synced ? View.VISIBLE : View.GONE );
+        constraintError.setVisibility( sync == Sync.errorSyncing ? View.VISIBLE : View.GONE );
     }
 }

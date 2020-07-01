@@ -40,20 +40,23 @@ public class AccountViewModel extends ViewModel {
     // Google Sign-In account the active user, if any.
     private GoogleSignInAccount googleSignInAccount;
 
+    // Expose GoogleSignInAccount.
+    public GoogleSignInAccount getGoogleSignInAccount() { return googleSignInAccount; }
+
     private String playerId;
 
     /*
     Mutable live data for profile information allows external observers to update
     as needed whenever these values change.
     */
-    private final MutableLiveData< Boolean > signedIn = new MutableLiveData<>( false );
+    private final MutableLiveData< Boolean > isSignedIn = new MutableLiveData<>( false );
     private final MutableLiveData< Uri > profilePicUri = new MutableLiveData<>( null );
     private final MutableLiveData< String > displayName = new MutableLiveData<>( null );
 
     /*
     Expose mutable live data for profile information to external observers.
     */
-    public MutableLiveData< Boolean > getSignedIn() { return signedIn; }
+    public MutableLiveData< Boolean > getIsSignedIn() { return isSignedIn; }
     public MutableLiveData< Uri > getProfilePicUri() { return profilePicUri; }
     public MutableLiveData< String > getDisplayName() { return displayName; }
 
@@ -63,7 +66,7 @@ public class AccountViewModel extends ViewModel {
 
         profilePicUri.setValue( null );
         displayName.setValue( null );
-        signedIn.setValue( false );
+        isSignedIn.setValue( false );
     }
 
     // Initiate the Google Sign-In process.
@@ -150,6 +153,6 @@ public class AccountViewModel extends ViewModel {
         profilePicUri.setValue( task.getResult().getHiResImageUri() );
         displayName.setValue( task.getResult().getDisplayName() );
 
-        signedIn.setValue( true );
+        isSignedIn.setValue( true );
     }
 }
