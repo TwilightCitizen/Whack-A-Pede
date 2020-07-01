@@ -28,8 +28,8 @@ MDV4910-O, C202006-01
         android:textColor="@color/earth_brown"
         android:textSize="@dimen/text_medium"
         android:textStyle="bold"
-        app:layout_constraintBottom_toTopOf="@+id/progress_speed"
-        app:layout_constraintEnd_toStartOf="@+id/text_speed"
+        app:layout_constraintBottom_toTopOf="@id/progress_speed"
+        app:layout_constraintEnd_toStartOf="@id/text_speed"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
@@ -42,9 +42,9 @@ MDV4910-O, C202006-01
         android:textColor="@color/earth_brown"
         android:textSize="@dimen/text_medium"
         android:textStyle="bold"
-        app:layout_constraintBottom_toTopOf="@+id/progress_speed"
+        app:layout_constraintBottom_toTopOf="@id/progress_speed"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toEndOf="@+id/text_speed_label"
+        app:layout_constraintStart_toEndOf="@id/text_speed_label"
         app:layout_constraintTop_toTopOf="parent"
         tools:ignore="InconsistentLayout" />
 

@@ -25,7 +25,7 @@ MDV4910-O, C202006-01
         android:layout_marginEnd="@dimen/default_between"
         android:layout_marginBottom="@dimen/default_margin"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toStartOf="@+id/frame_game"
+        app:layout_constraintEnd_toStartOf="@id/frame_game"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent">
 

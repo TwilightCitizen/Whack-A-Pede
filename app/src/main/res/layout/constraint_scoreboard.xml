@@ -35,10 +35,10 @@ MDV4910-O, C202006-01
         android:layout_height="0dp"
         android:contentDescription="@string/overlay"
         android:src="@drawable/profile_pic_frame"
-        app:layout_constraintBottom_toBottomOf="@+id/image_profile_pic"
-        app:layout_constraintEnd_toEndOf="@+id/image_profile_pic"
+        app:layout_constraintBottom_toBottomOf="@id/image_profile_pic"
+        app:layout_constraintEnd_toEndOf="@id/image_profile_pic"
         app:layout_constraintStart_toStartOf="@id/image_profile_pic"
-        app:layout_constraintTop_toTopOf="@+id/image_profile_pic" />
+        app:layout_constraintTop_toTopOf="@id/image_profile_pic" />
 
     <TextView
         android:id="@+id/text_display_name"

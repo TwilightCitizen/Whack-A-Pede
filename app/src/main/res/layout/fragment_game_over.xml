@@ -75,6 +75,4 @@ MDV4910-O, C202006-01
         <include layout="@layout/constraint_synced" />
         <include layout="@layout/constraint_error" />
     </FrameLayout>
-
-
 </androidx.constraintlayout.widget.ConstraintLayout>

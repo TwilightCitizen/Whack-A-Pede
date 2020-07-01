@@ -14,8 +14,8 @@ MDV4910-O, C202006-01
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:id="@+id/constraint_scoreboard"
-    app:layout_constraintBottom_toTopOf="@+id/constraint_speed"
-    app:layout_constraintEnd_toStartOf="@+id/frame_game"
+    app:layout_constraintBottom_toTopOf="@id/constraint_speed"
+    app:layout_constraintEnd_toStartOf="@id/frame_game"
     app:layout_constraintStart_toStartOf="parent"
     app:layout_constraintTop_toTopOf="parent">
 
@@ -37,10 +37,10 @@ MDV4910-O, C202006-01
         android:layout_height="0dp"
         android:contentDescription="@string/overlay"
         android:src="@drawable/profile_pic_frame"
-        app:layout_constraintBottom_toBottomOf="@+id/image_profile_pic"
-        app:layout_constraintEnd_toEndOf="@+id/image_profile_pic"
+        app:layout_constraintBottom_toBottomOf="@id/image_profile_pic"
+        app:layout_constraintEnd_toEndOf="@id/image_profile_pic"
         app:layout_constraintStart_toStartOf="@id/image_profile_pic"
-        app:layout_constraintTop_toTopOf="@+id/image_profile_pic" />
+        app:layout_constraintTop_toTopOf="@id/image_profile_pic" />
 
     <TextView
         android:id="@+id/text_display_name"
@@ -53,7 +53,7 @@ MDV4910-O, C202006-01
         android:textStyle="bold"
         app:layout_constraintEnd_toStartOf="@+id/text_score"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/image_profile_pic" />
+        app:layout_constraintTop_toBottomOf="@id/image_profile_pic" />
 
     <TextView
         android:id="@+id/text_score"
@@ -65,8 +65,8 @@ MDV4910-O, C202006-01
         android:textSize="@dimen/text_large"
         android:textStyle="bold"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toEndOf="@+id/text_display_name"
-        app:layout_constraintTop_toBottomOf="@+id/image_profile_pic" />
+        app:layout_constraintStart_toEndOf="@id/text_display_name"
+        app:layout_constraintTop_toBottomOf="@id/image_profile_pic" />
 
     <TextView
         android:id="@+id/text_time_label"
@@ -79,9 +79,9 @@ MDV4910-O, C202006-01
         android:textSize="@dimen/text_large"
         android:textStyle="bold"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toStartOf="@+id/text_time_remaining"
+        app:layout_constraintEnd_toStartOf="@id/text_time_remaining"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/text_display_name" />
+        app:layout_constraintTop_toBottomOf="@id/text_display_name" />
 
     <TextView
         android:id="@+id/text_time_remaining"
@@ -94,6 +94,6 @@ MDV4910-O, C202006-01
         android:textStyle="bold"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toEndOf="@+id/text_time_label"
-        app:layout_constraintTop_toBottomOf="@+id/text_score" />
+        app:layout_constraintStart_toEndOf="@id/text_time_label"
+        app:layout_constraintTop_toBottomOf="@id/text_score" />
 </androidx.constraintlayout.widget.ConstraintLayout>

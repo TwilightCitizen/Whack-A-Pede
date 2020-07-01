@@ -37,7 +37,7 @@ MDV4910-O, C202006-01
         android:layout_height="wrap_content"
         android:layout_marginTop="@dimen/default_margin"
         android:layout_marginBottom="@dimen/default_margin"
-        app:layout_constraintBottom_toTopOf="@+id/frame_game"
+        app:layout_constraintBottom_toTopOf="@id/frame_game"
         app:layout_constraintEnd_toEndOf="@id/frame_scoreboard"
         app:layout_constraintStart_toStartOf="@id/frame_scoreboard"
         app:layout_constraintTop_toBottomOf="@id/frame_scoreboard">
