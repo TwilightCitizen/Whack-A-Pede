@@ -129,29 +129,31 @@ public class GameOverFragment extends Fragment implements GameActivity.BackFragm
         gameViewModel.setSyncedToLeaderboard( Sync.notSynced );
     }
 
-    // Restore view models and allow rendering to the GLSurfaceView when the fragment is resumed.
+    // Restore view models and observers.
     @Override public void onResume() {
         super.onResume();
-
-        // Restore view models.
-        gameViewModel = new ViewModelProvider( gameActivity ).get( GameViewModel.class );
-        accountViewModel = new ViewModelProvider( gameActivity ).get( AccountViewModel.class );
-
-        // Setup observers on the view models.
+        setupViewModels();
         setupObservers();
 
         // Will eventually have achievements.
         onAchievementsChanged( 0 );
     }
 
+    // Restore view models.
+    private void setupViewModels() {
+        gameViewModel = new ViewModelProvider( gameActivity ).get( GameViewModel.class );
+        accountViewModel = new ViewModelProvider( gameActivity ).get( AccountViewModel.class );
+    }
+
+    /*
+    Setup observers that will act on changes to score, rounds, and elapsed time, and profile picture
+    and display name.
+    */
     private void setupObservers() {
-        // Setup observers that will act on changes to score, rounds, and elapsed time.
         gameViewModel.getScore().observe( gameActivity, this::onScoreChanged );
         gameViewModel.getRounds().observe( gameActivity, this::onRoundChanged );
         gameViewModel.getElapsedTimeMillis().observe( gameActivity, this::onElapsedTimeChanged );
         gameViewModel.getLeaderboardSync().observe( gameActivity, this::onLeaderboardSyncChanged );
-
-        // Setup observers that will action on changes to profile picture and display name.
         accountViewModel.getProfilePicUri().observe( gameActivity, this::onProfilePicUriChanged );
         accountViewModel.getDisplayName().observe( gameActivity, this::onDisplayNameChanged );
     }
@@ -285,14 +287,12 @@ public class GameOverFragment extends Fragment implements GameActivity.BackFragm
         // Otherwise start syncing to the leaderboard.
         gameViewModel.setSyncedToLeaderboard( Sync.syncing );
 
-        // Obtain score, rounds, and elapsed time values.
-        Integer scoreValue =  GameViewModel.getNullCoalescedValue( gameViewModel.getScore(), 0 );
-        Integer roundsValue = GameViewModel.getNullCoalescedValue( gameViewModel.getRounds(), 1 );
-        Long elapsedTimeValue =  GameViewModel.getNullCoalescedValue( gameViewModel.getElapsedTimeMillis(), 0L );
-
         // Sync the score, rounds, and time to the leaderboard.
         PlayGamesUtil.syncLeaderboards(
-            gameActivity, googleSignInAccount, scoreValue, roundsValue, elapsedTimeValue,
+            gameActivity, googleSignInAccount,
+            GameViewModel.getNullCoalescedValue( gameViewModel.getScore(), 0 ),
+            GameViewModel.getNullCoalescedValue( gameViewModel.getRounds(), 1 ),
+            GameViewModel.getNullCoalescedValue( gameViewModel.getElapsedTimeMillis(), 0L ),
             this::onSyncSuccess, this::onSyncFailure
         );
     }

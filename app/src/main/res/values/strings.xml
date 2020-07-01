@@ -7,7 +7,7 @@ Integrated Product Development
 MDV4910-O, C202006-01
 -->
 
-<resources>
+<resources xmlns:tools="http://schemas.android.com/tools">
     <!-- Application name. -->
     <string name="app_name">Whack-A-Pede</string>
 
@@ -43,7 +43,7 @@ MDV4910-O, C202006-01
     <string name="quit_confirmation_no">No, Keep Playing</string>
 
     <!-- Game over screen score summary. -->
-    <string name="final_score">%,d Final Score</string>
+    <string name="final_score" tools:ignore="PluralsCandidate">%,d Final Score</string>
 
     <plurals name="rounds">
         <item quantity="one">%d Round</item>

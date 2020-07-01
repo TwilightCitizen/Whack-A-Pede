@@ -28,9 +28,6 @@ public class TimeUtil {
     // Convert milliseconds into a fractional interval of seconds.
     public static float millisToIntervalOfSeconds( long millis ) { return millis / 1000.0f; }
 
-    // Convert seconds to milliseconds.
-    public static long secondsToMillis( int seconds ) { return seconds * 1000L; }
-
     // Convert milliseconds to whole seconds.
     public static int millisToSeconds( long millis ) { return (int) millis / 60; }
 

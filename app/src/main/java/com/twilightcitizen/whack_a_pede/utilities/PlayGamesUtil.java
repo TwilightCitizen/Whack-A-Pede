@@ -8,7 +8,6 @@ MDV4910-O, C202006-01
 package com.twilightcitizen.whack_a_pede.utilities;
 
 import android.content.Context;
-import android.util.Log;
 
 import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
 import com.google.android.gms.games.AnnotatedData;

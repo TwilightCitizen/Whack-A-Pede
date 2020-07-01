@@ -48,7 +48,4 @@ public class ModelBuilder {
 
     // When the ModelBuilder is built, it returns its Generated Data.
     public GeneratedData build() { return new GeneratedData( vertexData, drawList ); }
-
-    // Size of Circle in vertices.
-    public static int sizeOfCircleInVertices( int numPoints ) { return numPoints + 2; }
 }

@@ -557,7 +557,7 @@ public class GameViewModel extends ViewModel {
              Get new directions from turns at approach, change trajectory through them, and
              rotate smoothing around them.
             */
-            approachTurns( centipede, nextPosition, interval );
+            approachTurns( centipede, nextPosition );
             animateThroughTurns( centipede, nextPosition );
             rotateAroundTurns( centipede, interval );
 
@@ -625,7 +625,7 @@ public class GameViewModel extends ViewModel {
     }
 
     // Get a new direction from a turn as the centipede approaches it so it can begin rotation.
-    private void approachTurns( Centipede centipede, Point nextPosition, float interval ) {
+    private void approachTurns( Centipede centipede, Point nextPosition ) {
         // Cache previous position for speedier access.
         Point previousPosition = centipede.getPosition();
         // Cache direction for speedier access.

@@ -162,14 +162,20 @@ public class GameFragment extends Fragment {
         @NonNull View view, @Nullable Bundle savedInstanceState
     ) {
         super.onViewCreated( view, savedInstanceState );
+        setupScoreboard( view );
+        setupSpeedometer( view );
+    }
 
-        // Keep references to the profile pic, display name, score, and time remaining views.
+    // Keep references to the profile pic, display name, score, and time remaining views.
+    private void setupScoreboard( View view ) {
         imageProfilePic = view.findViewById( R.id.image_profile_pic );
         textDisplayName = view.findViewById( R.id.text_display_name );
         textScore = view.findViewById( R.id.text_score );
         textTimeRemaining = view.findViewById( R.id.text_time_remaining );
+    }
 
-        // Keep reference to the speedometer views for tablets.
+    // Keep reference to the speedometer views for tablets.
+    private void setupSpeedometer( View view ) {
         if( gameActivity.getResources().getBoolean( R.bool.is_tablet ) ) {
             progressSpeed = view.findViewById( R.id.progress_speed );
             textSpeed = view.findViewById( R.id.text_speed );
@@ -187,10 +193,6 @@ public class GameFragment extends Fragment {
         // Remove observers to avoid them running without context.
         removeObservers();
 
-        // Remove centipede speed observer for tablets.
-        if( gameActivity.getResources().getBoolean( R.bool.is_tablet ) )
-            gameViewModel.getCentipedeSpeed().removeObservers( gameActivity );
-
         // Pause the SurfaceView when GameFragment stops.
         if( rendererSet ) gameSurfaceView.onPause();
 
@@ -199,29 +201,26 @@ public class GameFragment extends Fragment {
 
     // Restore view models and allow rendering to the GLSurfaceView when the fragment is resumed.
     @Override public void onResume() {
-        // Restore view models.
-        gameViewModel = new ViewModelProvider( gameActivity ).get( GameViewModel.class );
-        accountViewModel = new ViewModelProvider( gameActivity ).get( AccountViewModel.class );
-
-        // Setup observers that will act on changes to score and time remaining in game view model.
-        gameViewModel.getScore().observe( gameActivity, this::onScoreChanged );
-        gameViewModel.getRemainingTimeMillis().observe( gameActivity, this::onTimeRemainingChanged );
-
-        // Setup centipede speed observer for tablets.
-        if( gameActivity.getResources().getBoolean( R.bool.is_tablet ) )
-            gameViewModel.getCentipedeSpeed().observe( gameActivity, this::onCentipedeSpeedChanged );
-
-        // Resume the SurfaceView when GameFragment starts or resumes.
-        if( rendererSet ) gameSurfaceView.onResume();
+        setupViewModels();
 
         /*
         Setup observers that will act on changes initiated by the menu items when selected.  These
         must be reestablished here after first setup in onCreateOptionsMenu because the observers
         change the visibility of key menu options that do not exist at first start.
         */
-        if( optionsMenuIsCreated ) setupObservers();
+        if( optionsMenuIsCreated ) setupMenuObservers();
+        setupObservers();
+
+        // Resume the SurfaceView when GameFragment starts or resumes.
+        if( rendererSet ) gameSurfaceView.onResume();
 
         super.onResume();
+    }
+
+    // Restore view models.
+    private void setupViewModels() {
+        gameViewModel = new ViewModelProvider( gameActivity ).get( GameViewModel.class );
+        accountViewModel = new ViewModelProvider( gameActivity ).get( AccountViewModel.class );
     }
 
     /*
@@ -232,14 +231,7 @@ public class GameFragment extends Fragment {
         @NonNull Menu menu, @NonNull MenuInflater inflater
     ) {
         inflater.inflate( R.menu.menu_game, menu );
-
-        // Keep key menu item references.
-        itemPlay = menu.findItem( R.id.action_play_game );
-        itemPause = menu.findItem( R.id.action_pause_game );
-        itemResume = menu.findItem( R.id.action_resume_game );
-        itemQuit = menu.findItem( R.id.action_quit_game );
-        itemSignIn = menu.findItem( R.id.action_sign_in );
-        itemSignOut = menu.findItem( R.id.action_sign_out );
+        setupMenuItems( menu );
 
         // Make icons visible in the menu.
         if( menu instanceof MenuBuilder )
@@ -250,14 +242,35 @@ public class GameFragment extends Fragment {
         must be established here first rather than at resume because the observers change the
         visibility of key menu options that do not exist at start, but here.
         */
-        setupObservers();
+        setupMenuObservers();
 
         // Flag the menu as created.
         optionsMenuIsCreated = true;
     }
 
+    // Keep key menu item references.
+    private void setupMenuItems( Menu menu ) {
+        itemPlay = menu.findItem( R.id.action_play_game );
+        itemPause = menu.findItem( R.id.action_pause_game );
+        itemResume = menu.findItem( R.id.action_resume_game );
+        itemQuit = menu.findItem( R.id.action_quit_game );
+        itemSignIn = menu.findItem( R.id.action_sign_in );
+        itemSignOut = menu.findItem( R.id.action_sign_out );
+    }
+
     // Setup observers for the game and account view models.
     private void setupObservers() {
+        // Setup observers that will act on changes to score and time remaining in game view model.
+        gameViewModel.getScore().observe( gameActivity, this::onScoreChanged );
+        gameViewModel.getRemainingTimeMillis().observe( gameActivity, this::onTimeRemainingChanged );
+
+        // Setup centipede speed observer for tablets.
+        if( gameActivity.getResources().getBoolean( R.bool.is_tablet ) )
+            gameViewModel.getCentipedeSpeed().observe( gameActivity, this::onCentipedeSpeedChanged );
+    }
+
+    // Setup observers for the game and account view models.
+    private void setupMenuObservers() {
         gameViewModel.getState().observe( gameActivity, this::onGameStateChanged );
         accountViewModel.getProfilePicUri().observe( gameActivity, this::onProfilePicUriChanged );
         accountViewModel.getDisplayName().observe( gameActivity, this::onDisplayNameChanged );
@@ -272,35 +285,34 @@ public class GameFragment extends Fragment {
         accountViewModel.getProfilePicUri().removeObservers( gameActivity );
         accountViewModel.getDisplayName().removeObservers( gameActivity );
         accountViewModel.getIsSignedIn().removeObservers( gameActivity );
+
+        // Remove centipede speed observer for tablets.
+        if( gameActivity.getResources().getBoolean( R.bool.is_tablet ) )
+            gameViewModel.getCentipedeSpeed().removeObservers( gameActivity );
     }
 
     // Act on selected menu items.
     @Override public boolean onOptionsItemSelected( @NonNull MenuItem item ) {
         switch( item.getItemId() ) {
             // Change game state.
-            case R.id.action_play_game:
-                gameViewModel.play(); return true;
-            case R.id.action_pause_game:
-                gameViewModel.pause(); return true;
-            case R.id.action_resume_game:
-                gameViewModel.resume(); return true;
-            case R.id.action_quit_game:
-                confirmQuit(); return true;
+            case R.id.action_play_game: gameViewModel.play(); break;
+            case R.id.action_pause_game: gameViewModel.pause(); break;
+            case R.id.action_resume_game: gameViewModel.resume(); break;
+            case R.id.action_quit_game: confirmQuit(); break;
             // Change logged in state.
-            case R.id.action_sign_in:
-                accountViewModel.startGoogleSignIn( this ); return true;
-            case R.id.action_sign_out:
-                accountViewModel.signOut(); return true;
+            case R.id.action_sign_in: accountViewModel.startGoogleSignIn( this ); break;
+            case R.id.action_sign_out: accountViewModel.signOut(); break;
             // Navigate to other screens.
             case R.id.action_change_settings:
-                gameActivity.getNavController().navigate( R.id.action_game_to_settings ); return true;
+                gameActivity.getNavController().navigate( R.id.action_game_to_settings ); break;
             case R.id.action_view_credits:
-                gameActivity.getNavController().navigate( R.id.action_game_to_credits ); return true;
+                gameActivity.getNavController().navigate( R.id.action_game_to_credits ); break;
             case R.id.action_view_leaderboard:
-                gameActivity.getNavController().navigate( R.id.action_game_to_leaderboard ); return true;
+                gameActivity.getNavController().navigate( R.id.action_game_to_leaderboard ); break;
+            default: return super.onOptionsItemSelected( item );
         }
 
-        return super.onOptionsItemSelected( item );
+        return true;
     }
 
     // Confirm the player's intentions to quit.
@@ -332,19 +344,22 @@ public class GameFragment extends Fragment {
     private void onGameStateChanged( State state ) {
         toggleMenuItemVisibility( state );
 
-        if( state == State.gameOver )
-            try {
-                gameActivity.getNavController().navigate( R.id.action_game_to_game_over );
-            } catch( Exception e ) {
-                e.printStackTrace();
-            }
+        // Navigate to game over screen if needed.
+        if( state == State.gameOver ) try {
+            gameActivity.getNavController().navigate( R.id.action_game_to_game_over );
+        } catch( Exception e ) {
+            e.printStackTrace();
+        }
 
+        // Guard against non-tablet form factor.
         if( !gameActivity.getResources().getBoolean( R.bool.is_tablet ) ) return;
 
-        if( state != State.running )
-            onCentipedeSpeedChanged( 0.0f );
-        else
-            gameViewModel.refreshCentipedeSpeed();
+        manageSpeedometer( state );
+    }
+
+    private void manageSpeedometer( State state ) {
+        if( state != State.running ) onCentipedeSpeedChanged( 0.0f );
+        else gameViewModel.refreshCentipedeSpeed();
     }
 
     // Toggle menu item visibility based on GameViewModel state.

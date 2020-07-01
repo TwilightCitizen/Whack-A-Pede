@@ -148,7 +148,8 @@ MDV4910-O, C202006-01
             app:layout_constraintBottom_toTopOf="@+id/progress_speed"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toEndOf="@+id/text_speed_label"
-            app:layout_constraintTop_toTopOf="parent" />
+            app:layout_constraintTop_toTopOf="parent"
+            tools:ignore="InconsistentLayout" />
 
         <ProgressBar
             android:id="@+id/progress_speed"
@@ -160,7 +161,8 @@ MDV4910-O, C202006-01
             android:progressTint="@color/earth_brown"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent" />
+            app:layout_constraintStart_toStartOf="parent"
+            tools:ignore="InconsistentLayout" />
     </androidx.constraintlayout.widget.ConstraintLayout>
 
     <FrameLayout
