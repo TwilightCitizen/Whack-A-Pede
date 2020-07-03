@@ -186,6 +186,7 @@ public class LeaderboardFragment extends Fragment {
         );
     }
 
+    // Show the other player's leaderboard entries and hide the retrieving message.
     private void onGetOtherLeaderboardEntriesSuccess(
         AnnotatedData< LeaderboardsClient.LeaderboardScores > leaderboardScoresAnnotatedData
     ) {
@@ -193,6 +194,7 @@ public class LeaderboardFragment extends Fragment {
         constraintRetrieving.setVisibility( View.GONE );
     }
 
+    // Show the other player's leaderboard entries.
     private void showOtherLeaderboardEntries(
         AnnotatedData< LeaderboardsClient.LeaderboardScores > leaderboardScoresAnnotatedData
     ) {
