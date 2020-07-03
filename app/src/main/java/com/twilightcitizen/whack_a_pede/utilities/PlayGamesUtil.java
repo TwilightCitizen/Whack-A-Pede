@@ -53,7 +53,7 @@ public class PlayGamesUtil {
             .addOnFailureListener( onFailureListener );
     }
 
-    public static void getLeaderboardEntry(
+    public static void getPlayerLeaderboardEntry(
         Context context, GoogleSignInAccount googleSignInAccount,
         OnSuccessListener< AnnotatedData< LeaderboardScore > > onSuccessListener,
         OnFailureListener onFailureListener
@@ -78,5 +78,32 @@ public class PlayGamesUtil {
 
             .addOnSuccessListener( onSuccessListener )
             .addOnFailureListener( onFailureListener );
+    }
+
+    public static void getOtherLeaderboardEntries(
+        Context context, GoogleSignInAccount googleSignInAccount,
+        OnSuccessListener< AnnotatedData< LeaderboardsClient.LeaderboardScores > > onSuccessListener,
+        OnFailureListener onFailureListener
+    ) {
+        if( googleSignInAccount == null ) {
+            onFailureListener.onFailure(
+                new IllegalArgumentException( "Google Sign In Account was Null" )
+            );
+
+            return;
+        }
+
+        LeaderboardsClient leaderboardsClient =
+            Games.getLeaderboardsClient( context, googleSignInAccount );
+
+        leaderboardsClient.loadTopScores(
+            context.getString( R.string.leaderboard_score_id ),
+            LeaderboardVariant.TIME_SPAN_ALL_TIME,
+            LeaderboardVariant.COLLECTION_PUBLIC,
+            context.getResources().getInteger( R.integer.max_leaderboard_results )
+        )
+
+        .addOnSuccessListener( onSuccessListener )
+        .addOnFailureListener( onFailureListener );
     }
 }

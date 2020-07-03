@@ -25,7 +25,9 @@ import androidx.lifecycle.ViewModelProvider;
 
 import com.google.android.gms.common.images.ImageManager;
 import com.google.android.gms.games.AnnotatedData;
+import com.google.android.gms.games.LeaderboardsClient;
 import com.google.android.gms.games.leaderboard.LeaderboardScore;
+import com.google.android.gms.games.leaderboard.LeaderboardScoreBuffer;
 import com.twilightcitizen.whack_a_pede.R;
 import com.twilightcitizen.whack_a_pede.activities.GameActivity;
 import com.twilightcitizen.whack_a_pede.utilities.PlayGamesUtil;
@@ -100,7 +102,7 @@ public class LeaderboardFragment extends Fragment {
         super.onResume();
         setupViewModels();
         setupObservers();
-        setupPlayerEntry();
+        setupPlayerLeaderboardEntry();
     }
 
     // Restore view models.
@@ -118,17 +120,25 @@ public class LeaderboardFragment extends Fragment {
     }
 
     // Setup the leaderboard entry for the signed in player.
-    private void setupPlayerEntry() {
-        PlayGamesUtil.getLeaderboardEntry(
+    private void setupPlayerLeaderboardEntry() {
+        PlayGamesUtil.getPlayerLeaderboardEntry(
             gameActivity,
             accountViewModel.getGoogleSignInAccount(),
             this::onGetPlayerLeaderboardEntrySuccess,
-            this::onGetPlayerLeaderboardEntryFailure
+            this::onAnyRetrievalFailure
         );
     }
 
-    //
+    // Show the signed in player's leaderboard entry and setup other player leaderboard entries.
     private void onGetPlayerLeaderboardEntrySuccess(
+        AnnotatedData< LeaderboardScore > leaderboardScoreAnnotatedData
+    ) {
+        showPlayerLeaderboardEntry( leaderboardScoreAnnotatedData );
+        setupOtherLeaderboardEntries();
+    }
+
+    // Show the signed in player's leaderboard entry.
+    private void showPlayerLeaderboardEntry(
         AnnotatedData< LeaderboardScore > leaderboardScoreAnnotatedData
     ) {
         LeaderboardScore leaderboardScore = leaderboardScoreAnnotatedData.get();
@@ -154,17 +164,49 @@ public class LeaderboardFragment extends Fragment {
         );
 
         textRoundsInTime.setText( String.format(
-            Locale.getDefault(), getString( R.string.rounds_in_time ), rounds, inTime
+            Locale.getDefault(), getString( R.string.rounds_in_time ),  rounds, inTime
         ) );
 
         textPlacement.setText( leaderboardScore.getDisplayRank() );
+    }
+
+    // Show the retrieval error message on retrieval failure.
+    private void onAnyRetrievalFailure( Exception e ) {
+        constraintRetrievalError.setVisibility( View.VISIBLE );
+        e.printStackTrace();
+    }
+
+    // Setup the leaderboard entries for the top players.
+    private void setupOtherLeaderboardEntries() {
+        PlayGamesUtil.getOtherLeaderboardEntries(
+            gameActivity,
+            accountViewModel.getGoogleSignInAccount(),
+            this::onGetOtherLeaderboardEntriesSuccess,
+            this::onAnyRetrievalFailure
+        );
+    }
+
+    private void onGetOtherLeaderboardEntriesSuccess(
+        AnnotatedData< LeaderboardsClient.LeaderboardScores > leaderboardScoresAnnotatedData
+    ) {
+        showOtherLeaderboardEntries( leaderboardScoresAnnotatedData );
         constraintRetrieving.setVisibility( View.GONE );
     }
 
-    //
-    private void onGetPlayerLeaderboardEntryFailure( Exception e ) {
-        constraintRetrievalError.setVisibility( View.VISIBLE );
-        e.printStackTrace();
+    private void showOtherLeaderboardEntries(
+        AnnotatedData< LeaderboardsClient.LeaderboardScores > leaderboardScoresAnnotatedData
+    ) {
+        LeaderboardsClient.LeaderboardScores leaderboardScores = leaderboardScoresAnnotatedData.get();
+
+        if( leaderboardScores == null ) return;
+
+        LeaderboardScoreBuffer leaderboardScoreBuffer = leaderboardScores.getScores();
+
+        int count = leaderboardScoreBuffer.getCount();
+
+        LeaderboardScore leaderboardScore = leaderboardScoreBuffer.get( 0 );
+
+        String displayName = leaderboardScore.getScoreHolderDisplayName();
     }
 
     // Keep reference to the retry button and set it up for taps.
@@ -176,7 +218,7 @@ public class LeaderboardFragment extends Fragment {
     }
 
     // Setup the retry button for taps.
-    private void onRetryClick( View view ) { setupPlayerEntry(); }
+    private void onRetryClick( View view ) { setupPlayerLeaderboardEntry(); }
 
     // Remove observers on stop so they do not run without context.
     @Override public void onStop() {

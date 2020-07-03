@@ -8,8 +8,12 @@ MDV4910-O, C202006-01
 -->
 
 <resources>
+    <!-- Music and Sound Effects Volumes -->
     <integer name="volume_min">0</integer>
     <integer name="volume_max">100</integer>
     <integer name="volume_effects">100</integer>
     <integer name="volume_music">20</integer>
+
+    <!-- Leaderboard Result Limits -->
+    <integer name="max_leaderboard_results">25</integer>
 </resources>
