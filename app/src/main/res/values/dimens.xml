@@ -10,6 +10,7 @@ MDV4910-O, C202006-01
 <resources>
     <dimen name="profile_pic_game_over">196dp</dimen>
     <dimen name="profile_pic_game">64dp</dimen>
+    <dimen name="profile_pic_leaderboard">96dp</dimen>
     <dimen name="default_margin">16dp</dimen>
     <dimen name="default_between">8dp</dimen>
     <dimen name="close_margin">4dp</dimen>

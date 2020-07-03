@@ -52,7 +52,7 @@ public class GameOverFragment extends Fragment implements GameActivity.BackFragm
     private GameViewModel gameViewModel;
     private AccountViewModel accountViewModel;
 
-    // Profile pic, display name, score, and time remaining shown in scoreboard.
+    // Profile pic, display name, score, and elapsed time shown in scoreboard.
     private ImageView imageProfilePic;
     private TextView textDisplayName;
     private TextView textScore;
@@ -100,7 +100,7 @@ public class GameOverFragment extends Fragment implements GameActivity.BackFragm
         setupRetryButton( view );
     }
 
-    // Keep references to the profile pic, display name, score, and time remaining views.
+    // Keep references to the profile pic, display name, score, and elapsed time views.
     private void setupScoreSummary( View view ) {
         imageProfilePic = view.findViewById( R.id.image_profile_pic );
         textDisplayName = view.findViewById( R.id.text_display_name );

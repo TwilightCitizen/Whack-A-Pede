@@ -70,6 +70,7 @@ public class GameFragment extends Fragment {
     private MenuItem itemQuit;
     private MenuItem itemSignIn;
     private MenuItem itemSignOut;
+    private MenuItem itemViewLeaderboard;
 
     // Flag for options menu creation.
     private boolean optionsMenuIsCreated;
@@ -256,6 +257,7 @@ public class GameFragment extends Fragment {
         itemQuit = menu.findItem( R.id.action_quit_game );
         itemSignIn = menu.findItem( R.id.action_sign_in );
         itemSignOut = menu.findItem( R.id.action_sign_out );
+        itemViewLeaderboard = menu.findItem( R.id.action_view_leaderboard );
     }
 
     // Setup observers for the game and account view models.
@@ -389,6 +391,7 @@ public class GameFragment extends Fragment {
     private void onSignedInChanged( boolean signedIn ) {
         itemSignIn.setVisible( !signedIn );
         itemSignOut.setVisible( signedIn );
+        itemViewLeaderboard.setVisible( signedIn );
     }
 
     // Observer to update the score on the scoreboard when it changes in the game view model.
