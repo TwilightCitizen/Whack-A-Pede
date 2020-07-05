@@ -62,7 +62,7 @@ public class GameOverFragment extends Fragment implements GameActivity.BackFragm
     private String rounds;
     private String inTime;
 
-    // Syncing, Synced, and Error Syning constraint views.
+    // Syncing, Synced, and Error Syncing constraint views.
     private ConstraintLayout constraintSyncing;
     private ConstraintLayout constraintSynced;
     private ConstraintLayout constraintError;

@@ -43,7 +43,7 @@ public class LeaderboardAdapter extends RecyclerView.Adapter< LeaderboardAdapter
 
     // Gap to put between leaderboard entries.
     public static class LeaderboardEntryGap extends RecyclerView.ItemDecoration {
-        private int gap;
+        private final int gap;
 
         public LeaderboardEntryGap( int gap ) { this.gap = gap; }
 
@@ -56,10 +56,10 @@ public class LeaderboardAdapter extends RecyclerView.Adapter< LeaderboardAdapter
     }
 
     // Context for resources.
-    Context context;
+    private final Context context;
 
     // Image manager for loading images.
-    ImageManager imageManager;
+    private final ImageManager imageManager;
 
     // Leaderboard entries to be adapted for view.
     private final LeaderboardScoreBuffer leaderboardScores;

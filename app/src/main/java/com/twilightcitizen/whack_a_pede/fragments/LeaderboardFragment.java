@@ -11,6 +11,9 @@ import android.content.Context;
 import android.net.Uri;
 import android.os.Bundle;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
@@ -60,6 +63,12 @@ public class LeaderboardFragment extends Fragment {
 
     // Recycler view for top player entries.
     private RecyclerView recyclerLeaderboard;
+
+    // Specify existence of options menu at creation.
+    @Override public void onCreate( @Nullable Bundle savedInstanceState ) {
+        super.onCreate( savedInstanceState );
+        setHasOptionsMenu( true );
+    }
 
     // Check the host context on attachment.
     @Override public void onAttach( @NonNull Context context ) {
@@ -129,6 +138,30 @@ public class LeaderboardFragment extends Fragment {
         setupViewModels();
         setupObservers();
         setupPlayerLeaderboardEntry();
+    }
+
+    // Inflate the leaderboard menu on menu creation.
+    @Override public void onCreateOptionsMenu(
+        @NonNull Menu menu, @NonNull MenuInflater inflater
+    ) {
+        inflater.inflate( R.menu.menu_leaderboard, menu );
+    }
+
+    // Act on selected menu items.
+    @Override public boolean onOptionsItemSelected( @NonNull MenuItem item ) {
+        switch( item.getItemId() ) {
+            case R.id.action_view_leaderboard_in_play_games:
+                PlayGamesUtil.showLeaderboardOnPlayGames(
+                    gameActivity, accountViewModel.getGoogleSignInAccount()
+                ); break;
+            case R.id.action_view_achievements_in_play_games:
+                PlayGamesUtil.showAchievementsOnPlayGames(
+                    gameActivity, accountViewModel.getGoogleSignInAccount()
+                ); break;
+            default: return super.onOptionsItemSelected( item );
+        }
+
+        return true;
     }
 
     // Restore view models.

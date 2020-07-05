@@ -129,4 +129,6 @@ MDV4910-O, C202006-01
     </string-array>
 
     <string name="rounds_and_time">%d_%d</string>
+    <string name="view_leaderboard_in_play_games">View Leaderboard in Play Games</string>
+    <string name="view_achievements_in_play_games">View Achievements in Play Games</string>
 </resources>
