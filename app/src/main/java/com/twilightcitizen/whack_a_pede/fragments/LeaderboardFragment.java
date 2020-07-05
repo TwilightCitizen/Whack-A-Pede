@@ -22,14 +22,17 @@ import androidx.annotation.Nullable;
 import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
+import androidx.recyclerview.widget.DividerItemDecoration;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
 import com.google.android.gms.common.images.ImageManager;
 import com.google.android.gms.games.AnnotatedData;
 import com.google.android.gms.games.LeaderboardsClient;
 import com.google.android.gms.games.leaderboard.LeaderboardScore;
-import com.google.android.gms.games.leaderboard.LeaderboardScoreBuffer;
 import com.twilightcitizen.whack_a_pede.R;
 import com.twilightcitizen.whack_a_pede.activities.GameActivity;
+import com.twilightcitizen.whack_a_pede.recyclerViews.LeaderboardAdapter;
 import com.twilightcitizen.whack_a_pede.utilities.PlayGamesUtil;
 import com.twilightcitizen.whack_a_pede.utilities.TimeUtil;
 import com.twilightcitizen.whack_a_pede.viewModels.AccountViewModel;
@@ -43,16 +46,20 @@ public class LeaderboardFragment extends Fragment {
     // View models for tracking game and account state.
     private AccountViewModel accountViewModel;
 
-    // Profile pic, display name, score, and elapsed time shown in scoreboard.
+    // Profile pic, display name, score, and elapsed time shown in player leaderboard entry.
     private ImageView imageProfilePic;
     private TextView textDisplayName;
     private TextView textScore;
     private TextView textRoundsInTime;
     private TextView textPlacement;
+    private TextView textTopPlayerEntries;
 
     // Retrieving and retrieval error constraint views.
     private ConstraintLayout constraintRetrieving;
     private ConstraintLayout constraintRetrievalError;
+
+    // Recycler view for top player entries.
+    private RecyclerView recyclerLeaderboard;
 
     // Check the host context on attachment.
     @Override public void onAttach( @NonNull Context context ) {
@@ -78,8 +85,26 @@ public class LeaderboardFragment extends Fragment {
     @Override public void onViewCreated( @NonNull View view, @Nullable Bundle savedInstanceState ) {
         super.onViewCreated( view, savedInstanceState );
         setupScoreSummary( view );
+        setupRecyclerLeaderboard( view );
         setupRetrievalMessages( view );
         setupRetryButton( view );
+    }
+
+    private void setupRecyclerLeaderboard( View view ) {
+        recyclerLeaderboard = view.findViewById( R.id.recycler_leaderboard );
+
+        recyclerLeaderboard.setHasFixedSize( false );
+        recyclerLeaderboard.setLayoutManager( new LinearLayoutManager( gameActivity ) );
+
+        recyclerLeaderboard.addItemDecoration(
+            new DividerItemDecoration( gameActivity, LinearLayoutManager.VERTICAL )
+        );
+
+        recyclerLeaderboard.addItemDecoration(
+            new LeaderboardAdapter.LeaderboardEntryGap(
+                getResources().getDimensionPixelSize( R.dimen.default_margin )
+            )
+        );
     }
 
     // Keep references to the profile pic, display name, score, and elapsed time views.
@@ -89,6 +114,7 @@ public class LeaderboardFragment extends Fragment {
         textScore = view.findViewById( R.id.text_score );
         textRoundsInTime = view.findViewById( R.id.text_rounds_in_time );
         textPlacement = view.findViewById( R.id.text_placement );
+        textTopPlayerEntries = view.findViewById( R.id.text_top_player_entries );
     }
 
     // Keep references to constraint views for retrieval status.
@@ -178,12 +204,19 @@ public class LeaderboardFragment extends Fragment {
 
     // Setup the leaderboard entries for the top players.
     private void setupOtherLeaderboardEntries() {
+        int maxLeaderboardEntries = getResources().getInteger( R.integer.max_leaderboard_results );
+
         PlayGamesUtil.getOtherLeaderboardEntries(
             gameActivity,
             accountViewModel.getGoogleSignInAccount(),
+            maxLeaderboardEntries,
             this::onGetOtherLeaderboardEntriesSuccess,
             this::onAnyRetrievalFailure
         );
+
+        textTopPlayerEntries.setText( getResources().getQuantityString(
+            R.plurals.top_entries, maxLeaderboardEntries, maxLeaderboardEntries
+        ) );
     }
 
     // Show the other player's leaderboard entries and hide the retrieving message.
@@ -202,13 +235,11 @@ public class LeaderboardFragment extends Fragment {
 
         if( leaderboardScores == null ) return;
 
-        LeaderboardScoreBuffer leaderboardScoreBuffer = leaderboardScores.getScores();
+        LeaderboardAdapter leaderboardAdapter = new LeaderboardAdapter(
+            gameActivity, leaderboardScores.getScores(), accountViewModel.getPlayerId()
+        );
 
-        int count = leaderboardScoreBuffer.getCount();
-
-        LeaderboardScore leaderboardScore = leaderboardScoreBuffer.get( 0 );
-
-        String displayName = leaderboardScore.getScoreHolderDisplayName();
+        recyclerLeaderboard.setAdapter( leaderboardAdapter );
     }
 
     // Keep reference to the retry button and set it up for taps.

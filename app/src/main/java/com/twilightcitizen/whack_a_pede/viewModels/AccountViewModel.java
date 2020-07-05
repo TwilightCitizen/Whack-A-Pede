@@ -43,7 +43,11 @@ public class AccountViewModel extends ViewModel {
     // Expose GoogleSignInAccount.
     public GoogleSignInAccount getGoogleSignInAccount() { return googleSignInAccount; }
 
+    // Player ID for the signed in account.
     private String playerId;
+
+    // Expose player ID.
+    public String getPlayerId() { return playerId; }
 
     /*
     Mutable live data for profile information allows external observers to update

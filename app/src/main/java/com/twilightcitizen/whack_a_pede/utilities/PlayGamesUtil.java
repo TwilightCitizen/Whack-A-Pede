@@ -81,7 +81,7 @@ public class PlayGamesUtil {
     }
 
     public static void getOtherLeaderboardEntries(
-        Context context, GoogleSignInAccount googleSignInAccount,
+        Context context, GoogleSignInAccount googleSignInAccount, int maxLeaderboardEntries,
         OnSuccessListener< AnnotatedData< LeaderboardsClient.LeaderboardScores > > onSuccessListener,
         OnFailureListener onFailureListener
     ) {
@@ -100,7 +100,7 @@ public class PlayGamesUtil {
             context.getString( R.string.leaderboard_score_id ),
             LeaderboardVariant.TIME_SPAN_ALL_TIME,
             LeaderboardVariant.COLLECTION_PUBLIC,
-            context.getResources().getInteger( R.integer.max_leaderboard_results )
+            maxLeaderboardEntries
         )
 
         .addOnSuccessListener( onSuccessListener )

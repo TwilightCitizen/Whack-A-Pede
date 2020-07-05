@@ -15,67 +15,78 @@ MDV4910-O, C202006-01
     android:layout_height="match_parent"
     tools:context=".fragments.LeaderboardFragment">
 
-    <ImageView
-        android:id="@+id/image_profile_pic"
-        android:layout_width="@dimen/profile_pic_leaderboard"
-        android:layout_height="@dimen/profile_pic_leaderboard"
+    <TextView
+        android:id="@+id/text_your_entry"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
         android:layout_marginStart="@dimen/default_margin"
         android:layout_marginTop="@dimen/default_margin"
-        android:contentDescription="@string/avatar"
-        android:src="@drawable/icon_guest_avatar"
+        android:layout_marginEnd="@dimen/default_margin"
+        android:layout_marginBottom="@dimen/close_margin"
+        android:text="@string/your_entry"
+        android:textAlignment="textStart"
+        android:textColor="@color/earth_brown"
+        android:textSize="@dimen/text_medium"
+        app:layout_constraintBottom_toTopOf="@id/frame_player_leaderboard"
+        app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
-    <ImageView
-        android:id="@+id/image_overlay"
-        android:layout_width="0dp"
-        android:layout_height="0dp"
-        android:contentDescription="@string/overlay"
-        android:src="@drawable/profile_pic_frame"
-        app:layout_constraintBottom_toBottomOf="@id/image_profile_pic"
-        app:layout_constraintEnd_toEndOf="@id/image_profile_pic"
-        app:layout_constraintStart_toStartOf="@id/image_profile_pic"
-        app:layout_constraintTop_toTopOf="@id/image_profile_pic" />
-
     <FrameLayout
-        android:id="@+id/frame_leaderboard"
+        android:id="@+id/frame_player_leaderboard"
         android:layout_width="0dp"
-        android:layout_height="0dp"
+        android:layout_height="wrap_content"
         android:layout_marginStart="@dimen/default_margin"
         android:layout_marginEnd="@dimen/default_margin"
-        app:layout_constraintBottom_toBottomOf="@id/image_profile_pic"
+        app:layout_constraintBottom_toTopOf="@id/recycler_achievements"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toEndOf="@id/image_profile_pic"
-        app:layout_constraintTop_toTopOf="@id/image_profile_pic">
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/text_your_entry">
 
         <include layout="@layout/constraint_leaderboard" />
     </FrameLayout>
 
-    <FrameLayout
-        android:id="@+id/frame_achievements"
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/recycler_achievements"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
+        android:layout_marginStart="@dimen/default_margin"
+        android:layout_marginTop="@dimen/default_margin"
+        android:layout_marginEnd="@dimen/default_margin"
+        android:layout_marginBottom="@dimen/default_margin"
+        app:layout_constraintBottom_toTopOf="@+id/text_top_player_entries"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/image_profile_pic"
-        android:layout_marginTop="@dimen/default_margin"
-        android:layout_marginStart="@dimen/default_margin"
-        android:layout_marginEnd="@dimen/default_margin">
+        app:layout_constraintTop_toBottomOf="@id/frame_player_leaderboard" />
 
-    </FrameLayout>
+    <TextView
+        android:id="@+id/text_top_player_entries"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="@dimen/default_margin"
+        android:layout_marginTop="@dimen/default_margin"
+        android:layout_marginEnd="@dimen/default_margin"
+        android:layout_marginBottom="@dimen/close_margin"
+        android:textAlignment="textStart"
+        android:textColor="@color/earth_brown"
+        android:textSize="@dimen/text_medium"
+        app:layout_constraintBottom_toTopOf="@+id/recycler_leaderboard"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/recycler_achievements" />
 
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/recycler_leaderboard"
         android:layout_width="0dp"
         android:layout_height="0dp"
+        android:layout_marginStart="@dimen/default_margin"
+        android:layout_marginTop="@dimen/close_margin"
+        android:layout_marginEnd="@dimen/default_margin"
+        android:layout_marginBottom="@dimen/default_margin"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/frame_achievements"
-        android:layout_marginTop="@dimen/default_margin"
-        android:layout_marginBottom="@dimen/default_margin"
-        android:layout_marginStart="@dimen/default_margin"
-        android:layout_marginEnd="@dimen/default_margin"/>
+        app:layout_constraintTop_toBottomOf="@+id/text_top_player_entries" />
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/constraint_retrieving"
@@ -89,7 +100,8 @@ MDV4910-O, C202006-01
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        android:background="@color/sunshine_yellow">
+        android:background="@color/sunshine_yellow"
+        android:visibility="gone">
 
         <ImageView
             android:id="@+id/image_retrieving"

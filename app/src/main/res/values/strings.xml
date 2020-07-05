@@ -45,15 +45,6 @@ MDV4910-O, C202006-01
     <!-- Game over screen score summary. -->
     <string name="final_score" tools:ignore="PluralsCandidate">%,d Final Score</string>
 
-    <!-- Leaderboard screen score summary. -->
-    <string name="top_score" tools:ignore="PluralsCandidate">%,d Top Score</string>
-    <string name="placement">%s Place</string>
-
-    <!-- Leaderboard screen retrieval status. -->
-    <string name="retrieving_image">Retrieval Status Image</string>
-    <string name="retrieving">Retrieving leaderboard entries…</string>
-    <string name="retrieval_error">Could not retrieve the leaderboard entries.  Check your Internet connectivity and retry.</string>
-
     <plurals name="rounds">
         <item quantity="one">%d Round</item>
         <item quantity="other">%,d Rounds</item>
@@ -66,6 +57,21 @@ MDV4910-O, C202006-01
         <item quantity="one">%d Achievement</item>
         <item quantity="other">%,d Achievements</item>
     </plurals>
+
+    <!-- Leaderboard screen score summary. -->
+    <string name="your_entry">Your Entry</string>
+    <string name="top_score" tools:ignore="PluralsCandidate">%,d Top Score</string>
+    <string name="placement">%s Place</string>
+
+    <plurals name="top_entries">
+        <item quantity="one">Top Player Entry</item>
+        <item quantity="other">Top %,d Player Entries</item>
+    </plurals>
+
+    <!-- Leaderboard screen retrieval status. -->
+    <string name="retrieving_image">Retrieval Status Image</string>
+    <string name="retrieving">Retrieving leaderboard entries…</string>
+    <string name="retrieval_error">Could not retrieve the leaderboard entries.  Check your Internet connectivity and retry.</string>
 
     <!-- Game over screen leaderboard sync status. -->
     <string name="sync_image">Sync Status Image</string>
