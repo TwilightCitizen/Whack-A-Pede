@@ -1,3 +1,10 @@
+/*
+Whack-A-Pede
+David A. Clark, Jr.
+Integrated Product Development
+MDV4910-O, C202006-01
+*/
+
 package com.twilightcitizen.whack_a_pede.utilities;
 
 import android.content.Context;
@@ -8,6 +15,9 @@ import android.media.SoundPool;
 
 import com.twilightcitizen.whack_a_pede.R;
 
+/*
+Sound Utility sets up background music and sound effects with configured track and volume settings.
+*/
 public class SoundUtil {
     // Sound pool for sound effects.
     private static SoundPool effectsPool;

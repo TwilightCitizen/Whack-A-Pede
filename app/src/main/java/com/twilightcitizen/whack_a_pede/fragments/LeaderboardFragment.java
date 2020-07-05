@@ -42,6 +42,12 @@ import com.twilightcitizen.whack_a_pede.viewModels.AccountViewModel;
 
 import java.util.Locale;
 
+/*
+Leaderboard Fragment displays the leaderboard screen to the user.  It shows the player's leaderboard
+entry, including the player's achievements, and then the top 25 players' leaderboard entries,
+excluding the current player's if he or she is in the top 25.  Menu options allow the player to
+view the leaderboard or achievements in the Google Play Games app.
+*/
 public class LeaderboardFragment extends Fragment {
     // Context needed for some actions.
     private GameActivity gameActivity;

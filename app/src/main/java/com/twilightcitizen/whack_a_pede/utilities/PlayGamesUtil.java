@@ -25,6 +25,11 @@ import com.twilightcitizen.whack_a_pede.R;
 
 import java.util.Locale;
 
+/*
+Play Games Utility provides static methods to simplify the retrieval of leaderboard and achievement
+information for the logged in player and the top 25 players.  Methods also simplify the launching
+of Google Play Games to view leaderboards or achievements for the game there.
+*/
 public class PlayGamesUtil {
     private static final int REQUEST_UNUSED = 100;
 
