@@ -293,19 +293,42 @@ public class GameOverFragment extends Fragment implements GameActivity.BackFragm
             GameViewModel.getNullCoalescedValue( gameViewModel.getScore(), 0 ),
             GameViewModel.getNullCoalescedValue( gameViewModel.getRounds(), 1 ),
             GameViewModel.getNullCoalescedValue( gameViewModel.getElapsedTimeMillis(), 0L ),
-            this::onSyncSuccess, this::onSyncFailure
+            this::onLeaderboardSyncSuccess, this::onAnySyncFailure
+        );
+    }
+
+    // Increment the number of games played on game count achievements.
+    private void onLeaderboardSyncSuccess( ScoreSubmissionData scoreSubmissionData ) {
+        PlayGamesUtil.incrementGameCountAchievements(
+            gameActivity, accountViewModel.getGoogleSignInAccount(),
+            this::onIncrementGameCountAchievementSuccess, this::onAnySyncFailure
+        );
+    }
+
+    // Unlock the 1 Million Points achievement as needed.
+    private void onIncrementGameCountAchievementSuccess( Boolean unlocked ) {
+        int scoreValue = GameViewModel.getNullCoalescedValue( gameViewModel.getScore(), 0 );
+
+        if( scoreValue < 1_000_000 ) {
+            onUnlock1MillionPointsAchievementSuccess( null ); return;
+        }
+
+        PlayGamesUtil.unlock1MillionPointsAchievement(
+            gameActivity, accountViewModel.getGoogleSignInAccount(),
+            this::onUnlock1MillionPointsAchievementSuccess,
+            this::onAnySyncFailure
         );
     }
 
     // Flag the sync as complete, message it, and remove back navigation confirmation.
-    private void onSyncSuccess( ScoreSubmissionData scoreSubmissionData ) {
+    private void onUnlock1MillionPointsAchievementSuccess( Void aVoid ) {
         gameViewModel.setSyncedToLeaderboard( Sync.synced );
 
         confirmedBackPress = true;
     }
 
     // Flag the sync as incomplete, message it, and remove back navigation confirmation.
-    private void onSyncFailure( Exception e ) {
+    private void onAnySyncFailure( Exception e ) {
         gameViewModel.setSyncedToLeaderboard( Sync.errorSyncing );
         e.printStackTrace();
     }

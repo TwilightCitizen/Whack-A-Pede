@@ -11,6 +11,9 @@ import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+
 import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
 import com.google.android.gms.games.AchievementsClient;
 import com.google.android.gms.games.AnnotatedData;
@@ -21,6 +24,8 @@ import com.google.android.gms.games.leaderboard.LeaderboardVariant;
 import com.google.android.gms.games.leaderboard.ScoreSubmissionData;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.android.gms.tasks.SuccessContinuation;
+import com.google.android.gms.tasks.Task;
 import com.twilightcitizen.whack_a_pede.R;
 
 import java.util.Locale;
@@ -117,6 +122,92 @@ public class PlayGamesUtil {
         .addOnFailureListener( onFailureListener );
     }
 
+    public static void incrementGameCountAchievements(
+        Context context, GoogleSignInAccount googleSignInAccount,
+        OnSuccessListener< Boolean > onSuccessListener,
+        OnFailureListener onFailureListener
+    ) {
+        if( googleSignInAccount == null ) {
+            onFailureListener.onFailure(
+                new IllegalArgumentException( "Google Sign In Account was Null" )
+            );
+
+            return;
+        }
+
+        AchievementsClient achievementsClient =
+            Games.getAchievementsClient( context, googleSignInAccount );
+
+        achievementsClient
+            .unlockImmediate( context.getString( R.string.play_a_game ) )
+            .addOnFailureListener( onFailureListener )
+            .addOnSuccessListener( aVoid -> increment10GamesAchievement(
+                context, achievementsClient, onSuccessListener, onFailureListener
+            ) );
+    }
+
+    private static void increment10GamesAchievement(
+        Context context,
+        AchievementsClient achievementsClient,
+        OnSuccessListener< Boolean > onSuccessListener,
+        OnFailureListener onFailureListener
+    ) {
+        achievementsClient
+            .incrementImmediate( context.getString( R.string.play_10_games ), 1 )
+            .addOnFailureListener( onFailureListener )
+            .addOnSuccessListener( aVoid -> increment50GamesAchievement(
+                context, achievementsClient, onSuccessListener, onFailureListener
+            ) );
+    }
+
+    private static void increment50GamesAchievement(
+        Context context,
+        AchievementsClient achievementsClient,
+        OnSuccessListener< Boolean > onSuccessListener,
+        OnFailureListener onFailureListener
+    ) {
+        achievementsClient
+            .incrementImmediate( context.getString( R.string.play_50_games ), 1 )
+            .addOnFailureListener( onFailureListener )
+            .addOnSuccessListener( aVoid -> increment100GamesAchievement(
+                context, achievementsClient, onSuccessListener, onFailureListener
+            ) );
+    }
+
+    private static void increment100GamesAchievement(
+        Context context,
+        AchievementsClient achievementsClient,
+        OnSuccessListener< Boolean > onSuccessListener,
+        OnFailureListener onFailureListener
+    ) {
+        achievementsClient
+            .incrementImmediate( context.getString( R.string.play_100_games ), 1 )
+            .addOnFailureListener( onFailureListener )
+            .addOnSuccessListener( onSuccessListener );
+    }
+
+    public static void unlock1MillionPointsAchievement(
+        Context context, GoogleSignInAccount googleSignInAccount,
+        OnSuccessListener< Void > onSuccessListener,
+        OnFailureListener onFailureListener
+    ) {
+        if( googleSignInAccount == null ) {
+            onFailureListener.onFailure(
+                new IllegalArgumentException( "Google Sign In Account was Null" )
+            );
+
+            return;
+        }
+
+        AchievementsClient achievementsClient =
+            Games.getAchievementsClient( context, googleSignInAccount );
+
+        achievementsClient
+            .unlockImmediate( context.getString( R.string.score_1m_points ) )
+            .addOnFailureListener( onFailureListener )
+            .addOnSuccessListener( onSuccessListener );
+    }
+
     public static void showAchievementsOnPlayGames(
         Activity activity, GoogleSignInAccount googleSignInAccount
     ) {
@@ -129,7 +220,8 @@ public class PlayGamesUtil {
         AchievementsClient achievementsClient =
             Games.getAchievementsClient( activity, googleSignInAccount );
 
-        achievementsClient.getAchievementsIntent()
+        achievementsClient
+            .getAchievementsIntent()
             .addOnSuccessListener( ( OnSuccessListener< Intent > ) intent ->
                 activity.startActivityForResult( intent, REQUEST_UNUSED ) )
             .addOnFailureListener( ( OnFailureListener ) Throwable::printStackTrace );
@@ -147,7 +239,8 @@ public class PlayGamesUtil {
         LeaderboardsClient leaderboardsClient =
             Games.getLeaderboardsClient( activity, googleSignInAccount );
 
-        leaderboardsClient.getAllLeaderboardsIntent()
+        leaderboardsClient
+            .getAllLeaderboardsIntent()
             .addOnSuccessListener( intent ->
                 activity.startActivityForResult( intent, REQUEST_UNUSED ) )
             .addOnFailureListener( ( OnFailureListener ) Throwable::printStackTrace );

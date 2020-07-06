@@ -13,4 +13,13 @@ MDV4910-O, C202006-01
 
     <!-- Play Games Leaderboard IDs -->
     <string name="leaderboard_score_id">CgkI15rnreEXEAIQAg</string>
+
+    <!-- Play Games Achievement IDs -->
+    <string name="play_a_game">CgkI15rnreEXEAIQBQ</string>
+    <string name="play_10_games">CgkI15rnreEXEAIQBg</string>
+    <string name="play_50_games">CgkI15rnreEXEAIQBw</string>
+    <string name="play_100_games">CgkI15rnreEXEAIQCA</string>
+    <string name="score_1m_points">CgkI15rnreEXEAIQCQ</string>
+    <string name="head_whack">CgkI15rnreEXEAIQCg</string>
+    <string name="only_tails">CgkI15rnreEXEAIQCw</string>
 </resources>
