@@ -8,6 +8,7 @@ MDV4910-O, C202006-01
 package com.twilightcitizen.whack_a_pede.utilities;
 
 import android.app.Activity;
+import android.app.AlertDialog;
 import android.content.Context;
 import android.content.Intent;
 
@@ -35,19 +36,40 @@ of Google Play Games to view leaderboards or achievements for the game there.
 public class PlayGamesUtil {
     private static final int REQUEST_UNUSED = 100;
 
+    private static boolean failedOnBadAccount(
+        GoogleSignInAccount googleSignInAccount, OnFailureListener onFailureListener
+    ) {
+        if( googleSignInAccount != null ) return false;
+
+        onFailureListener.onFailure(
+            new IllegalArgumentException( "Google Sign In Account was Null" )
+        );
+
+        return true;
+    }
+
+    private static boolean alertedOnBadAccount(
+        Activity activity, GoogleSignInAccount googleSignInAccount
+    ) {
+        if( googleSignInAccount != null ) return false;
+
+        new AlertDialog.Builder( activity, R.style.Whackapede_AlertDialog )
+            .setIcon( R.drawable.icon_warning )
+            .setTitle( R.string.bad_account_title )
+            .setMessage( R.string.bad_account_body )
+            .setPositiveButton( R.string.bad_account_okay, null )
+            .show();
+
+        return true;
+    }
+
     public static void syncLeaderboards(
         Context context, GoogleSignInAccount googleSignInAccount,
         int score, int rounds, long time,
         OnSuccessListener< ScoreSubmissionData > onSuccessListener,
         OnFailureListener onFailureListener
     ) {
-        if( googleSignInAccount == null ) {
-            onFailureListener.onFailure(
-                new IllegalArgumentException( "Google Sign In Account was Null" )
-            );
-
-            return;
-        }
+        if( failedOnBadAccount( googleSignInAccount, onFailureListener ) ) return;
 
         String roundsAndTime = String.format(
             Locale.getDefault(), context.getString( R.string.rounds_and_time ), rounds, time
@@ -70,13 +92,7 @@ public class PlayGamesUtil {
         OnSuccessListener< AnnotatedData< LeaderboardScore > > onSuccessListener,
         OnFailureListener onFailureListener
     ) {
-        if( googleSignInAccount == null ) {
-            onFailureListener.onFailure(
-                new IllegalArgumentException( "Google Sign In Account was Null" )
-            );
-
-            return;
-        }
+        if( failedOnBadAccount( googleSignInAccount, onFailureListener ) ) return;
 
         LeaderboardsClient leaderboardsClient =
             Games.getLeaderboardsClient( context, googleSignInAccount );
@@ -97,13 +113,7 @@ public class PlayGamesUtil {
         OnSuccessListener< AnnotatedData< LeaderboardsClient.LeaderboardScores > > onSuccessListener,
         OnFailureListener onFailureListener
     ) {
-        if( googleSignInAccount == null ) {
-            onFailureListener.onFailure(
-                new IllegalArgumentException( "Google Sign In Account was Null" )
-            );
-
-            return;
-        }
+        if( failedOnBadAccount( googleSignInAccount, onFailureListener ) ) return;
 
         LeaderboardsClient leaderboardsClient =
             Games.getLeaderboardsClient( context, googleSignInAccount );
@@ -124,13 +134,7 @@ public class PlayGamesUtil {
         OnSuccessListener< Integer > onSuccessListener,
         OnFailureListener onFailureListener
     ) {
-        if( googleSignInAccount == null ) {
-            onFailureListener.onFailure(
-                new IllegalArgumentException( "Google Sign In Account was Null" )
-            );
-
-            return;
-        }
+        if( failedOnBadAccount( googleSignInAccount, onFailureListener ) ) return;
 
         AchievementsClient achievementsClient =
             Games.getAchievementsClient( context, googleSignInAccount );
@@ -160,13 +164,7 @@ public class PlayGamesUtil {
         OnSuccessListener< Boolean > onSuccessListener,
         OnFailureListener onFailureListener
     ) {
-        if( googleSignInAccount == null ) {
-            onFailureListener.onFailure(
-                new IllegalArgumentException( "Google Sign In Account was Null" )
-            );
-
-            return;
-        }
+        if( failedOnBadAccount( googleSignInAccount, onFailureListener ) ) return;
 
         AchievementsClient achievementsClient =
             Games.getAchievementsClient( context, googleSignInAccount );
@@ -224,13 +222,7 @@ public class PlayGamesUtil {
         OnSuccessListener< Void > onSuccessListener,
         OnFailureListener onFailureListener
     ) {
-        if( googleSignInAccount == null ) {
-            onFailureListener.onFailure(
-                new IllegalArgumentException( "Google Sign In Account was Null" )
-            );
-
-            return;
-        }
+        if( failedOnBadAccount( googleSignInAccount, onFailureListener ) ) return;
 
         AchievementsClient achievementsClient =
             Games.getAchievementsClient( context, googleSignInAccount );
@@ -244,11 +236,7 @@ public class PlayGamesUtil {
     public static void showAchievementsOnPlayGames(
         Activity activity, GoogleSignInAccount googleSignInAccount
     ) {
-        if( googleSignInAccount == null ) {
-            // TODO: Alert failure.
-
-            return;
-        }
+        if( alertedOnBadAccount( activity, googleSignInAccount ) ) return;
 
         AchievementsClient achievementsClient =
             Games.getAchievementsClient( activity, googleSignInAccount );
@@ -263,11 +251,7 @@ public class PlayGamesUtil {
     public static void showLeaderboardOnPlayGames(
         Activity activity, GoogleSignInAccount googleSignInAccount
     ) {
-        if( googleSignInAccount == null ) {
-            // TODO: Alert failure.
-
-            return;
-        }
+        if( alertedOnBadAccount( activity, googleSignInAccount ) ) return;
 
         LeaderboardsClient leaderboardsClient =
             Games.getLeaderboardsClient( activity, googleSignInAccount );

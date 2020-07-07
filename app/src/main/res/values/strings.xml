@@ -62,6 +62,7 @@ MDV4910-O, C202006-01
     <string name="your_entry">Your Entry</string>
     <string name="top_score" tools:ignore="PluralsCandidate">%,d Top Score</string>
     <string name="placement">%s Place</string>
+    <string name="rounds_and_time">%d_%d</string>
 
     <plurals name="top_entries">
         <item quantity="one">Top Player Entry</item>
@@ -128,7 +129,12 @@ MDV4910-O, C202006-01
         <item>Leopard Spots</item>
     </string-array>
 
-    <string name="rounds_and_time">%d_%d</string>
+    <!-- Leaderboard menu actions -->
     <string name="view_leaderboard_in_play_games">View Leaderboard in Play Games</string>
     <string name="view_achievements_in_play_games">View Achievements in Play Games</string>
+
+    <!-- Play Game Utility bad Google Sign-in account alert dialog -->
+    <string name="bad_account_title">Something went wrong.</string>
+    <string name="bad_account_body">Please try again after logging out and back in again.</string>
+    <string name="bad_account_okay">Okay</string>
 </resources>
