@@ -16,16 +16,33 @@ MDV4910-O, C202006-01
 
     <!-- Play Games Achievement IDs -->
     <string name="play_a_game">CgkI15rnreEXEAIQBQ</string>
+
     <string name="play_10_games">CgkI15rnreEXEAIQBg</string>
     <string name="play_50_games">CgkI15rnreEXEAIQBw</string>
     <string name="play_100_games">CgkI15rnreEXEAIQCA</string>
-    <string name="score_1m_points">CgkI15rnreEXEAIQCQ</string>
+    <string name="play_1k_games">CgkI15rnreEXEAIQDA</string>
+
     <string name="head_whack">CgkI15rnreEXEAIQCg</string>
     <string name="only_tails">CgkI15rnreEXEAIQCw</string>
+
+    <string name="score_100k_points">CgkI15rnreEXEAIQDQ</string>
+    <string name="score_200k_points">CgkI15rnreEXEAIQDg</string>
+    <string name="score_300k_points">CgkI15rnreEXEAIQDw</string>
+    <string name="score_500k_points">CgkI15rnreEXEAIQEA</string>
+    <string name="score_1m_points">CgkI15rnreEXEAIQCQ</string>
 
     <string-array name="incremental_game_count_achievements">
         <item>@string/play_10_games</item>
         <item>@string/play_50_games</item>
         <item>@string/play_100_games</item>
+        <item>@string/play_1k_games</item>
+    </string-array>
+
+    <string-array name="points_achievements">
+        <item>@string/score_100k_points</item>
+        <item>@string/score_200k_points</item>
+        <item>@string/score_300k_points</item>
+        <item>@string/score_500k_points</item>
+        <item>@string/score_1m_points</item>
     </string-array>
 </resources>

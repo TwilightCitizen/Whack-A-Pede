@@ -37,6 +37,7 @@ import com.twilightcitizen.whack_a_pede.viewModels.GameViewModel;
 
 import static com.twilightcitizen.whack_a_pede.viewModels.GameViewModel.Sync;
 
+import java.util.HashSet;
 import java.util.Locale;
 
 /*
@@ -314,23 +315,29 @@ public class GameOverFragment extends Fragment implements GameActivity.BackFragm
         );
     }
 
-    // Unlock the 1 Million Points achievement as needed.
+    // Build list of other achievements and unlock them.
     private void onIncrementGameCountAchievementSuccess( Boolean unlocked ) {
+        HashSet< String > achievementIDsToUnlock = new HashSet<>();
+
         int scoreValue = GameViewModel.getNullCoalescedValue( gameViewModel.getScore(), 0 );
 
-        if( scoreValue < 1_000_000 ) {
-            onUnlock1MillionPointsAchievementSuccess( null ); return;
-        }
+        if( scoreValue >= 1_000_000 ) achievementIDsToUnlock.add( getString( R.string.score_1m_points ) );
+        if( scoreValue >= 500_000 ) achievementIDsToUnlock.add( getString( R.string.score_500k_points ) );
+        if( scoreValue >= 300_000 ) achievementIDsToUnlock.add( getString( R.string.score_300k_points ) );
+        if( scoreValue >= 200_000 ) achievementIDsToUnlock.add( getString( R.string.score_200k_points ) );
+        if( scoreValue >= 100_000 ) achievementIDsToUnlock.add( getString( R.string.score_100k_points ) );
 
-        PlayGamesUtil.unlock1MillionPointsAchievement(
-            gameActivity, accountViewModel.getGoogleSignInAccount(),
-            this::onUnlock1MillionPointsAchievementSuccess,
-            this::onAnySyncFailure
+        if( gameViewModel.getShatteredCentipede() ) achievementIDsToUnlock.add( getString( R.string.head_whack ) );
+        if( gameViewModel.getTailOnlyKilledCentipede() ) achievementIDsToUnlock.add( getString( R.string.only_tails ) );
+
+        PlayGamesUtil.unlockOtherAchievements(
+            gameActivity, accountViewModel.getGoogleSignInAccount(), achievementIDsToUnlock,
+            this::onUnlockOtherAchievementsSuccess, this::onAnySyncFailure
         );
     }
 
     // Get the achievement count after any achievement unlocks have been applied.
-    private void onUnlock1MillionPointsAchievementSuccess( Void aVoid ) {
+    private void onUnlockOtherAchievementsSuccess( Void aVoid ) {
         PlayGamesUtil.getPlayerUnlockedAchievementCount(
             gameActivity, accountViewModel.getGoogleSignInAccount(),
             this::onGetUnlockedAchievementCountAfterUnlocksSuccess, this::onAnySyncFailure

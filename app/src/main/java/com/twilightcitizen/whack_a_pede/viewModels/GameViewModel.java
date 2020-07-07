@@ -169,6 +169,9 @@ public class GameViewModel extends ViewModel {
     // Centipedes on the lawn at any given time.
     public static final List< Centipede > CENTIPEDES = new ArrayList<>();
 
+    // The number of segments in a fresh centipede.
+    public static final int segmentsPerCentipede = 10;
+
     // Null coalesce mutable live data as a value.
     public static <T> T getNullCoalescedValue( MutableLiveData< T > mutableLiveData, T fallback ) {
         T value = mutableLiveData.getValue();
@@ -229,6 +232,18 @@ public class GameViewModel extends ViewModel {
     // Expose the mutable live data game state.
     public MutableLiveData< State > getState() { return state; }
 
+    // Achievement unlock flags.
+    private boolean shatteredCentipede = false;
+    private boolean tailOnlyKilledCentipede = false;
+
+    // Accumulators for some achievement unlock flags.
+    private int headsTapped = 0;
+    private int tailsTapped = 0;
+
+    // Expose achievement unlock flags.
+    public boolean getShatteredCentipede() { return shatteredCentipede; }
+    public boolean getTailOnlyKilledCentipede() { return tailOnlyKilledCentipede; }
+
     /*
     The following methods allow external game observers to change the game's state as needed.  Calls
     that would move the game between states in an invalid or unexpected way with throw an exception.
@@ -272,6 +287,7 @@ public class GameViewModel extends ViewModel {
         setupNewGame();
     }
 
+    // Reset all values to where they should be for a fresh game.
     private void setupNewGame() {
         CENTIPEDES.clear();
         state.setValue( State.newGame );
@@ -281,6 +297,11 @@ public class GameViewModel extends ViewModel {
         remainingTimeMillis.setValue( STARTING_REMAINING_TIME_MILLIS );
         elapsedTimeMillis.setValue( STARTING_ELAPSED_TIME_MILLIS );
         leaderboardSync.setValue( Sync.notSynced );
+
+        shatteredCentipede = false;
+        tailOnlyKilledCentipede = false;
+        headsTapped = 0;
+        tailsTapped = 0;
     }
 
     // Loop the game through the provided time slice.
@@ -350,9 +371,12 @@ public class GameViewModel extends ViewModel {
         // Randomize its above/below ground position.
         if( ( random.nextInt( 2 ) + 1 ) % 2 == 0 ) centipede.toggleAbove();
 
-        // Give it 9 tails and add it to the lawn.
-        centipede.addTails( 9 );
+        // Give it tails and add it to the lawn.
+        centipede.addTails( segmentsPerCentipede - 1 );
         CENTIPEDES.add( centipede );
+
+        headsTapped = 0;
+        tailsTapped = 0;
     }
 
     // Check for game over conditions and switch state as needed.
@@ -403,7 +427,14 @@ public class GameViewModel extends ViewModel {
 
         // Setup a new centipede and play an appropriate sound.
         SoundUtil.playNewRound();
+        applyRoundAchievements();
         setupCentipede();
+    }
+
+    // Unlock any achievements for the game tracked within in the round.
+    private void applyRoundAchievements() {
+        shatteredCentipede |= headsTapped == segmentsPerCentipede;
+        tailOnlyKilledCentipede |= tailsTapped == segmentsPerCentipede - 1;
     }
 
     /*
@@ -463,6 +494,7 @@ public class GameViewModel extends ViewModel {
         for( Centipede centipede : centipedesKilled ) {
             // Killed heads are removed and all their tails are scattered as independent heads.
             if( centipede.getIsHead() ) {
+                headsTapped++;
                 Centipede tail = centipede.getTail();
 
                 centipede.removeTail();
@@ -478,8 +510,11 @@ public class GameViewModel extends ViewModel {
 
                     tail = newTail;
                 }
+
                 // Killed tails just go away.
             } else if ( centipede.getIsTail() ) {
+                tailsTapped++;
+
                 centipede.getHead().removeTail();
                 centipede.removeHead();
                 // Killed middles split the centipede into two independent ones.

@@ -28,6 +28,7 @@ import com.twilightcitizen.whack_a_pede.R;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashSet;
 import java.util.Locale;
 
 /*
@@ -179,15 +180,14 @@ public class PlayGamesUtil {
             .unlockImmediate( context.getString( R.string.play_a_game ) )
             .addOnFailureListener( onFailureListener )
             .addOnSuccessListener( aVoid -> incrementGameCountAchievements(
-                achievementsClient, onSuccessListener, onFailureListener, incrementalGameCountAchievements
+                achievementsClient, incrementalGameCountAchievements, onSuccessListener, onFailureListener
             ) );
     }
 
     private static void incrementGameCountAchievements(
-        AchievementsClient achievementsClient,
-        OnSuccessListener< Boolean > onSuccessListener,
-        OnFailureListener onFailureListener,
-        ArrayList< String > incrementalGameCountAchievements
+        AchievementsClient achievementsClient, ArrayList< String > incrementalGameCountAchievements,
+        OnSuccessListener< Boolean > onSuccessListener, OnFailureListener onFailureListener
+
     ) {
         if( incrementalGameCountAchievements.size() == 0 ) {
             onSuccessListener.onSuccess( true ); return;
@@ -199,24 +199,43 @@ public class PlayGamesUtil {
             .incrementImmediate( achievementToIncrement, 1 )
             .addOnFailureListener( onFailureListener )
             .addOnSuccessListener( aVoid -> incrementGameCountAchievements(
-                achievementsClient, onSuccessListener, onFailureListener, incrementalGameCountAchievements
+                achievementsClient,incrementalGameCountAchievements, onSuccessListener, onFailureListener
             ) );
     }
 
-    public static void unlock1MillionPointsAchievement(
-        Context context, GoogleSignInAccount googleSignInAccount,
-        OnSuccessListener< Void > onSuccessListener,
-        OnFailureListener onFailureListener
+    public static void unlockOtherAchievements(
+        Context context, GoogleSignInAccount googleSignInAccount, HashSet< String > achievementIDsToUnlock,
+        OnSuccessListener< Void > onSuccessListener, OnFailureListener onFailureListener
     ) {
         if( failedOnBadAccount( googleSignInAccount, onFailureListener ) ) return;
 
         AchievementsClient achievementsClient =
             Games.getAchievementsClient( context, googleSignInAccount );
 
+        unlockOtherAchievements(
+            achievementsClient, achievementIDsToUnlock, onSuccessListener, onFailureListener
+        );
+    }
+
+    private static void unlockOtherAchievements(
+        AchievementsClient achievementsClient, HashSet< String > achievementIDsToUnlock,
+        OnSuccessListener< Void > onSuccessListener, OnFailureListener onFailureListener
+
+    ) {
+        if( achievementIDsToUnlock.size() == 0 ) {
+            onSuccessListener.onSuccess( null ); return;
+        }
+
+        String achievementIdToUnlock = achievementIDsToUnlock.iterator().next();
+
+        achievementIDsToUnlock.remove( achievementIdToUnlock );
+
         achievementsClient
-            .unlockImmediate( context.getString( R.string.score_1m_points ) )
+            .unlockImmediate( achievementIdToUnlock )
             .addOnFailureListener( onFailureListener )
-            .addOnSuccessListener( onSuccessListener );
+            .addOnSuccessListener( aVoid -> unlockOtherAchievements(
+                achievementsClient, achievementIDsToUnlock, onSuccessListener, onFailureListener
+            ) );
     }
 
     public static void showAchievementsOnPlayGames(
@@ -229,9 +248,8 @@ public class PlayGamesUtil {
 
         achievementsClient
             .getAchievementsIntent()
-            .addOnSuccessListener( ( OnSuccessListener< Intent > ) intent ->
-                activity.startActivityForResult( intent, REQUEST_UNUSED ) )
-            .addOnFailureListener( ( OnFailureListener ) Throwable::printStackTrace );
+            .addOnSuccessListener( intent -> activity.startActivityForResult( intent, REQUEST_UNUSED ) )
+            .addOnFailureListener( Throwable::printStackTrace );
     }
 
     public static void showLeaderboardOnPlayGames(
@@ -246,6 +264,6 @@ public class PlayGamesUtil {
             .getAllLeaderboardsIntent()
             .addOnSuccessListener( intent ->
                 activity.startActivityForResult( intent, REQUEST_UNUSED ) )
-            .addOnFailureListener( ( OnFailureListener ) Throwable::printStackTrace );
+            .addOnFailureListener( Throwable::printStackTrace );
     }
 }
