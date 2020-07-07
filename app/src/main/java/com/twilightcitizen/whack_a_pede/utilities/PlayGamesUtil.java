@@ -26,6 +26,8 @@ import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.twilightcitizen.whack_a_pede.R;
 
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Locale;
 
 /*
@@ -166,55 +168,39 @@ public class PlayGamesUtil {
     ) {
         if( failedOnBadAccount( googleSignInAccount, onFailureListener ) ) return;
 
+        ArrayList< String > incrementalGameCountAchievements = new ArrayList<>( Arrays.asList(
+            context.getResources().getStringArray( R.array.incremental_game_count_achievements )
+        ) );
+
         AchievementsClient achievementsClient =
             Games.getAchievementsClient( context, googleSignInAccount );
 
         achievementsClient
             .unlockImmediate( context.getString( R.string.play_a_game ) )
             .addOnFailureListener( onFailureListener )
-            .addOnSuccessListener( aVoid -> increment10GamesAchievement(
-                context, achievementsClient, onSuccessListener, onFailureListener
+            .addOnSuccessListener( aVoid -> incrementGameCountAchievements(
+                achievementsClient, onSuccessListener, onFailureListener, incrementalGameCountAchievements
             ) );
     }
 
-    private static void increment10GamesAchievement(
-        Context context,
+    private static void incrementGameCountAchievements(
         AchievementsClient achievementsClient,
         OnSuccessListener< Boolean > onSuccessListener,
-        OnFailureListener onFailureListener
+        OnFailureListener onFailureListener,
+        ArrayList< String > incrementalGameCountAchievements
     ) {
-        achievementsClient
-            .incrementImmediate( context.getString( R.string.play_10_games ), 1 )
-            .addOnFailureListener( onFailureListener )
-            .addOnSuccessListener( aVoid -> increment50GamesAchievement(
-                context, achievementsClient, onSuccessListener, onFailureListener
-            ) );
-    }
+        if( incrementalGameCountAchievements.size() == 0 ) {
+            onSuccessListener.onSuccess( true ); return;
+        }
 
-    private static void increment50GamesAchievement(
-        Context context,
-        AchievementsClient achievementsClient,
-        OnSuccessListener< Boolean > onSuccessListener,
-        OnFailureListener onFailureListener
-    ) {
-        achievementsClient
-            .incrementImmediate( context.getString( R.string.play_50_games ), 1 )
-            .addOnFailureListener( onFailureListener )
-            .addOnSuccessListener( aVoid -> increment100GamesAchievement(
-                context, achievementsClient, onSuccessListener, onFailureListener
-            ) );
-    }
+        String achievementToIncrement = incrementalGameCountAchievements.remove( 0 );
 
-    private static void increment100GamesAchievement(
-        Context context,
-        AchievementsClient achievementsClient,
-        OnSuccessListener< Boolean > onSuccessListener,
-        OnFailureListener onFailureListener
-    ) {
         achievementsClient
-            .incrementImmediate( context.getString( R.string.play_100_games ), 1 )
+            .incrementImmediate( achievementToIncrement, 1 )
             .addOnFailureListener( onFailureListener )
-            .addOnSuccessListener( onSuccessListener );
+            .addOnSuccessListener( aVoid -> incrementGameCountAchievements(
+                achievementsClient, onSuccessListener, onFailureListener, incrementalGameCountAchievements
+            ) );
     }
 
     public static void unlock1MillionPointsAchievement(

@@ -22,4 +22,10 @@ MDV4910-O, C202006-01
     <string name="score_1m_points">CgkI15rnreEXEAIQCQ</string>
     <string name="head_whack">CgkI15rnreEXEAIQCg</string>
     <string name="only_tails">CgkI15rnreEXEAIQCw</string>
+
+    <string-array name="incremental_game_count_achievements">
+        <item>@string/play_10_games</item>
+        <item>@string/play_50_games</item>
+        <item>@string/play_100_games</item>
+    </string-array>
 </resources>
