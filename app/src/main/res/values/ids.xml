@@ -37,12 +37,4 @@ MDV4910-O, C202006-01
         <item>@string/play_100_games</item>
         <item>@string/play_1k_games</item>
     </string-array>
-
-    <string-array name="points_achievements">
-        <item>@string/score_100k_points</item>
-        <item>@string/score_200k_points</item>
-        <item>@string/score_300k_points</item>
-        <item>@string/score_500k_points</item>
-        <item>@string/score_1m_points</item>
-    </string-array>
 </resources>

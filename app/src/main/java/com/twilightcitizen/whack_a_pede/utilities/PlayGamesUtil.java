@@ -10,7 +10,6 @@ package com.twilightcitizen.whack_a_pede.utilities;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.Context;
-import android.content.Intent;
 
 import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
 import com.google.android.gms.games.AchievementsClient;
