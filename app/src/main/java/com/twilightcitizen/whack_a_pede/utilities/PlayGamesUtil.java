@@ -11,21 +11,18 @@ import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-
 import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
 import com.google.android.gms.games.AchievementsClient;
 import com.google.android.gms.games.AnnotatedData;
 import com.google.android.gms.games.Games;
 import com.google.android.gms.games.LeaderboardsClient;
+import com.google.android.gms.games.achievement.Achievement;
+import com.google.android.gms.games.achievement.AchievementBuffer;
 import com.google.android.gms.games.leaderboard.LeaderboardScore;
 import com.google.android.gms.games.leaderboard.LeaderboardVariant;
 import com.google.android.gms.games.leaderboard.ScoreSubmissionData;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
-import com.google.android.gms.tasks.SuccessContinuation;
-import com.google.android.gms.tasks.Task;
 import com.twilightcitizen.whack_a_pede.R;
 
 import java.util.Locale;
@@ -120,6 +117,42 @@ public class PlayGamesUtil {
 
         .addOnSuccessListener( onSuccessListener )
         .addOnFailureListener( onFailureListener );
+    }
+
+    public static void getPlayerUnlockedAchievementCount(
+        Context context, GoogleSignInAccount googleSignInAccount,
+        OnSuccessListener< Integer > onSuccessListener,
+        OnFailureListener onFailureListener
+    ) {
+        if( googleSignInAccount == null ) {
+            onFailureListener.onFailure(
+                new IllegalArgumentException( "Google Sign In Account was Null" )
+            );
+
+            return;
+        }
+
+        AchievementsClient achievementsClient =
+            Games.getAchievementsClient( context, googleSignInAccount );
+
+        achievementsClient
+            .load( true )
+            .addOnFailureListener( onFailureListener )
+            .addOnSuccessListener( achievementBufferAnnotatedData -> {
+                AchievementBuffer achievementBuffer = achievementBufferAnnotatedData.get();
+                int achievementCount = achievementBuffer == null ? 0 : achievementBuffer.getCount();
+                int unlockedAchievementCount = 0;
+
+                if( achievementCount == 0 ) {
+                    onSuccessListener.onSuccess( unlockedAchievementCount ); return;
+                }
+
+                for( int i = 0; i < achievementCount; i++ )
+                    if( achievementBuffer.get( i ).getState() == Achievement.STATE_UNLOCKED )
+                        unlockedAchievementCount++;
+
+                onSuccessListener.onSuccess( unlockedAchievementCount );
+            } );
     }
 
     public static void incrementGameCountAchievements(

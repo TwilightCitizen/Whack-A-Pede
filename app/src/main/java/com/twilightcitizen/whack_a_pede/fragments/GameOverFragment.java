@@ -59,8 +59,10 @@ public class GameOverFragment extends Fragment implements GameActivity.BackFragm
     private TextView textRoundsInTime;
     private TextView textAchievements;
 
+    // Rounds, time, and achievement count.
     private String rounds;
     private String inTime;
+    private int unlockedAchievementCount;
 
     // Syncing, Synced, and Error Syncing constraint views.
     private ConstraintLayout constraintSyncing;
@@ -134,9 +136,6 @@ public class GameOverFragment extends Fragment implements GameActivity.BackFragm
         super.onResume();
         setupViewModels();
         setupObservers();
-
-        // Will eventually have achievements.
-        onAchievementsChanged( 0 );
     }
 
     // Restore view models.
@@ -257,12 +256,12 @@ public class GameOverFragment extends Fragment implements GameActivity.BackFragm
         ) );
     }
 
-    // Observer to format the total achievements when it changes.
-    @SuppressWarnings( "SameParameterValue" ) private void onAchievementsChanged( int achievements ) {
+    // Observer to format the unlocked achievement count when it changes.
+    private void onUnlockedAchievementCountChanged( int unlockedAchievementCount ) {
         // Format the final score.
-        textAchievements.setText(
-            getResources().getQuantityString( R.plurals.achievements, achievements, achievements )
-        );
+        textAchievements.setText( getResources().getQuantityString(
+            R.plurals.achievements, unlockedAchievementCount, unlockedAchievementCount
+        ) );
     }
 
     private void onLeaderboardSyncChanged( Sync sync ) {
@@ -297,8 +296,18 @@ public class GameOverFragment extends Fragment implements GameActivity.BackFragm
         );
     }
 
-    // Increment the number of games played on game count achievements.
+    // Get the player's achievement count before updating achievements.
     private void onLeaderboardSyncSuccess( ScoreSubmissionData scoreSubmissionData ) {
+        PlayGamesUtil.getPlayerUnlockedAchievementCount(
+            gameActivity, accountViewModel.getGoogleSignInAccount(),
+            this::onGetInitialUnlockedAchievementCountSuccess, this::onAnySyncFailure
+        );
+    }
+
+    // Increment the number of games played on game count achievements.
+    private void onGetInitialUnlockedAchievementCountSuccess( int achievementCount ) {
+        this.unlockedAchievementCount = achievementCount;
+
         PlayGamesUtil.incrementGameCountAchievements(
             gameActivity, accountViewModel.getGoogleSignInAccount(),
             this::onIncrementGameCountAchievementSuccess, this::onAnySyncFailure
@@ -320,11 +329,20 @@ public class GameOverFragment extends Fragment implements GameActivity.BackFragm
         );
     }
 
-    // Flag the sync as complete, message it, and remove back navigation confirmation.
+    // Get the achievement count after any achievement unlocks have been applied.
     private void onUnlock1MillionPointsAchievementSuccess( Void aVoid ) {
-        gameViewModel.setSyncedToLeaderboard( Sync.synced );
+        PlayGamesUtil.getPlayerUnlockedAchievementCount(
+            gameActivity, accountViewModel.getGoogleSignInAccount(),
+            this::onGetUnlockedAchievementCountAfterUnlocksSuccess, this::onAnySyncFailure
+        );
+    }
 
+    // Flag the sync as complete, message it, and remove back navigation confirmation.
+    private void onGetUnlockedAchievementCountAfterUnlocksSuccess( int unlockedAchievementCount ) {
         confirmedBackPress = true;
+
+        onUnlockedAchievementCountChanged( unlockedAchievementCount - this.unlockedAchievementCount );
+        gameViewModel.setSyncedToLeaderboard( Sync.synced );
     }
 
     // Flag the sync as incomplete, message it, and remove back navigation confirmation.

@@ -54,8 +54,8 @@ MDV4910-O, C202006-01
     <string name="rounds_in_time">%s %s</string>
 
     <plurals name="achievements">
-        <item quantity="one">%d Achievement</item>
-        <item quantity="other">%,d Achievements</item>
+        <item quantity="one">%d New Achievement</item>
+        <item quantity="other">%,d New Achievements</item>
     </plurals>
 
     <!-- Leaderboard screen score summary. -->
