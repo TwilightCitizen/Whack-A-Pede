@@ -64,8 +64,9 @@ public class LeaderboardAdapter extends RecyclerView.Adapter< LeaderboardAdapter
     // Leaderboard entries to be adapted for view.
     private final LeaderboardScoreBuffer leaderboardScores;
 
-    // Player ID to be excluded from display.
-    private final String excludePlayerID;
+    // Player index to be excluded from display.
+    //private final String excludePlayerID;
+    private Integer signedInPlayerIndex = null;
 
     public LeaderboardAdapter(
         Context context, LeaderboardScoreBuffer leaderboardScores, String excludePlayerID
@@ -73,11 +74,17 @@ public class LeaderboardAdapter extends RecyclerView.Adapter< LeaderboardAdapter
         this.context = context;
         this.leaderboardScores = leaderboardScores;
         this.imageManager = ImageManager.create( context );
-        this.excludePlayerID = excludePlayerID;
+
+        excludePlayer( excludePlayerID );
     }
 
-    // View type is determined by placement or position.
-    @Override public int getItemViewType( int position ) { return position; }
+    private void excludePlayer( String excludePlayerID ) {
+        for( int i = 0; i < leaderboardScores.getCount(); i++ ) if(
+            leaderboardScores.get( i ).getScoreHolder().getPlayerId().equals( excludePlayerID )
+        ) {
+            signedInPlayerIndex = i;
+        }
+    }
 
     @NonNull @Override public LeaderboardViewHolder onCreateViewHolder(
         @NonNull ViewGroup parent, int viewType
@@ -89,6 +96,8 @@ public class LeaderboardAdapter extends RecyclerView.Adapter< LeaderboardAdapter
     }
 
     @Override public void onBindViewHolder( @NonNull LeaderboardViewHolder holder, int position ) {
+        if( signedInPlayerIndex != null && position >= signedInPlayerIndex ) position++;
+
         // All leaderboard items can be bound with the same view holder.
         LeaderboardScore leaderboardScore = leaderboardScores.get( position );
 
@@ -123,18 +132,10 @@ public class LeaderboardAdapter extends RecyclerView.Adapter< LeaderboardAdapter
             leaderboardScore.getScoreHolderHiResImageUri(),
             R.drawable.icon_guest_avatar
         );
-
-        if( leaderboardScore.getScoreHolder().getPlayerId().equals( excludePlayerID ) ) {
-            holder.itemView.setVisibility( View.GONE );
-            holder.itemView.setLayoutParams( new RecyclerView.LayoutParams( 0, 0 ) );
-        } else {
-            holder.itemView.setVisibility( View.VISIBLE );
-
-            holder.itemView.setLayoutParams( new RecyclerView.LayoutParams(
-                ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT
-            ) );
-        }
     }
 
-    @Override public int getItemCount() { return leaderboardScores.getCount(); }
+    @Override public int getItemCount() {
+        return signedInPlayerIndex == null ?
+            leaderboardScores.getCount() : leaderboardScores.getCount() - 1;
+    }
 }
