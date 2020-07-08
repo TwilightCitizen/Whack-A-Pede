@@ -25,11 +25,22 @@ MDV4910-O, C202006-01
     <string name="head_whack">CgkI15rnreEXEAIQCg</string>
     <string name="only_tails">CgkI15rnreEXEAIQCw</string>
 
+    <string name="double_elimination">CgkI15rnreEXEAIQEQ</string>
+    <string name="triple_elimination">CgkI15rnreEXEAIQEg</string>
+    <string name="quadruple_elimination">CgkI15rnreEXEAIQEw</string>
+    <string name="half_life">CgkI15rnreEXEAIQFA</string>
+
     <string name="score_100k_points">CgkI15rnreEXEAIQDQ</string>
     <string name="score_200k_points">CgkI15rnreEXEAIQDg</string>
     <string name="score_300k_points">CgkI15rnreEXEAIQDw</string>
     <string name="score_500k_points">CgkI15rnreEXEAIQEA</string>
     <string name="score_1m_points">CgkI15rnreEXEAIQCQ</string>
+
+    <string name="survive_a_round">CgkI15rnreEXEAIQFQ</string>
+    <string name="survive_10_rounds">CgkI15rnreEXEAIQFg</string>
+    <string name="survive_50_rounds">CgkI15rnreEXEAIQFw</string>
+    <string name="survive_100_rounds">CgkI15rnreEXEAIQGA</string>
+    <string name="survive_500_rounds">CgkI15rnreEXEAIQGQ</string>
 
     <string-array name="incremental_game_count_achievements">
         <item>@string/play_10_games</item>

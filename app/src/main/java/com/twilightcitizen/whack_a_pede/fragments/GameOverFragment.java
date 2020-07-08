@@ -318,8 +318,8 @@ public class GameOverFragment extends Fragment implements GameActivity.BackFragm
     // Build list of other achievements and unlock them.
     private void onIncrementGameCountAchievementSuccess( Boolean unlocked ) {
         HashSet< String > achievementIDsToUnlock = new HashSet<>();
-
         int scoreValue = GameViewModel.getNullCoalescedValue( gameViewModel.getScore(), 0 );
+        int roundsValue = GameViewModel.getNullCoalescedValue( gameViewModel.getRounds(), 0 );
 
         if( scoreValue >= 1_000_000 ) achievementIDsToUnlock.add( getString( R.string.score_1m_points ) );
         if( scoreValue >= 500_000 ) achievementIDsToUnlock.add( getString( R.string.score_500k_points ) );
@@ -327,8 +327,18 @@ public class GameOverFragment extends Fragment implements GameActivity.BackFragm
         if( scoreValue >= 200_000 ) achievementIDsToUnlock.add( getString( R.string.score_200k_points ) );
         if( scoreValue >= 100_000 ) achievementIDsToUnlock.add( getString( R.string.score_100k_points ) );
 
-        if( gameViewModel.getShatteredCentipede() ) achievementIDsToUnlock.add( getString( R.string.head_whack ) );
-        if( gameViewModel.getTailOnlyKilledCentipede() ) achievementIDsToUnlock.add( getString( R.string.only_tails ) );
+        if( roundsValue > 500 ) achievementIDsToUnlock.add( getString( R.string.survive_500_rounds ) );
+        if( roundsValue > 100 ) achievementIDsToUnlock.add( getString( R.string.survive_100_rounds ) );
+        if( roundsValue > 50 ) achievementIDsToUnlock.add( getString( R.string.survive_50_rounds ) );
+        if( roundsValue > 10 ) achievementIDsToUnlock.add( getString( R.string.survive_10_rounds ) );
+        if( roundsValue > 1 ) achievementIDsToUnlock.add( getString( R.string.survive_a_round ) );
+
+        if( gameViewModel.getHeadWhack() ) achievementIDsToUnlock.add( getString( R.string.head_whack ) );
+        if( gameViewModel.getTailsOnly() ) achievementIDsToUnlock.add( getString( R.string.only_tails ) );
+        if( gameViewModel.getDoubleElimination() ) achievementIDsToUnlock.add( getString( R.string.double_elimination ) );
+        if( gameViewModel.getTripleElimination() ) achievementIDsToUnlock.add( getString( R.string.triple_elimination ) );
+        if( gameViewModel.getQuadrupleElimination() ) achievementIDsToUnlock.add( getString( R.string.quadruple_elimination ) );
+        if( gameViewModel.getHalfLife() ) achievementIDsToUnlock.add( getString( R.string.half_life ) );
 
         PlayGamesUtil.unlockOtherAchievements(
             gameActivity, accountViewModel.getGoogleSignInAccount(), achievementIDsToUnlock,

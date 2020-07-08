@@ -233,16 +233,24 @@ public class GameViewModel extends ViewModel {
     public MutableLiveData< State > getState() { return state; }
 
     // Achievement unlock flags.
-    private boolean shatteredCentipede = false;
-    private boolean tailOnlyKilledCentipede = false;
+    private boolean headWhack = false;
+    private boolean tailsOnly = false;
+    private boolean doubleElimination = false;
+    private boolean tripleElimination = false;
+    private boolean quadrupleElimination = false;
+    private boolean halfLife = false;
 
     // Accumulators for some achievement unlock flags.
     private int headsTapped = 0;
     private int tailsTapped = 0;
 
     // Expose achievement unlock flags.
-    public boolean getShatteredCentipede() { return shatteredCentipede; }
-    public boolean getTailOnlyKilledCentipede() { return tailOnlyKilledCentipede; }
+    public boolean getHeadWhack() { return headWhack; }
+    public boolean getTailsOnly() { return tailsOnly; }
+    public boolean getDoubleElimination() { return doubleElimination; }
+    public boolean getTripleElimination() { return tripleElimination; }
+    public boolean getQuadrupleElimination() { return quadrupleElimination; }
+    public boolean getHalfLife() { return halfLife; }
 
     /*
     The following methods allow external game observers to change the game's state as needed.  Calls
@@ -298,8 +306,12 @@ public class GameViewModel extends ViewModel {
         elapsedTimeMillis.setValue( STARTING_ELAPSED_TIME_MILLIS );
         leaderboardSync.setValue( Sync.notSynced );
 
-        shatteredCentipede = false;
-        tailOnlyKilledCentipede = false;
+        headWhack = false;
+        tailsOnly = false;
+        doubleElimination = false;
+        tripleElimination = false;
+        quadrupleElimination = false;
+        halfLife = false;
         headsTapped = 0;
         tailsTapped = 0;
     }
@@ -433,8 +445,8 @@ public class GameViewModel extends ViewModel {
 
     // Unlock any achievements for the game tracked within in the round.
     private void applyRoundAchievements() {
-        shatteredCentipede |= headsTapped == segmentsPerCentipede;
-        tailOnlyKilledCentipede |= tailsTapped == segmentsPerCentipede - 1;
+        headWhack |= headsTapped == segmentsPerCentipede;
+        tailsOnly |= tailsTapped == segmentsPerCentipede - 1;
     }
 
     /*
@@ -467,6 +479,19 @@ public class GameViewModel extends ViewModel {
 
         // Clear touch points so they cannot keep killing centipedes.
         touchPoints.clear();
+
+        // Process multiple elimination achievements.
+        int eliminationCount = centipedesKilled.size();
+
+        if( eliminationCount >= 5 ) {
+            doubleElimination = tripleElimination = quadrupleElimination = halfLife = true;
+        } if( eliminationCount == 4 ) {
+            doubleElimination = tripleElimination = quadrupleElimination = true;
+        } if( eliminationCount == 3 ) {
+            doubleElimination = tripleElimination = true;
+        } if( eliminationCount == 2 ) {
+            doubleElimination = true;
+        }
 
         // Clear centipede attack lists to avoid needless checks.
         centipedesKilled.clear();
