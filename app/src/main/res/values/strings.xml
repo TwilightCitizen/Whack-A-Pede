@@ -63,6 +63,8 @@ MDV4910-O, C202006-01
     <string name="top_score" tools:ignore="PluralsCandidate">%,d Top Score</string>
     <string name="placement">%s Place</string>
     <string name="rounds_and_time">%d_%d</string>
+    <string name="achievement_avatar">Achievement Avatar</string>
+    <string name="your_achievements">Your Achievements</string>
 
     <plurals name="top_entries">
         <item quantity="one">Top Player Entry</item>

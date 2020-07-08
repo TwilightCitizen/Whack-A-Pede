@@ -161,6 +161,22 @@ public class PlayGamesUtil {
             } );
     }
 
+    public static void getPlayerAchievements(
+        Context context, GoogleSignInAccount googleSignInAccount,
+        OnSuccessListener< AnnotatedData< AchievementBuffer > > onSuccessListener,
+        OnFailureListener onFailureListener
+    ) {
+        if( failedOnBadAccount( googleSignInAccount, onFailureListener ) ) return;
+
+        AchievementsClient achievementsClient =
+            Games.getAchievementsClient( context, googleSignInAccount );
+
+        achievementsClient
+            .load( true )
+            .addOnFailureListener( onFailureListener )
+            .addOnSuccessListener( onSuccessListener );
+    }
+
     public static void incrementGameCountAchievements(
         Context context, GoogleSignInAccount googleSignInAccount,
         OnSuccessListener< Boolean > onSuccessListener,

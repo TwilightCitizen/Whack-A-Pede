@@ -32,9 +32,11 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.google.android.gms.common.images.ImageManager;
 import com.google.android.gms.games.AnnotatedData;
 import com.google.android.gms.games.LeaderboardsClient;
+import com.google.android.gms.games.achievement.AchievementBuffer;
 import com.google.android.gms.games.leaderboard.LeaderboardScore;
 import com.twilightcitizen.whack_a_pede.R;
 import com.twilightcitizen.whack_a_pede.activities.GameActivity;
+import com.twilightcitizen.whack_a_pede.recyclerViews.AchievementAdapter;
 import com.twilightcitizen.whack_a_pede.recyclerViews.LeaderboardAdapter;
 import com.twilightcitizen.whack_a_pede.utilities.PlayGamesUtil;
 import com.twilightcitizen.whack_a_pede.utilities.TimeUtil;
@@ -67,8 +69,9 @@ public class LeaderboardFragment extends Fragment {
     private ConstraintLayout constraintRetrieving;
     private ConstraintLayout constraintRetrievalError;
 
-    // Recycler view for top player entries.
+    // Recycler view for top player entries and signed in player achievements.
     private RecyclerView recyclerLeaderboard;
+    private RecyclerView recyclerAchievements;
 
     // Specify existence of options menu at creation.
     @Override public void onCreate( @Nullable Bundle savedInstanceState ) {
@@ -101,6 +104,7 @@ public class LeaderboardFragment extends Fragment {
         super.onViewCreated( view, savedInstanceState );
         setupScoreSummary( view );
         setupRecyclerLeaderboard( view );
+        setupRecyclerAchievement( view );
         setupRetrievalMessages( view );
         setupRetryButton( view );
     }
@@ -108,7 +112,7 @@ public class LeaderboardFragment extends Fragment {
     private void setupRecyclerLeaderboard( View view ) {
         recyclerLeaderboard = view.findViewById( R.id.recycler_leaderboard );
 
-        recyclerLeaderboard.setHasFixedSize( false );
+        recyclerLeaderboard.setHasFixedSize( true );
         recyclerLeaderboard.setLayoutManager( new LinearLayoutManager( gameActivity ) );
 
         recyclerLeaderboard.addItemDecoration(
@@ -117,6 +121,26 @@ public class LeaderboardFragment extends Fragment {
 
         recyclerLeaderboard.addItemDecoration(
             new LeaderboardAdapter.LeaderboardEntryGap(
+                getResources().getDimensionPixelSize( R.dimen.default_margin )
+            )
+        );
+    }
+
+    private void setupRecyclerAchievement( View view ) {
+        recyclerAchievements = view.findViewById( R.id.recycler_achievements );
+
+        recyclerAchievements.setHasFixedSize( true );
+
+        recyclerAchievements.setLayoutManager( new LinearLayoutManager(
+                gameActivity, LinearLayoutManager.HORIZONTAL, false
+        ) );
+
+        recyclerLeaderboard.addItemDecoration(
+            new DividerItemDecoration( gameActivity, LinearLayoutManager.HORIZONTAL )
+        );
+
+        recyclerLeaderboard.addItemDecoration(
+            new AchievementAdapter.AchievementEntryGap(
                 getResources().getDimensionPixelSize( R.dimen.default_margin )
             )
         );
@@ -258,12 +282,12 @@ public class LeaderboardFragment extends Fragment {
         ) );
     }
 
-    // Show the other player's leaderboard entries and hide the retrieving message.
+    // Show the other player's leaderboard entries and setup the signed in players achievements.
     private void onGetOtherLeaderboardEntriesSuccess(
         AnnotatedData< LeaderboardsClient.LeaderboardScores > leaderboardScoresAnnotatedData
     ) {
         showOtherLeaderboardEntries( leaderboardScoresAnnotatedData );
-        constraintRetrieving.setVisibility( View.GONE );
+        setupPlayerAchievements();
     }
 
     // Show the other player's leaderboard entries.
@@ -279,6 +303,28 @@ public class LeaderboardFragment extends Fragment {
         );
 
         recyclerLeaderboard.setAdapter( leaderboardAdapter );
+    }
+
+    // Setup the achievements unlocked for the signed in player.
+    private void setupPlayerAchievements() {
+        PlayGamesUtil.getPlayerAchievements(
+            gameActivity,
+            accountViewModel.getGoogleSignInAccount(),
+            this::onGetPlayerAchievementsSuccess,
+            this::onAnyRetrievalFailure
+        );
+    }
+
+    // Show the player's achievements and hide the retrieving message.
+    private void onGetPlayerAchievementsSuccess(
+        AnnotatedData< AchievementBuffer > achievementBufferAnnotatedData
+    ) {
+        AchievementAdapter achievementAdapter = new AchievementAdapter(
+            gameActivity, achievementBufferAnnotatedData.get()
+        );
+
+        recyclerAchievements.setAdapter( achievementAdapter );
+        constraintRetrieving.setVisibility( View.GONE );
     }
 
     // Keep reference to the retry button and set it up for taps.

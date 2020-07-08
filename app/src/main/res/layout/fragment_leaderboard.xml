@@ -37,8 +37,10 @@ MDV4910-O, C202006-01
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginStart="@dimen/default_margin"
+        android:layout_marginTop="@dimen/close_margin"
         android:layout_marginEnd="@dimen/default_margin"
-        app:layout_constraintBottom_toTopOf="@id/recycler_achievements"
+        android:layout_marginBottom="@dimen/close_margin"
+        app:layout_constraintBottom_toTopOf="@+id/text_your_achievements"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/text_your_entry">
@@ -46,18 +48,32 @@ MDV4910-O, C202006-01
         <include layout="@layout/constraint_leaderboard" />
     </FrameLayout>
 
-    <androidx.recyclerview.widget.RecyclerView
-        android:id="@+id/recycler_achievements"
+    <TextView
+        android:id="@+id/text_your_achievements"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginStart="@dimen/default_margin"
-        android:layout_marginTop="@dimen/default_margin"
+        android:layout_marginTop="@dimen/close_margin"
+        android:layout_marginEnd="@dimen/default_margin"
+        android:layout_marginBottom="@dimen/close_margin"
+        android:text="@string/your_achievements"
+        app:layout_constraintBottom_toTopOf="@+id/recycler_achievements"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/frame_player_leaderboard" />
+
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/recycler_achievements"
+        android:layout_width="0dp"
+        android:layout_height="@dimen/achievement_avatar"
+        android:layout_marginStart="@dimen/default_margin"
+        android:layout_marginTop="@dimen/close_margin"
         android:layout_marginEnd="@dimen/default_margin"
         android:layout_marginBottom="@dimen/default_margin"
         app:layout_constraintBottom_toTopOf="@+id/text_top_player_entries"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/frame_player_leaderboard" />
+        app:layout_constraintTop_toBottomOf="@id/text_your_achievements" />
 
     <TextView
         android:id="@+id/text_top_player_entries"
