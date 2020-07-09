@@ -318,6 +318,7 @@ public class GameOverFragment extends Fragment implements GameActivity.BackFragm
     // Build list of other achievements and unlock them.
     private void onIncrementGameCountAchievementSuccess( Boolean unlocked ) {
         HashSet< String > achievementIDsToUnlock = new HashSet<>();
+
         int scoreValue = GameViewModel.getNullCoalescedValue( gameViewModel.getScore(), 0 );
         int roundsValue = GameViewModel.getNullCoalescedValue( gameViewModel.getRounds(), 0 );
 

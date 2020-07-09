@@ -16,6 +16,7 @@ MDV4910-O, C202006-01
     <dimen name="default_between">8dp</dimen>
     <dimen name="close_margin">4dp</dimen>
     <dimen name="sync_icon_size">64dp</dimen>
+    <dimen name="retrieve_icon_size">32dp</dimen>
     <dimen name="text_small">12sp</dimen>
     <dimen name="text_medium">14sp</dimen>
     <dimen name="text_large">18sp</dimen>
