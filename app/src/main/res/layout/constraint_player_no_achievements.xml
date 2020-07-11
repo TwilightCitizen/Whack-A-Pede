@@ -10,11 +10,13 @@ MDV4910-O, C202006-01
 <androidx.constraintlayout.widget.ConstraintLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/constraint_player_no_achievements"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:background="@color/sunshine_yellow"
-    android:visibility="gone">
+    android:visibility="gone"
+    tools:ignore="Overdraw">
 
     <ImageView
         android:id="@+id/image_player_no_achievements"

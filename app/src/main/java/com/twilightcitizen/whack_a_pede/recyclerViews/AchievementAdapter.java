@@ -6,7 +6,6 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
-import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
@@ -46,9 +45,6 @@ public class AchievementAdapter extends RecyclerView.Adapter< AchievementAdapter
         }
     }
 
-    // Context for resources.
-    private final Context context;
-
     // Image manager for loading images.
     private final ImageManager imageManager;
 
@@ -59,7 +55,6 @@ public class AchievementAdapter extends RecyclerView.Adapter< AchievementAdapter
     public AchievementAdapter(
         Context context, AchievementBuffer achievements
     ) {
-        this.context = context;
         this.achievements = achievements;
         this.imageManager = ImageManager.create( context );
 
