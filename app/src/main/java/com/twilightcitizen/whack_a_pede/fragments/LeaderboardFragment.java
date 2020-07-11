@@ -72,6 +72,8 @@ public class LeaderboardFragment extends Fragment {
     private ConstraintLayout constraintRetrievalErrorPlayerAchievements;
     private ConstraintLayout constraintRetrievingTop25Leaderboard;
     private ConstraintLayout constraintRetrievalErrorTop25Leaderboard;
+    private ConstraintLayout constraintNoPlayerAchievements;
+    private ConstraintLayout constraintNoTop25Leaderboard;
 
     // Recycler view for top player entries and signed in player achievements.
     private RecyclerView recyclerLeaderboard;
@@ -174,6 +176,10 @@ public class LeaderboardFragment extends Fragment {
             view.findViewById( R.id.constraint_top_25_leaderboard_retrieving );
         constraintRetrievalErrorTop25Leaderboard =
             view.findViewById( R.id.constraint_top_25_leaderboard_retrieval_error );
+        constraintNoPlayerAchievements =
+            view.findViewById( R.id.constraint_player_no_achievements );
+        constraintNoTop25Leaderboard =
+            view.findViewById( R.id.constraint_no_top_25_leaderboard );
     }
 
     // Restore view models and observers.
@@ -238,13 +244,13 @@ public class LeaderboardFragment extends Fragment {
     ) {
         showPlayerLeaderboardEntry( leaderboardScoreAnnotatedData );
         constraintRetrievingPlayerLeaderboard.setVisibility( View.GONE );
-        setupOtherLeaderboardEntries();
+        setupPlayerAchievements();
     }
 
     private void onGetPlayerLeaderboardEntryFailure( Exception e ) {
         constraintRetrievingPlayerLeaderboard.setVisibility( View.GONE );
         constraintRetrievalErrorPlayerLeaderboard.setVisibility( View.VISIBLE );
-        setupOtherLeaderboardEntries();
+        setupPlayerAchievements();
     }
 
     // Show the signed in player's leaderboard entry.
@@ -280,53 +286,6 @@ public class LeaderboardFragment extends Fragment {
         textPlacement.setText( leaderboardScore.getDisplayRank() );
     }
 
-    // Setup the leaderboard entries for the top players.
-    private void setupOtherLeaderboardEntries() {
-        int maxLeaderboardEntries = getResources().getInteger( R.integer.max_leaderboard_results );
-
-        PlayGamesUtil.getOtherLeaderboardEntries(
-            gameActivity,
-            accountViewModel.getGoogleSignInAccount(),
-            maxLeaderboardEntries,
-            this::onGetTop25LeaderboardEntriesSuccess,
-            this::onGetTop25LeaderboardEntriesFailure
-        );
-
-        textTopPlayerEntries.setText( getResources().getQuantityString(
-            R.plurals.top_entries, maxLeaderboardEntries, maxLeaderboardEntries
-        ) );
-    }
-
-    // Show the other player's leaderboard entries and setup the signed in players achievements.
-    private void onGetTop25LeaderboardEntriesSuccess(
-        AnnotatedData< LeaderboardsClient.LeaderboardScores > leaderboardScoresAnnotatedData
-    ) {
-        showOtherLeaderboardEntries( leaderboardScoresAnnotatedData );
-        constraintRetrievingTop25Leaderboard.setVisibility( View.GONE );
-        setupPlayerAchievements();
-    }
-
-    private void onGetTop25LeaderboardEntriesFailure( Exception e ) {
-        constraintRetrievingTop25Leaderboard.setVisibility( View.GONE );
-        constraintRetrievalErrorTop25Leaderboard.setVisibility( View.VISIBLE );
-        setupPlayerAchievements();
-    }
-
-    // Show the other player's leaderboard entries.
-    private void showOtherLeaderboardEntries(
-        AnnotatedData< LeaderboardsClient.LeaderboardScores > leaderboardScoresAnnotatedData
-    ) {
-        LeaderboardsClient.LeaderboardScores leaderboardScores = leaderboardScoresAnnotatedData.get();
-
-        if( leaderboardScores == null ) return;
-
-        LeaderboardAdapter leaderboardAdapter = new LeaderboardAdapter(
-            gameActivity, leaderboardScores.getScores(), accountViewModel.getPlayerId()
-        );
-
-        recyclerLeaderboard.setAdapter( leaderboardAdapter );
-    }
-
     // Setup the achievements unlocked for the signed in player.
     private void setupPlayerAchievements() {
         PlayGamesUtil.getPlayerAchievements(
@@ -343,19 +302,13 @@ public class LeaderboardFragment extends Fragment {
     ) {
         showPlayerAchievements( achievementBufferAnnotatedData );
         constraintRetrievingPlayerAchievements.setVisibility( View.GONE );
+        setupTop25LeaderboardEntries();
     }
 
     private void onGetPlayerAchievementsFailure( Exception e ) {
         constraintRetrievingPlayerAchievements.setVisibility( View.GONE );
         constraintRetrievalErrorPlayerAchievements.setVisibility( View.VISIBLE );
-    }
-
-    // Keep reference to the retry button and set it up for taps.
-    private void setupRetryButton( View view ) {
-        // Button to retry syncing after sync failure.
-        Button buttonRetry = view.findViewById( R.id.button_retry );
-
-        buttonRetry.setOnClickListener( this::onRetryClick );
+        setupTop25LeaderboardEntries();
     }
 
     private void showPlayerAchievements(
@@ -366,6 +319,64 @@ public class LeaderboardFragment extends Fragment {
         );
 
         recyclerAchievements.setAdapter( achievementAdapter );
+
+        if( achievementAdapter.getItemCount() == 0 )
+            constraintNoPlayerAchievements.setVisibility( View.VISIBLE );
+    }
+
+    // Setup the leaderboard entries for the top players.
+    private void setupTop25LeaderboardEntries() {
+        int maxLeaderboardEntries = getResources().getInteger( R.integer.max_leaderboard_results );
+
+        textTopPlayerEntries.setText( getResources().getQuantityString(
+                R.plurals.top_entries, maxLeaderboardEntries, maxLeaderboardEntries
+        ) );
+
+        PlayGamesUtil.getOtherLeaderboardEntries(
+            gameActivity,
+            accountViewModel.getGoogleSignInAccount(),
+            maxLeaderboardEntries,
+            this::onGetTop25LeaderboardEntriesSuccess,
+            this::onGetTop25LeaderboardEntriesFailure
+        );
+    }
+
+    // Show the other player's leaderboard entries and setup the signed in players achievements.
+    private void onGetTop25LeaderboardEntriesSuccess(
+        AnnotatedData< LeaderboardsClient.LeaderboardScores > leaderboardScoresAnnotatedData
+    ) {
+        showOtherLeaderboardEntries( leaderboardScoresAnnotatedData );
+        constraintRetrievingTop25Leaderboard.setVisibility( View.GONE );
+    }
+
+    private void onGetTop25LeaderboardEntriesFailure( Exception e ) {
+        constraintRetrievingTop25Leaderboard.setVisibility( View.GONE );
+        constraintRetrievalErrorTop25Leaderboard.setVisibility( View.VISIBLE );
+    }
+
+    // Show the other player's leaderboard entries.
+    private void showOtherLeaderboardEntries(
+        AnnotatedData< LeaderboardsClient.LeaderboardScores > leaderboardScoresAnnotatedData
+    ) {
+        LeaderboardsClient.LeaderboardScores leaderboardScores = leaderboardScoresAnnotatedData.get();
+
+        if( leaderboardScores == null || leaderboardScores.getScores().getCount() == 0 ) {
+            constraintNoTop25Leaderboard.setVisibility( View.VISIBLE ); return;
+        }
+
+        LeaderboardAdapter leaderboardAdapter = new LeaderboardAdapter(
+            gameActivity, leaderboardScores.getScores(), accountViewModel.getPlayerId()
+        );
+
+        recyclerLeaderboard.setAdapter( leaderboardAdapter );
+    }
+
+    // Keep reference to the retry button and set it up for taps.
+    private void setupRetryButton( View view ) {
+        // Button to retry syncing after sync failure.
+        Button buttonRetry = view.findViewById( R.id.button_retry );
+
+        buttonRetry.setOnClickListener( this::onRetryClick );
     }
 
     // Setup the retry button for taps.
@@ -377,7 +388,7 @@ public class LeaderboardFragment extends Fragment {
         super.onStop();
     }
 
-    // Remove observers .
+    // Remove observers.
     private void removeObservers() {
         accountViewModel.getProfilePicUri().removeObservers( gameActivity );
         accountViewModel.getDisplayName().removeObservers( gameActivity );

@@ -79,6 +79,8 @@ MDV4910-O, C202006-01
     <string name="retrieval_error_player_achievements">Could not retrieve your achievements.</string>
     <string name="retrieving_top_25_leaderboard">Retrieving the top 25 leaderboard entries.</string>
     <string name="retrieval_error_top_25_leaderboard">Could not retrieve the top 25 leaderboard entries.</string>
+    <string name="no_achievements">It looks like you have not unlocked any achievements yet.</string>
+    <string name="no_top_25">It looks like no one has gotten on the leaderboard yet.</string>
 
     <!-- Game over screen leaderboard sync status. -->
     <string name="sync_image">Sync Status Image</string>
