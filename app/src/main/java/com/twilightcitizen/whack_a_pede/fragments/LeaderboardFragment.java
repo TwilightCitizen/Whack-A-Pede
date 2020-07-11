@@ -16,7 +16,6 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
 
@@ -66,14 +65,16 @@ public class LeaderboardFragment extends Fragment {
     private TextView textTopPlayerEntries;
 
     // Retrieving and retrieval error constraint views.
+    private ConstraintLayout constraintPlayerLeaderboard;
     private ConstraintLayout constraintRetrievingPlayerLeaderboard;
     private ConstraintLayout constraintRetrievalErrorPlayerLeaderboard;
     private ConstraintLayout constraintRetrievingPlayerAchievements;
     private ConstraintLayout constraintRetrievalErrorPlayerAchievements;
-    private ConstraintLayout constraintRetrievingTop25Leaderboard;
-    private ConstraintLayout constraintRetrievalErrorTop25Leaderboard;
+    private ConstraintLayout constraintRetrievingTopPlayersLeaderboard;
+    private ConstraintLayout constraintRetrievalErrorTopPlayersLeaderboard;
     private ConstraintLayout constraintNoPlayerAchievements;
-    private ConstraintLayout constraintNoTop25Leaderboard;
+    private ConstraintLayout constraintNoTopPlayersLeaderboard;
+    private ConstraintLayout constraintOnlyTopPlayerLeaderboard;
 
     // Recycler view for top player entries and signed in player achievements.
     private RecyclerView recyclerLeaderboard;
@@ -112,11 +113,10 @@ public class LeaderboardFragment extends Fragment {
         setupRecyclerLeaderboard( view );
         setupRecyclerAchievement( view );
         setupRetrievalMessages( view );
-        //setupRetryButton( view );
     }
 
     private void setupRecyclerLeaderboard( View view ) {
-        recyclerLeaderboard = view.findViewById( R.id.recycler_leaderboard );
+        recyclerLeaderboard = view.findViewById( R.id.recycler_top_players_leaderboard );
 
         recyclerLeaderboard.setHasFixedSize( true );
         recyclerLeaderboard.setLayoutManager( new LinearLayoutManager( gameActivity ) );
@@ -133,7 +133,7 @@ public class LeaderboardFragment extends Fragment {
     }
 
     private void setupRecyclerAchievement( View view ) {
-        recyclerAchievements = view.findViewById( R.id.recycler_achievements );
+        recyclerAchievements = view.findViewById( R.id.player_recycler_achievements );
 
         recyclerAchievements.setHasFixedSize( true );
 
@@ -164,6 +164,8 @@ public class LeaderboardFragment extends Fragment {
 
     // Keep references to constraint views for retrieval status.
     private void setupRetrievalMessages( View view ) {
+        constraintPlayerLeaderboard =
+            view.findViewById( R.id.constraint_leaderboard );
         constraintRetrievingPlayerLeaderboard =
             view.findViewById( R.id.constraint_player_leaderboard_retrieving );
         constraintRetrievalErrorPlayerLeaderboard =
@@ -172,14 +174,16 @@ public class LeaderboardFragment extends Fragment {
             view.findViewById( R.id.constraint_player_achievement_retrieving );
         constraintRetrievalErrorPlayerAchievements =
             view.findViewById( R.id.constraint_player_achievement_retrieval_error );
-        constraintRetrievingTop25Leaderboard =
-            view.findViewById( R.id.constraint_top_25_leaderboard_retrieving );
-        constraintRetrievalErrorTop25Leaderboard =
-            view.findViewById( R.id.constraint_top_25_leaderboard_retrieval_error );
+        constraintRetrievingTopPlayersLeaderboard =
+            view.findViewById( R.id.constraint_top_players_leaderboard_retrieving );
+        constraintRetrievalErrorTopPlayersLeaderboard =
+            view.findViewById( R.id.constraint_top_players_leaderboard_retrieval_error );
         constraintNoPlayerAchievements =
             view.findViewById( R.id.constraint_player_no_achievements );
-        constraintNoTop25Leaderboard =
-            view.findViewById( R.id.constraint_no_top_25_leaderboard );
+        constraintNoTopPlayersLeaderboard =
+            view.findViewById( R.id.constraint_no_top_players_leaderboard );
+        constraintOnlyTopPlayerLeaderboard =
+            view.findViewById( R.id.constraint_only_top_player_leaderboard );
     }
 
     // Restore view models and observers.
@@ -230,6 +234,8 @@ public class LeaderboardFragment extends Fragment {
 
     // Setup the leaderboard entry for the signed in player.
     private void setupPlayerLeaderboardEntry() {
+        constraintPlayerLeaderboard.setVisibility( View.GONE );
+
         PlayGamesUtil.getPlayerLeaderboardEntry(
             gameActivity,
             accountViewModel.getGoogleSignInAccount(),
@@ -243,6 +249,7 @@ public class LeaderboardFragment extends Fragment {
         AnnotatedData< LeaderboardScore > leaderboardScoreAnnotatedData
     ) {
         showPlayerLeaderboardEntry( leaderboardScoreAnnotatedData );
+        constraintPlayerLeaderboard.setVisibility( View.VISIBLE );
         constraintRetrievingPlayerLeaderboard.setVisibility( View.GONE );
         setupPlayerAchievements();
     }
@@ -302,13 +309,13 @@ public class LeaderboardFragment extends Fragment {
     ) {
         showPlayerAchievements( achievementBufferAnnotatedData );
         constraintRetrievingPlayerAchievements.setVisibility( View.GONE );
-        setupTop25LeaderboardEntries();
+        setupTopPlayersLeaderboardEntries();
     }
 
     private void onGetPlayerAchievementsFailure( Exception e ) {
         constraintRetrievingPlayerAchievements.setVisibility( View.GONE );
         constraintRetrievalErrorPlayerAchievements.setVisibility( View.VISIBLE );
-        setupTop25LeaderboardEntries();
+        setupTopPlayersLeaderboardEntries();
     }
 
     private void showPlayerAchievements(
@@ -325,7 +332,7 @@ public class LeaderboardFragment extends Fragment {
     }
 
     // Setup the leaderboard entries for the top players.
-    private void setupTop25LeaderboardEntries() {
+    private void setupTopPlayersLeaderboardEntries() {
         int maxLeaderboardEntries = getResources().getInteger( R.integer.max_leaderboard_results );
 
         textTopPlayerEntries.setText( getResources().getQuantityString(
@@ -336,32 +343,32 @@ public class LeaderboardFragment extends Fragment {
             gameActivity,
             accountViewModel.getGoogleSignInAccount(),
             maxLeaderboardEntries,
-            this::onGetTop25LeaderboardEntriesSuccess,
-            this::onGetTop25LeaderboardEntriesFailure
+            this::onGetTopPlayersLeaderboardEntriesSuccess,
+            this::onGetTopPlayersLeaderboardEntriesFailure
         );
     }
 
     // Show the other player's leaderboard entries and setup the signed in players achievements.
-    private void onGetTop25LeaderboardEntriesSuccess(
+    private void onGetTopPlayersLeaderboardEntriesSuccess(
         AnnotatedData< LeaderboardsClient.LeaderboardScores > leaderboardScoresAnnotatedData
     ) {
-        showOtherLeaderboardEntries( leaderboardScoresAnnotatedData );
-        constraintRetrievingTop25Leaderboard.setVisibility( View.GONE );
+        showTopPlayersLeaderboardEntries( leaderboardScoresAnnotatedData );
+        constraintRetrievingTopPlayersLeaderboard.setVisibility( View.GONE );
     }
 
-    private void onGetTop25LeaderboardEntriesFailure( Exception e ) {
-        constraintRetrievingTop25Leaderboard.setVisibility( View.GONE );
-        constraintRetrievalErrorTop25Leaderboard.setVisibility( View.VISIBLE );
+    private void onGetTopPlayersLeaderboardEntriesFailure( Exception e ) {
+        constraintRetrievingTopPlayersLeaderboard.setVisibility( View.GONE );
+        constraintRetrievalErrorTopPlayersLeaderboard.setVisibility( View.VISIBLE );
     }
 
     // Show the other player's leaderboard entries.
-    private void showOtherLeaderboardEntries(
+    private void showTopPlayersLeaderboardEntries(
         AnnotatedData< LeaderboardsClient.LeaderboardScores > leaderboardScoresAnnotatedData
     ) {
         LeaderboardsClient.LeaderboardScores leaderboardScores = leaderboardScoresAnnotatedData.get();
 
         if( leaderboardScores == null || leaderboardScores.getScores().getCount() == 0 ) {
-            constraintNoTop25Leaderboard.setVisibility( View.VISIBLE ); return;
+            constraintNoTopPlayersLeaderboard.setVisibility( View.VISIBLE ); return;
         }
 
         LeaderboardAdapter leaderboardAdapter = new LeaderboardAdapter(
@@ -369,18 +376,10 @@ public class LeaderboardFragment extends Fragment {
         );
 
         recyclerLeaderboard.setAdapter( leaderboardAdapter );
+
+        if( leaderboardAdapter.signedInPlayerIsOnlyPlayer() )
+            constraintOnlyTopPlayerLeaderboard.setVisibility( View.VISIBLE );
     }
-
-    // Keep reference to the retry button and set it up for taps.
-    private void setupRetryButton( View view ) {
-        // Button to retry syncing after sync failure.
-        Button buttonRetry = view.findViewById( R.id.button_retry );
-
-        buttonRetry.setOnClickListener( this::onRetryClick );
-    }
-
-    // Setup the retry button for taps.
-    private void onRetryClick( View view ) { setupPlayerLeaderboardEntry(); }
 
     // Remove observers on stop so they do not run without context.
     @Override public void onStop() {

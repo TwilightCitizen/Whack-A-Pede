@@ -52,6 +52,8 @@ MDV4910-O, C202006-01
             app:layout_constraintTop_toBottomOf="@id/text_your_entry">
 
             <include layout="@layout/constraint_leaderboard" />
+            <include layout="@layout/constraint_player_leaderboard_retrieving" />
+            <include layout="@layout/constraint_player_leaderboard_retrieval_error" />
         </FrameLayout>
 
         <TextView
@@ -63,15 +65,15 @@ MDV4910-O, C202006-01
             android:layout_marginEnd="@dimen/default_margin"
             android:layout_marginBottom="@dimen/close_margin"
             android:text="@string/your_achievements"
-            app:layout_constraintBottom_toTopOf="@+id/recycler_achievements"
+            app:layout_constraintBottom_toTopOf="@+id/frame_player_achievements"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/frame_player_leaderboard" />
 
-        <androidx.recyclerview.widget.RecyclerView
-            android:id="@+id/recycler_achievements"
+        <FrameLayout
+            android:id="@+id/frame_player_achievements"
             android:layout_width="0dp"
-            android:layout_height="@dimen/achievement_avatar"
+            android:layout_height="wrap_content"
             android:layout_marginStart="@dimen/default_margin"
             android:layout_marginTop="@dimen/close_margin"
             android:layout_marginEnd="@dimen/default_margin"
@@ -79,7 +81,17 @@ MDV4910-O, C202006-01
             app:layout_constraintBottom_toTopOf="@+id/text_top_player_entries"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/text_your_achievements" />
+            app:layout_constraintTop_toBottomOf="@id/text_your_achievements">
+
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/player_recycler_achievements"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content" />
+
+            <include layout="@layout/constraint_player_achievement_retrieving" />
+            <include layout="@layout/constraint_player_achievement_retrieval_error" />
+            <include layout="@layout/constraint_player_no_achievements" />
+        </FrameLayout>
 
         <TextView
             android:id="@+id/text_top_player_entries"
@@ -92,13 +104,13 @@ MDV4910-O, C202006-01
             android:textAlignment="textStart"
             android:textColor="@color/earth_brown"
             android:textSize="@dimen/text_medium"
-            app:layout_constraintBottom_toTopOf="@+id/recycler_leaderboard"
+            app:layout_constraintBottom_toTopOf="@+id/frame_top_players_leaderboard"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/recycler_achievements" />
+            app:layout_constraintTop_toBottomOf="@+id/frame_player_achievements" />
 
-        <androidx.recyclerview.widget.RecyclerView
-            android:id="@+id/recycler_leaderboard"
+        <FrameLayout
+            android:id="@+id/frame_top_players_leaderboard"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:minHeight="@dimen/achievement_avatar"
@@ -109,315 +121,17 @@ MDV4910-O, C202006-01
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/text_top_player_entries" />
+            app:layout_constraintTop_toBottomOf="@+id/text_top_player_entries">
 
-        <androidx.constraintlayout.widget.ConstraintLayout
-            android:id="@+id/constraint_player_leaderboard_retrieving"
-            android:layout_width="0dp"
-            android:layout_height="0dp"
-            android:background="@color/sunshine_yellow"
-            android:visibility="visible"
-            app:layout_constraintBottom_toBottomOf="@+id/frame_player_leaderboard"
-            app:layout_constraintEnd_toEndOf="@+id/frame_player_leaderboard"
-            app:layout_constraintStart_toStartOf="@+id/frame_player_leaderboard"
-            app:layout_constraintTop_toTopOf="@+id/frame_player_leaderboard">
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/recycler_top_players_leaderboard"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content" />
 
-            <ImageView
-                android:id="@+id/image_player_leaderboard_retrieving"
-                android:layout_width="@dimen/retrieve_icon_size"
-                android:layout_height="@dimen/retrieve_icon_size"
-                android:layout_marginBottom="@dimen/close_margin"
-                android:contentDescription="@string/retrieving_image"
-                android:src="@drawable/icon_retrieving"
-                app:layout_constraintBottom_toTopOf="@id/text_player_leaderboard_retrieving"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent" />
-
-            <TextView
-                android:id="@+id/text_player_leaderboard_retrieving"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="@dimen/close_margin"
-                android:text="@string/retrieving_player_leaderboard"
-                android:textAlignment="center"
-                android:textColor="@color/earth_brown"
-                android:textSize="@dimen/text_medium"
-                android:textStyle="bold"
-                app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@id/image_player_leaderboard_retrieving" />
-        </androidx.constraintlayout.widget.ConstraintLayout>
-
-        <androidx.constraintlayout.widget.ConstraintLayout
-            android:id="@+id/constraint_player_leaderboard_retrieval_error"
-            android:layout_width="0dp"
-            android:layout_height="0dp"
-            android:background="@color/sunshine_yellow"
-            android:visibility="gone"
-            app:layout_constraintBottom_toBottomOf="@+id/frame_player_leaderboard"
-            app:layout_constraintEnd_toEndOf="@+id/frame_player_leaderboard"
-            app:layout_constraintStart_toStartOf="@+id/frame_player_leaderboard"
-            app:layout_constraintTop_toTopOf="@+id/frame_player_leaderboard">
-
-            <ImageView
-                android:id="@+id/image_player_leaderboard_retrieval_error"
-                android:layout_width="@dimen/retrieve_icon_size"
-                android:layout_height="@dimen/retrieve_icon_size"
-                android:contentDescription="@string/retrieving_image"
-                android:src="@drawable/icon_warning"
-                app:layout_constraintBottom_toTopOf="@id/text_player_leaderboard_retrieval_error"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent" />
-
-            <TextView
-                android:id="@+id/text_player_leaderboard_retrieval_error"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="@dimen/close_margin"
-                android:text="@string/retrieval_error_player_leaderboard"
-                android:textAlignment="center"
-                android:textColor="@color/earth_brown"
-                android:textSize="@dimen/text_medium"
-                android:textStyle="bold"
-                app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@id/image_player_leaderboard_retrieval_error" />
-
-        </androidx.constraintlayout.widget.ConstraintLayout>
-
-        <androidx.constraintlayout.widget.ConstraintLayout
-            android:id="@+id/constraint_player_achievement_retrieving"
-            android:layout_width="0dp"
-            android:layout_height="0dp"
-            android:background="@color/sunshine_yellow"
-            android:visibility="visible"
-            app:layout_constraintBottom_toBottomOf="@+id/recycler_achievements"
-            app:layout_constraintEnd_toEndOf="@+id/recycler_achievements"
-            app:layout_constraintStart_toStartOf="@+id/recycler_achievements"
-            app:layout_constraintTop_toTopOf="@+id/recycler_achievements">
-
-            <ImageView
-                android:id="@+id/image_player_achievements_retrieving"
-                android:layout_width="@dimen/retrieve_icon_size"
-                android:layout_height="@dimen/retrieve_icon_size"
-                android:layout_marginBottom="@dimen/close_margin"
-                android:contentDescription="@string/retrieving_image"
-                android:src="@drawable/icon_retrieving"
-                app:layout_constraintBottom_toTopOf="@id/text_player_achievements_retrieving"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent" />
-
-            <TextView
-                android:id="@+id/text_player_achievements_retrieving"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="@dimen/close_margin"
-                android:text="@string/retrieving_player_achievements"
-                android:textAlignment="center"
-                android:textColor="@color/earth_brown"
-                android:textSize="@dimen/text_medium"
-                android:textStyle="bold"
-                app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@id/image_player_achievements_retrieving" />
-        </androidx.constraintlayout.widget.ConstraintLayout>
-
-        <androidx.constraintlayout.widget.ConstraintLayout
-            android:id="@+id/constraint_player_achievement_retrieval_error"
-            android:layout_width="0dp"
-            android:layout_height="0dp"
-            android:background="@color/sunshine_yellow"
-            android:visibility="gone"
-            app:layout_constraintBottom_toBottomOf="@+id/recycler_achievements"
-            app:layout_constraintEnd_toEndOf="@+id/recycler_achievements"
-            app:layout_constraintStart_toStartOf="@+id/recycler_achievements"
-            app:layout_constraintTop_toTopOf="@+id/recycler_achievements">
-
-            <ImageView
-                android:id="@+id/image_player_achievement_retrieval_error"
-                android:layout_width="@dimen/retrieve_icon_size"
-                android:layout_height="@dimen/retrieve_icon_size"
-                android:contentDescription="@string/retrieving_image"
-                android:src="@drawable/icon_warning"
-                app:layout_constraintBottom_toTopOf="@id/text_player_achievement_retrieval_error"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent" />
-
-            <TextView
-                android:id="@+id/text_player_achievement_retrieval_error"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="@dimen/close_margin"
-                android:text="@string/retrieval_error_player_achievements"
-                android:textAlignment="center"
-                android:textColor="@color/earth_brown"
-                android:textSize="@dimen/text_medium"
-                android:textStyle="bold"
-                app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@id/image_player_achievement_retrieval_error" />
-        </androidx.constraintlayout.widget.ConstraintLayout>
-
-        <androidx.constraintlayout.widget.ConstraintLayout
-            android:id="@+id/constraint_player_no_achievements"
-            android:layout_width="0dp"
-            android:layout_height="0dp"
-            android:background="@color/sunshine_yellow"
-            android:visibility="gone"
-            app:layout_constraintBottom_toBottomOf="@+id/recycler_achievements"
-            app:layout_constraintEnd_toEndOf="@+id/recycler_achievements"
-            app:layout_constraintStart_toStartOf="@+id/recycler_achievements"
-            app:layout_constraintTop_toTopOf="@+id/recycler_achievements">
-
-            <ImageView
-                android:id="@+id/image_player_no_achievements"
-                android:layout_width="@dimen/retrieve_icon_size"
-                android:layout_height="@dimen/retrieve_icon_size"
-                android:contentDescription="@string/retrieving_image"
-                android:src="@drawable/icon_information"
-                app:layout_constraintBottom_toTopOf="@id/text_player_no_achievements"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent" />
-
-            <TextView
-                android:id="@+id/text_player_no_achievements"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="@dimen/close_margin"
-                android:text="@string/no_achievements"
-                android:textAlignment="center"
-                android:textColor="@color/earth_brown"
-                android:textSize="@dimen/text_medium"
-                android:textStyle="bold"
-                app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@id/image_player_no_achievements" />
-
-        </androidx.constraintlayout.widget.ConstraintLayout>
-
-        <androidx.constraintlayout.widget.ConstraintLayout
-            android:id="@+id/constraint_top_25_leaderboard_retrieving"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:background="@color/sunshine_yellow"
-            android:visibility="visible"
-            app:layout_constraintBottom_toBottomOf="@+id/recycler_leaderboard"
-            app:layout_constraintEnd_toEndOf="@+id/recycler_leaderboard"
-            app:layout_constraintStart_toStartOf="@+id/recycler_leaderboard"
-            app:layout_constraintTop_toTopOf="@+id/recycler_leaderboard">
-
-            <ImageView
-                android:id="@+id/image_top_25_leaderboard_retrieving"
-                android:layout_width="@dimen/retrieve_icon_size"
-                android:layout_height="@dimen/retrieve_icon_size"
-                android:layout_marginBottom="@dimen/close_margin"
-                android:contentDescription="@string/retrieving_image"
-                android:src="@drawable/icon_retrieving"
-                app:layout_constraintBottom_toTopOf="@id/text_top_25_leaderboard_retrieving"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent" />
-
-            <TextView
-                android:id="@+id/text_top_25_leaderboard_retrieving"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="@dimen/close_margin"
-                android:text="@string/retrieving_top_25_leaderboard"
-                android:textAlignment="center"
-                android:textColor="@color/earth_brown"
-                android:textSize="@dimen/text_medium"
-                android:textStyle="bold"
-                app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@id/image_top_25_leaderboard_retrieving" />
-        </androidx.constraintlayout.widget.ConstraintLayout>
-
-        <androidx.constraintlayout.widget.ConstraintLayout
-            android:id="@+id/constraint_top_25_leaderboard_retrieval_error"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:background="@color/sunshine_yellow"
-            android:visibility="gone"
-            app:layout_constraintBottom_toBottomOf="@+id/recycler_leaderboard"
-            app:layout_constraintEnd_toEndOf="@+id/recycler_leaderboard"
-            app:layout_constraintStart_toStartOf="@+id/recycler_leaderboard"
-            app:layout_constraintTop_toTopOf="@+id/recycler_leaderboard">
-
-            <ImageView
-                android:id="@+id/image_top_25_leaderboard_retrieval_error"
-                android:layout_width="@dimen/retrieve_icon_size"
-                android:layout_height="@dimen/retrieve_icon_size"
-                android:contentDescription="@string/retrieving_image"
-                android:src="@drawable/icon_warning"
-                app:layout_constraintBottom_toTopOf="@id/text_top_25_leaderboard_retrieval_error"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent" />
-
-            <TextView
-                android:id="@+id/text_top_25_leaderboard_retrieval_error"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="@dimen/close_margin"
-                android:text="@string/retrieval_error_top_25_leaderboard"
-                android:textAlignment="center"
-                android:textColor="@color/earth_brown"
-                android:textSize="@dimen/text_medium"
-                android:textStyle="bold"
-                app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@id/image_top_25_leaderboard_retrieval_error" />
-        </androidx.constraintlayout.widget.ConstraintLayout>
-
-        <androidx.constraintlayout.widget.ConstraintLayout
-            android:id="@+id/constraint_no_top_25_leaderboard"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:background="@color/sunshine_yellow"
-            android:visibility="gone"
-            app:layout_constraintBottom_toBottomOf="@+id/recycler_leaderboard"
-            app:layout_constraintEnd_toEndOf="@+id/recycler_leaderboard"
-            app:layout_constraintStart_toStartOf="@+id/recycler_leaderboard"
-            app:layout_constraintTop_toTopOf="@+id/recycler_leaderboard">
-
-            <ImageView
-                android:id="@+id/image__no_top_25"
-                android:layout_width="@dimen/retrieve_icon_size"
-                android:layout_height="@dimen/retrieve_icon_size"
-                android:contentDescription="@string/retrieving_image"
-                android:src="@drawable/icon_information"
-                app:layout_constraintBottom_toTopOf="@id/text_no_top_25"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent" />
-
-            <TextView
-                android:id="@+id/text_no_top_25"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="@dimen/close_margin"
-                android:text="@string/no_top_25"
-                android:textAlignment="center"
-                android:textColor="@color/earth_brown"
-                android:textSize="@dimen/text_medium"
-                android:textStyle="bold"
-                app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@id/image__no_top_25" />
-        </androidx.constraintlayout.widget.ConstraintLayout>
+            <include layout="@layout/constraint_top_players_leaderboard_retrieving" />
+            <include layout="@layout/constraint_top_players_leaderboard_retrieval_error" />
+            <include layout="@layout/constraint_no_top_players_leaderboard" />
+            <include layout="@layout/constraint_only_top_player_leaderboard" />
+        </FrameLayout>
     </androidx.constraintlayout.widget.ConstraintLayout>
 </ScrollView>

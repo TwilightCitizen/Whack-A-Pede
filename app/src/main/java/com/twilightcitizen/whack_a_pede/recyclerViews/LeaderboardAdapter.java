@@ -138,4 +138,8 @@ public class LeaderboardAdapter extends RecyclerView.Adapter< LeaderboardAdapter
         return signedInPlayerIndex == null ?
             leaderboardScores.getCount() : leaderboardScores.getCount() - 1;
     }
+
+    public boolean signedInPlayerIsOnlyPlayer() {
+        return signedInPlayerIndex != null && getItemCount() == 0;
+    }
 }
