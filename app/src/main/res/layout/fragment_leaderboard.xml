@@ -46,7 +46,7 @@ MDV4910-O, C202006-01
             android:layout_marginTop="@dimen/close_margin"
             android:layout_marginEnd="@dimen/default_margin"
             android:layout_marginBottom="@dimen/close_margin"
-            app:layout_constraintBottom_toTopOf="@+id/text_your_achievements"
+            app:layout_constraintBottom_toTopOf="@id/text_your_achievements"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@id/text_your_entry">
@@ -65,10 +65,10 @@ MDV4910-O, C202006-01
             android:layout_marginEnd="@dimen/default_margin"
             android:layout_marginBottom="@dimen/close_margin"
             android:text="@string/your_achievements"
-            app:layout_constraintBottom_toTopOf="@+id/frame_player_achievements"
+            app:layout_constraintBottom_toTopOf="@id/frame_player_achievements"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/frame_player_leaderboard" />
+            app:layout_constraintTop_toBottomOf="@id/frame_player_leaderboard" />
 
         <FrameLayout
             android:id="@+id/frame_player_achievements"
@@ -78,7 +78,7 @@ MDV4910-O, C202006-01
             android:layout_marginTop="@dimen/close_margin"
             android:layout_marginEnd="@dimen/default_margin"
             android:layout_marginBottom="@dimen/default_margin"
-            app:layout_constraintBottom_toTopOf="@+id/text_top_player_entries"
+            app:layout_constraintBottom_toTopOf="@id/text_top_player_entries"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@id/text_your_achievements">
@@ -104,10 +104,10 @@ MDV4910-O, C202006-01
             android:textAlignment="textStart"
             android:textColor="@color/earth_brown"
             android:textSize="@dimen/text_medium"
-            app:layout_constraintBottom_toTopOf="@+id/frame_top_players_leaderboard"
+            app:layout_constraintBottom_toTopOf="@id/frame_top_players_leaderboard"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/frame_player_achievements" />
+            app:layout_constraintTop_toBottomOf="@id/frame_player_achievements" />
 
         <FrameLayout
             android:id="@+id/frame_top_players_leaderboard"
@@ -121,7 +121,7 @@ MDV4910-O, C202006-01
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/text_top_player_entries">
+            app:layout_constraintTop_toBottomOf="@id/text_top_player_entries">
 
             <androidx.recyclerview.widget.RecyclerView
                 android:id="@+id/recycler_top_players_leaderboard"
