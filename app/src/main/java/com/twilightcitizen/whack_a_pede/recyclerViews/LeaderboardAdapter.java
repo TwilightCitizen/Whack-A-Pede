@@ -78,6 +78,7 @@ public class LeaderboardAdapter extends RecyclerView.Adapter< LeaderboardAdapter
         excludePlayer( excludePlayerID );
     }
 
+    // Exclude the signed in player from the leaderboard by index.
     private void excludePlayer( String excludePlayerID ) {
         for( int i = 0; i < leaderboardScores.getCount(); i++ ) if(
             leaderboardScores.get( i ).getScoreHolder().getPlayerId().equals( excludePlayerID )
@@ -107,6 +108,7 @@ public class LeaderboardAdapter extends RecyclerView.Adapter< LeaderboardAdapter
             Locale.getDefault(), context.getString( R.string.top_score ), leaderboardScore.getRawScore()
         ) );
 
+        // Get rounds and time from score tag.
         String scoreTag = leaderboardScore.getScoreTag();
         String[] scoreTagParts = scoreTag.split( "_" );
         int roundsValue = Integer.parseInt( scoreTagParts[ 0 ] );
@@ -134,11 +136,13 @@ public class LeaderboardAdapter extends RecyclerView.Adapter< LeaderboardAdapter
         );
     }
 
+    // Expose the count of leaderboard items less any for the signed in player.
     @Override public int getItemCount() {
         return signedInPlayerIndex == null ?
             leaderboardScores.getCount() : leaderboardScores.getCount() - 1;
     }
 
+    // Expose whether or not the signed in player is the only leader on the leaderboard.
     public boolean signedInPlayerIsOnlyPlayer() {
         return signedInPlayerIndex != null && getItemCount() == 0;
     }

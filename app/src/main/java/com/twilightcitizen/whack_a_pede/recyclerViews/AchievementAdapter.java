@@ -52,7 +52,7 @@ public class AchievementAdapter extends RecyclerView.Adapter< AchievementAdapter
     // Image manager for loading images.
     private final ImageManager imageManager;
 
-    // Leaderboard entries to be adapted for view.
+    // Achievements to be adapted for view.
     private final AchievementBuffer achievements;
     private final ArrayList< Integer > unlockedAchievements = new ArrayList<>();
 
@@ -66,6 +66,7 @@ public class AchievementAdapter extends RecyclerView.Adapter< AchievementAdapter
         indexUnlockedAchievements();
     }
 
+    // Index all the achievements that are unlocked.
     private void indexUnlockedAchievements() {
         for( int i = 0; i < achievements.getCount(); i++ ) if(
             achievements.get( i ).getState() == Achievement.STATE_UNLOCKED
@@ -84,7 +85,7 @@ public class AchievementAdapter extends RecyclerView.Adapter< AchievementAdapter
     }
 
     @Override public void onBindViewHolder( @NonNull AchievementViewHolder holder, int position ) {
-        // All leaderboard items can be bound with the same view holder.
+        // All achievements can be bound with the same view holder.
         Achievement achievement = achievements.get( unlockedAchievements.get( position ) );
 
         imageManager.loadImage(
@@ -94,6 +95,7 @@ public class AchievementAdapter extends RecyclerView.Adapter< AchievementAdapter
         );
     }
 
+    // Expose the count of unlocked achievements.
     @Override public int getItemCount() {
         return unlockedAchievements.size();
     }

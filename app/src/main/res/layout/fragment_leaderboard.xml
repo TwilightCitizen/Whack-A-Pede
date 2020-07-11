@@ -84,7 +84,7 @@ MDV4910-O, C202006-01
             app:layout_constraintTop_toBottomOf="@id/text_your_achievements">
 
             <androidx.recyclerview.widget.RecyclerView
-                android:id="@+id/player_recycler_achievements"
+                android:id="@+id/recycler_player_achievements"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content" />
 

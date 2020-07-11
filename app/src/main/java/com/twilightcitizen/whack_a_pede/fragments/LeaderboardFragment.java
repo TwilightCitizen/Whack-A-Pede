@@ -77,8 +77,8 @@ public class LeaderboardFragment extends Fragment {
     private ConstraintLayout constraintOnlyTopPlayerLeaderboard;
 
     // Recycler view for top player entries and signed in player achievements.
-    private RecyclerView recyclerLeaderboard;
-    private RecyclerView recyclerAchievements;
+    private RecyclerView recyclerTopPlayersLeaderboard;
+    private RecyclerView recyclerPlayerAchievements;
 
     // Specify existence of options menu at creation.
     @Override public void onCreate( @Nullable Bundle savedInstanceState ) {
@@ -106,46 +106,48 @@ public class LeaderboardFragment extends Fragment {
         return inflater.inflate( R.layout.fragment_leaderboard, container, false );
     }
 
-    // After view creation, keep references to the score summary.
+    // After view creation, initialize leaderboard and achievement views and setup retrieval messages.
     @Override public void onViewCreated( @NonNull View view, @Nullable Bundle savedInstanceState ) {
         super.onViewCreated( view, savedInstanceState );
-        setupScoreSummary( view );
-        setupRecyclerLeaderboard( view );
-        setupRecyclerAchievement( view );
+        initializePlayerLeaderboard( view );
+        initializeTopPlayerLeaderboard( view );
+        initializePlayerAchievements( view );
         setupRetrievalMessages( view );
     }
 
-    private void setupRecyclerLeaderboard( View view ) {
-        recyclerLeaderboard = view.findViewById( R.id.recycler_top_players_leaderboard );
+    // Setup the top player leaderboard recycler.
+    private void initializeTopPlayerLeaderboard( View view ) {
+        recyclerTopPlayersLeaderboard = view.findViewById( R.id.recycler_top_players_leaderboard );
 
-        recyclerLeaderboard.setHasFixedSize( true );
-        recyclerLeaderboard.setLayoutManager( new LinearLayoutManager( gameActivity ) );
+        recyclerTopPlayersLeaderboard.setHasFixedSize( true );
+        recyclerTopPlayersLeaderboard.setLayoutManager( new LinearLayoutManager( gameActivity ) );
 
-        recyclerLeaderboard.addItemDecoration(
+        recyclerTopPlayersLeaderboard.addItemDecoration(
             new DividerItemDecoration( gameActivity, LinearLayoutManager.VERTICAL )
         );
 
-        recyclerLeaderboard.addItemDecoration(
+        recyclerTopPlayersLeaderboard.addItemDecoration(
             new LeaderboardAdapter.LeaderboardEntryGap(
                 getResources().getDimensionPixelSize( R.dimen.default_margin )
             )
         );
     }
 
-    private void setupRecyclerAchievement( View view ) {
-        recyclerAchievements = view.findViewById( R.id.player_recycler_achievements );
+    // Setup the sign in player achievements recycler.
+    private void initializePlayerAchievements( View view ) {
+        recyclerPlayerAchievements = view.findViewById( R.id.recycler_player_achievements );
 
-        recyclerAchievements.setHasFixedSize( true );
+        recyclerPlayerAchievements.setHasFixedSize( true );
 
-        recyclerAchievements.setLayoutManager( new LinearLayoutManager(
-                gameActivity, LinearLayoutManager.HORIZONTAL, false
+        recyclerPlayerAchievements.setLayoutManager( new LinearLayoutManager(
+            gameActivity, LinearLayoutManager.HORIZONTAL, false
         ) );
 
-        recyclerLeaderboard.addItemDecoration(
+        recyclerTopPlayersLeaderboard.addItemDecoration(
             new DividerItemDecoration( gameActivity, LinearLayoutManager.HORIZONTAL )
         );
 
-        recyclerLeaderboard.addItemDecoration(
+        recyclerTopPlayersLeaderboard.addItemDecoration(
             new AchievementAdapter.AchievementEntryGap(
                 getResources().getDimensionPixelSize( R.dimen.default_margin )
             )
@@ -153,7 +155,7 @@ public class LeaderboardFragment extends Fragment {
     }
 
     // Keep references to the profile pic, display name, score, and elapsed time views.
-    private void setupScoreSummary( View view ) {
+    private void initializePlayerLeaderboard( View view ) {
         imageProfilePic = view.findViewById( R.id.image_profile_pic );
         textDisplayName = view.findViewById( R.id.text_display_name );
         textScore = view.findViewById( R.id.text_score );
@@ -244,7 +246,7 @@ public class LeaderboardFragment extends Fragment {
         );
     }
 
-    // Show the signed in player's leaderboard entry and setup other player leaderboard entries.
+    // Show the signed in player's leaderboard entry and setup the signed in player's achievements.
     private void onGetPlayerLeaderboardEntrySuccess(
         AnnotatedData< LeaderboardScore > leaderboardScoreAnnotatedData
     ) {
@@ -254,6 +256,7 @@ public class LeaderboardFragment extends Fragment {
         setupPlayerAchievements();
     }
 
+    // Show the retrieval error message and and setup the signed in player's achievements.
     private void onGetPlayerLeaderboardEntryFailure( Exception e ) {
         constraintRetrievingPlayerLeaderboard.setVisibility( View.GONE );
         constraintRetrievalErrorPlayerLeaderboard.setVisibility( View.VISIBLE );
@@ -272,6 +275,7 @@ public class LeaderboardFragment extends Fragment {
             Locale.getDefault(),  getString( R.string.top_score ), leaderboardScore.getRawScore()
         ) );
 
+        // Extract rounds and time from the tag.
         String scoreTag = leaderboardScore.getScoreTag();
         String[] scoreTagParts = scoreTag.split( "_" );
         int roundsValue = Integer.parseInt( scoreTagParts[ 0 ] );
@@ -303,7 +307,7 @@ public class LeaderboardFragment extends Fragment {
         );
     }
 
-    // Show the player's achievements and hide the retrieving message.
+    // Show the player's achievements and setup the top players' leaderboard.
     private void onGetPlayerAchievementsSuccess(
         AnnotatedData< AchievementBuffer > achievementBufferAnnotatedData
     ) {
@@ -312,12 +316,14 @@ public class LeaderboardFragment extends Fragment {
         setupTopPlayersLeaderboardEntries();
     }
 
+    // Show the retrieval error message and setup the top players' leaderboard.
     private void onGetPlayerAchievementsFailure( Exception e ) {
         constraintRetrievingPlayerAchievements.setVisibility( View.GONE );
         constraintRetrievalErrorPlayerAchievements.setVisibility( View.VISIBLE );
         setupTopPlayersLeaderboardEntries();
     }
 
+    // Adapt the signed in player's achievements for display in the recycler.
     private void showPlayerAchievements(
         AnnotatedData< AchievementBuffer > achievementBufferAnnotatedData
     ) {
@@ -325,7 +331,7 @@ public class LeaderboardFragment extends Fragment {
             gameActivity, achievementBufferAnnotatedData.get()
         );
 
-        recyclerAchievements.setAdapter( achievementAdapter );
+        recyclerPlayerAchievements.setAdapter( achievementAdapter );
 
         if( achievementAdapter.getItemCount() == 0 )
             constraintNoPlayerAchievements.setVisibility( View.VISIBLE );
@@ -348,7 +354,7 @@ public class LeaderboardFragment extends Fragment {
         );
     }
 
-    // Show the other player's leaderboard entries and setup the signed in players achievements.
+    // Show the other player's leaderboard entries.
     private void onGetTopPlayersLeaderboardEntriesSuccess(
         AnnotatedData< LeaderboardsClient.LeaderboardScores > leaderboardScoresAnnotatedData
     ) {
@@ -356,6 +362,7 @@ public class LeaderboardFragment extends Fragment {
         constraintRetrievingTopPlayersLeaderboard.setVisibility( View.GONE );
     }
 
+    // Show the retrieval error message.
     private void onGetTopPlayersLeaderboardEntriesFailure( Exception e ) {
         constraintRetrievingTopPlayersLeaderboard.setVisibility( View.GONE );
         constraintRetrievalErrorTopPlayersLeaderboard.setVisibility( View.VISIBLE );
@@ -375,7 +382,7 @@ public class LeaderboardFragment extends Fragment {
             gameActivity, leaderboardScores.getScores(), accountViewModel.getPlayerId()
         );
 
-        recyclerLeaderboard.setAdapter( leaderboardAdapter );
+        recyclerTopPlayersLeaderboard.setAdapter( leaderboardAdapter );
 
         if( leaderboardAdapter.signedInPlayerIsOnlyPlayer() )
             constraintOnlyTopPlayerLeaderboard.setVisibility( View.VISIBLE );
