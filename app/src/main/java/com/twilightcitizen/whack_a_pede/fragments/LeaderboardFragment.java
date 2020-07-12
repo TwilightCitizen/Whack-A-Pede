@@ -236,6 +236,8 @@ public class LeaderboardFragment extends Fragment {
 
     // Setup the leaderboard entry for the signed in player.
     private void setupPlayerLeaderboardEntry() {
+        if( !isAdded() ) return;
+
         constraintPlayerLeaderboard.setVisibility( View.GONE );
 
         PlayGamesUtil.getPlayerLeaderboardEntry(
@@ -248,8 +250,11 @@ public class LeaderboardFragment extends Fragment {
 
     // Show the signed in player's leaderboard entry and setup the signed in player's achievements.
     private void onGetPlayerLeaderboardEntrySuccess(
+
         AnnotatedData< LeaderboardScore > leaderboardScoreAnnotatedData
     ) {
+        if( !isAdded() ) return;
+
         showPlayerLeaderboardEntry( leaderboardScoreAnnotatedData );
         constraintPlayerLeaderboard.setVisibility( View.VISIBLE );
         constraintRetrievingPlayerLeaderboard.setVisibility( View.GONE );
@@ -258,6 +263,8 @@ public class LeaderboardFragment extends Fragment {
 
     // Show the retrieval error message and and setup the signed in player's achievements.
     private void onGetPlayerLeaderboardEntryFailure( Exception e ) {
+        if( !isAdded() ) return;
+
         constraintRetrievingPlayerLeaderboard.setVisibility( View.GONE );
         constraintRetrievalErrorPlayerLeaderboard.setVisibility( View.VISIBLE );
         setupPlayerAchievements();
@@ -267,6 +274,8 @@ public class LeaderboardFragment extends Fragment {
     private void showPlayerLeaderboardEntry(
         AnnotatedData< LeaderboardScore > leaderboardScoreAnnotatedData
     ) {
+        if( !isAdded() ) return;
+
         LeaderboardScore leaderboardScore = leaderboardScoreAnnotatedData.get();
 
         if( leaderboardScore == null ) return;
@@ -299,6 +308,8 @@ public class LeaderboardFragment extends Fragment {
 
     // Setup the achievements unlocked for the signed in player.
     private void setupPlayerAchievements() {
+        if( !isAdded() ) return;
+
         PlayGamesUtil.getPlayerAchievements(
             gameActivity,
             accountViewModel.getGoogleSignInAccount(),
@@ -311,6 +322,8 @@ public class LeaderboardFragment extends Fragment {
     private void onGetPlayerAchievementsSuccess(
         AnnotatedData< AchievementBuffer > achievementBufferAnnotatedData
     ) {
+        if( !isAdded() ) return;
+
         showPlayerAchievements( achievementBufferAnnotatedData );
         constraintRetrievingPlayerAchievements.setVisibility( View.GONE );
         setupTopPlayersLeaderboardEntries();
@@ -318,6 +331,8 @@ public class LeaderboardFragment extends Fragment {
 
     // Show the retrieval error message and setup the top players' leaderboard.
     private void onGetPlayerAchievementsFailure( Exception e ) {
+        if( !isAdded() ) return;
+
         constraintRetrievingPlayerAchievements.setVisibility( View.GONE );
         constraintRetrievalErrorPlayerAchievements.setVisibility( View.VISIBLE );
         setupTopPlayersLeaderboardEntries();
@@ -327,6 +342,8 @@ public class LeaderboardFragment extends Fragment {
     private void showPlayerAchievements(
         AnnotatedData< AchievementBuffer > achievementBufferAnnotatedData
     ) {
+        if( !isAdded() ) return;
+
         AchievementAdapter achievementAdapter = new AchievementAdapter(
             gameActivity, achievementBufferAnnotatedData.get()
         );
@@ -339,6 +356,8 @@ public class LeaderboardFragment extends Fragment {
 
     // Setup the leaderboard entries for the top players.
     private void setupTopPlayersLeaderboardEntries() {
+        if( !isAdded() ) return;
+
         int maxLeaderboardEntries = getResources().getInteger( R.integer.max_leaderboard_results );
 
         textTopPlayerEntries.setText( getResources().getQuantityString(
@@ -358,12 +377,16 @@ public class LeaderboardFragment extends Fragment {
     private void onGetTopPlayersLeaderboardEntriesSuccess(
         AnnotatedData< LeaderboardsClient.LeaderboardScores > leaderboardScoresAnnotatedData
     ) {
+        if( !isAdded() ) return;
+
         showTopPlayersLeaderboardEntries( leaderboardScoresAnnotatedData );
         constraintRetrievingTopPlayersLeaderboard.setVisibility( View.GONE );
     }
 
     // Show the retrieval error message.
     private void onGetTopPlayersLeaderboardEntriesFailure( Exception e ) {
+        if( !isAdded() ) return;
+
         constraintRetrievingTopPlayersLeaderboard.setVisibility( View.GONE );
         constraintRetrievalErrorTopPlayersLeaderboard.setVisibility( View.VISIBLE );
     }
@@ -372,6 +395,8 @@ public class LeaderboardFragment extends Fragment {
     private void showTopPlayersLeaderboardEntries(
         AnnotatedData< LeaderboardsClient.LeaderboardScores > leaderboardScoresAnnotatedData
     ) {
+        if( !isAdded() ) return;
+
         LeaderboardsClient.LeaderboardScores leaderboardScores = leaderboardScoresAnnotatedData.get();
 
         if( leaderboardScores == null || leaderboardScores.getScores().getCount() == 0 ) {
@@ -402,6 +427,8 @@ public class LeaderboardFragment extends Fragment {
 
     // Observer to replace the profile pic when it changes in the account view model.
     private void onProfilePicUriChanged( Uri profilePicUri ) {
+        if( !isAdded() ) return;
+
         ImageManager imageManager = ImageManager.create( gameActivity );
 
         imageManager.loadImage( imageProfilePic, profilePicUri, R.drawable.icon_guest_avatar );
@@ -409,6 +436,8 @@ public class LeaderboardFragment extends Fragment {
 
     // Observer to replace the display name when it changes in the account view model.
     private void onDisplayNameChanged( String displayName ) {
+        if( !isAdded() ) return;
+
         textDisplayName.setText(
             displayName == null ? gameActivity.getString( R.string.guest ) : displayName
         );

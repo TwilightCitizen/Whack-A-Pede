@@ -210,6 +210,8 @@ public class GameOverFragment extends Fragment implements GameActivity.BackFragm
 
     // Observer to replace the profile pic when it changes in the account view model.
     private void onProfilePicUriChanged( Uri profilePicUri ) {
+        if( !isAdded() ) return;
+
         ImageManager imageManager = ImageManager.create( gameActivity );
 
         imageManager.loadImage( imageProfilePic, profilePicUri, R.drawable.icon_guest_avatar );
@@ -217,6 +219,8 @@ public class GameOverFragment extends Fragment implements GameActivity.BackFragm
 
     // Observer to replace the display name when it changes in the account view model.
     private void onDisplayNameChanged( String displayName ) {
+        if( !isAdded() ) return;
+
         textDisplayName.setText(
             displayName == null ? gameActivity.getString( R.string.guest ) : displayName
         );
@@ -224,6 +228,8 @@ public class GameOverFragment extends Fragment implements GameActivity.BackFragm
 
     // Observer to format the final score  when it changes in the game view model.
     private void onScoreChanged( int score ) {
+        if( !isAdded() ) return;
+
         // Format the final score.
         textScore.setText(
             String.format( Locale.getDefault(), getString( R.string.final_score ), score )
@@ -232,6 +238,8 @@ public class GameOverFragment extends Fragment implements GameActivity.BackFragm
 
     // Observer to format the total rounds when it changes in the game view model.
     private void onRoundChanged( int rounds ) {
+        if( !isAdded() ) return;
+
         // Format the final score.
         this.rounds = getResources().getQuantityString( R.plurals.rounds, rounds, rounds );
 
@@ -240,6 +248,8 @@ public class GameOverFragment extends Fragment implements GameActivity.BackFragm
 
     // Observer to update the elapsed time when it changes in the view model.
     private void onElapsedTimeChanged( long timeElapsed ) {
+        if( !isAdded() ) return;
+
         // Format time remaining as MM:SS.
         inTime = String.format(
             Locale.getDefault(), getString( R.string.in_time ),
@@ -251,6 +261,8 @@ public class GameOverFragment extends Fragment implements GameActivity.BackFragm
 
     // Combine rounds and time into a single string for the text view.
     private void onRoundsInTimeChanged() {
+        if( !isAdded() ) return;
+
         // Format the rounds in time.
         textRoundsInTime.setText(
             String.format( Locale.getDefault(), getString( R.string.rounds_in_time ), rounds, inTime
@@ -259,6 +271,8 @@ public class GameOverFragment extends Fragment implements GameActivity.BackFragm
 
     // Observer to format the unlocked achievement count when it changes.
     private void onUnlockedAchievementCountChanged( int unlockedAchievementCount ) {
+        if( !isAdded() ) return;
+
         // Format the final score.
         textAchievements.setText( getResources().getQuantityString(
             R.plurals.achievements, unlockedAchievementCount, unlockedAchievementCount
@@ -266,6 +280,8 @@ public class GameOverFragment extends Fragment implements GameActivity.BackFragm
     }
 
     private void onLeaderboardSyncChanged( Sync sync ) {
+        if( !isAdded() ) return;
+
         // Toggle the visibility of sync status messages.
         toggleSyncMessageVisibility( sync );
 
@@ -299,6 +315,8 @@ public class GameOverFragment extends Fragment implements GameActivity.BackFragm
 
     // Get the player's achievement count before updating achievements.
     private void onLeaderboardSyncSuccess( ScoreSubmissionData scoreSubmissionData ) {
+        if( !isAdded() ) return;
+
         PlayGamesUtil.getPlayerUnlockedAchievementCount(
             gameActivity, accountViewModel.getGoogleSignInAccount(),
             this::onGetInitialUnlockedAchievementCountSuccess, this::onAnySyncFailure
@@ -307,6 +325,8 @@ public class GameOverFragment extends Fragment implements GameActivity.BackFragm
 
     // Increment the number of games played on game count achievements.
     private void onGetInitialUnlockedAchievementCountSuccess( int achievementCount ) {
+        if( !isAdded() ) return;
+
         this.unlockedAchievementCount = achievementCount;
 
         PlayGamesUtil.incrementGameCountAchievements(
@@ -317,6 +337,8 @@ public class GameOverFragment extends Fragment implements GameActivity.BackFragm
 
     // Build list of other achievements and unlock them.
     private void onIncrementGameCountAchievementSuccess( Boolean unlocked ) {
+        if( !isAdded() ) return;
+
         HashSet< String > achievementIDsToUnlock = new HashSet<>();
 
         int scoreValue = GameViewModel.getNullCoalescedValue( gameViewModel.getScore(), 0 );
@@ -349,6 +371,8 @@ public class GameOverFragment extends Fragment implements GameActivity.BackFragm
 
     // Get the achievement count after any achievement unlocks have been applied.
     private void onUnlockOtherAchievementsSuccess( Void aVoid ) {
+        if( !isAdded() ) return;
+
         PlayGamesUtil.getPlayerUnlockedAchievementCount(
             gameActivity, accountViewModel.getGoogleSignInAccount(),
             this::onGetUnlockedAchievementCountAfterUnlocksSuccess, this::onAnySyncFailure
@@ -357,6 +381,8 @@ public class GameOverFragment extends Fragment implements GameActivity.BackFragm
 
     // Flag the sync as complete, message it, and remove back navigation confirmation.
     private void onGetUnlockedAchievementCountAfterUnlocksSuccess( int unlockedAchievementCount ) {
+        if( !isAdded() ) return;
+
         confirmedBackPress = true;
 
         onUnlockedAchievementCountChanged( unlockedAchievementCount - this.unlockedAchievementCount );
@@ -365,6 +391,8 @@ public class GameOverFragment extends Fragment implements GameActivity.BackFragm
 
     // Flag the sync as incomplete, message it, and remove back navigation confirmation.
     private void onAnySyncFailure( Exception e ) {
+        if( !isAdded() ) return;
+
         gameViewModel.setSyncedToLeaderboard( Sync.errorSyncing );
         e.printStackTrace();
     }
