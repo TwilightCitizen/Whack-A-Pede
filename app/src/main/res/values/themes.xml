@@ -1,0 +1,81 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<!--
+Whack-A-Pede
+David A. Clark, Jr.
+Integrated Product Development
+MDV4910-O, C202006-01
+-->
+
+<resources>
+    <!-- Order of components for each drawable array:
+        Centipede Head Above
+        Centipede Head Below
+        Centipede Body Above
+        Centipede Body Below
+        Lawn Top
+        Lawn Bottom -->
+
+    <array name="sunny_day">
+        <item>@drawable/centipede_head_above_sunny_day</item>
+        <item>@drawable/centipede_head_below_sunny_day</item>
+        <item>@drawable/centipede_body_above_sunny_day</item>
+        <item>@drawable/centipede_body_below_sunny_day</item>
+        <item>@drawable/lawn_top_sunny_day</item>
+        <item>@drawable/lawn_bottom_sunny_day</item>
+    </array>
+
+    <array name="high_contrast">
+        <item>@drawable/centipede_head_above_high_contrast</item>
+        <item>@drawable/centipede_head_below_high_contrast</item>
+        <item>@drawable/centipede_body_above_high_contrast</item>
+        <item>@drawable/centipede_body_below_high_contrast</item>
+        <item>@drawable/lawn_top_high_contrast</item>
+        <item>@drawable/lawn_bottom_high_contrast</item>
+    </array>
+
+    <array name="patriotic">
+        <item>@drawable/centipede_head_above_patriotic</item>
+        <item>@drawable/centipede_head_below_patriotic</item>
+        <item>@drawable/centipede_body_above_patriotic</item>
+        <item>@drawable/centipede_body_below_patriotic</item>
+        <item>@drawable/lawn_top_patriotic</item>
+        <item>@drawable/lawn_bottom_patriotic</item>
+    </array>
+
+    <array name="camouflage">
+        <item>@drawable/centipede_head_above_camouflage</item>
+        <item>@drawable/centipede_head_below_camouflage</item>
+        <item>@drawable/centipede_body_above_camouflage</item>
+        <item>@drawable/centipede_body_below_camouflage</item>
+        <item>@drawable/lawn_top_sunny_day</item>
+        <item>@drawable/lawn_bottom_sunny_day</item>
+    </array>
+
+    <array name="zebra_stripes">
+        <item>@drawable/centipede_head_above_zebra_stripes</item>
+        <item>@drawable/centipede_head_below_zebra_stripes</item>
+        <item>@drawable/centipede_body_above_zebra_stripes</item>
+        <item>@drawable/centipede_body_below_zebra_stripes</item>
+        <item>@drawable/lawn_top_sunny_day</item>
+        <item>@drawable/lawn_bottom_sunny_day</item>
+    </array>
+    
+    <array name="tiger_stripes">
+        <item>@drawable/centipede_head_above_tiger_stripes</item>
+        <item>@drawable/centipede_head_below_tiger_stripes</item>
+        <item>@drawable/centipede_body_above_tiger_stripes</item>
+        <item>@drawable/centipede_body_below_tiger_stripes</item>
+        <item>@drawable/lawn_top_sunny_day</item>
+        <item>@drawable/lawn_bottom_sunny_day</item>
+    </array>
+
+    <array name="leopard_spots">
+        <item>@drawable/centipede_head_above_leopard_spots</item>
+        <item>@drawable/centipede_head_below_leopard_spots</item>
+        <item>@drawable/centipede_body_above_leopard_spots</item>
+        <item>@drawable/centipede_body_below_leopard_spots</item>
+        <item>@drawable/lawn_top_sunny_day</item>
+        <item>@drawable/lawn_bottom_sunny_day</item>
+    </array>
+</resources>

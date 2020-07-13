@@ -8,10 +8,13 @@ MDV4910-O, C202006-01
 package com.twilightcitizen.whack_a_pede.renderers;
 
 import android.content.Context;
+import android.content.SharedPreferences;
+import android.content.res.TypedArray;
 import android.opengl.GLSurfaceView;
 
 import androidx.lifecycle.ViewModelProvider;
 import androidx.lifecycle.ViewModelStoreOwner;
+import androidx.preference.PreferenceManager;
 
 import com.twilightcitizen.whack_a_pede.R;
 import com.twilightcitizen.whack_a_pede.geometry.Point;
@@ -108,14 +111,32 @@ public class GameRenderer implements GLSurfaceView.Renderer {
         segment = new Segment( CENTIPEDE_NORMAL_HEIGHT, CENTIPEDE_NORMAL_WIDTH );
         textureShader = new TextureShader( context );
 
+        // Get textures from configured theme in default shared preferences.
+        SharedPreferences sharedPreferences =
+            PreferenceManager.getDefaultSharedPreferences( context );
+
+        String themeName = sharedPreferences.getString(
+            context.getString( R.string.color_theme_key ), "Sunny Day"
+        ).toLowerCase().replaceAll( "[^a-zA-Z0-9]", "_" );
+
+        TypedArray themeDrawables = context.getResources().obtainTypedArray(
+            context.getResources().getIdentifier( themeName, "array", context.getPackageName() )
+        );
+
+        int[] themeDrawableIds = new int[ themeDrawables.length() ];
+
+        for( int i = 0; i < themeDrawables.length(); i++ )
+            themeDrawableIds[ i ] = themeDrawables.getResourceId( i, 0 );
+
+        themeDrawables.recycle();
+
         // Load textures to be used by the TextureShader program.
-        // TODO: Hook into default shared preferences for these.
-        centipedeHeadAbove = TextureUtil.LoadTexture( context, R.drawable.centipede_head_above_sunny_day );
-        centipedeHeadBelow = TextureUtil.LoadTexture( context, R.drawable.centipede_head_below_sunny_day );
-        centipedeBodyAbove = TextureUtil.LoadTexture( context, R.drawable.centipede_body_above_sunny_day );
-        centipedeBodyBelow = TextureUtil.LoadTexture( context, R.drawable.centipede_body_below_sunny_day );
-        lawnTop = TextureUtil.LoadTexture( context, R.drawable.lawn_top_sunny_day );
-        lawnBottom = TextureUtil.LoadTexture( context, R.drawable.lawn_bottom_sunny_day );
+        centipedeHeadAbove = TextureUtil.LoadTexture( context, themeDrawableIds[ 0 ] );
+        centipedeHeadBelow = TextureUtil.LoadTexture( context, themeDrawableIds[ 1 ] );
+        centipedeBodyAbove = TextureUtil.LoadTexture( context, themeDrawableIds[ 2 ] );
+        centipedeBodyBelow = TextureUtil.LoadTexture( context, themeDrawableIds[ 3 ] );
+        lawnTop = TextureUtil.LoadTexture( context, themeDrawableIds[ 4 ]);
+        lawnBottom = TextureUtil.LoadTexture( context, themeDrawableIds[ 5 ] );
     }
 
     // Called when GLSurfaceView dimensions change. Parameter gl is ignored.
