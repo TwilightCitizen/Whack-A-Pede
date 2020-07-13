@@ -43,7 +43,6 @@ public class SettingsFragment extends PreferenceFragmentCompat {
     // Apply any changes to the Sound Utility on exit.
     @Override public void onStop() {
         super.onStop();
-
         SoundUtil.setupVolumes( gameActivity );
         SoundUtil.setupBackgroundMusic( gameActivity );
     }

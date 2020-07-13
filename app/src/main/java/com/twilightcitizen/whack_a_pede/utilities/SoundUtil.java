@@ -8,10 +8,13 @@ MDV4910-O, C202006-01
 package com.twilightcitizen.whack_a_pede.utilities;
 
 import android.content.Context;
+import android.content.SharedPreferences;
 import android.media.AudioAttributes;
 import android.media.MediaPlayer;
 import android.media.SoundPool;
 
+
+import androidx.preference.PreferenceManager;
 
 import com.twilightcitizen.whack_a_pede.R;
 
@@ -49,25 +52,18 @@ public class SoundUtil {
 
     // Setup the volumes of sound effects and music.
     public static void setupVolumes( Context context ) {
-        /* SharedPreferences sharedPreferences =
-            PreferenceManager.getDefaultSharedPreferences( context ); */
+        SharedPreferences sharedPreferences =
+            PreferenceManager.getDefaultSharedPreferences( context );
 
-        volumeEffects = (float)
-            context.getResources().getInteger( R.integer.volume_effects ) /
-            context.getResources().getInteger( R.integer.volume_max );
-
-        /* (float) sharedPreferences.getInt(
+        volumeEffects = (float) sharedPreferences.getInt(
             context.getString( R.string.effects_volume_key ),
             context.getResources().getInteger( R.integer.volume_effects )
-        ) / context.getResources().getInteger( R.integer.volume_max ); */
+        ) / context.getResources().getInteger( R.integer.volume_max );
 
-        volumeMusic = (float)
-            context.getResources().getInteger( R.integer.volume_music ) /
-            context.getResources().getInteger( R.integer.volume_max );
-        /* (float) sharedPreferences.getInt(
+        volumeMusic = (float) sharedPreferences.getInt(
             context.getString( R.string.music_volume_key ),
             context.getResources().getInteger( R.integer.volume_music )
-        ) / context.getResources().getInteger( R.integer.volume_max ); */
+        ) / context.getResources().getInteger( R.integer.volume_max );
     }
 
     // Setup all the sound effects in a sound pool.
@@ -94,13 +90,12 @@ public class SoundUtil {
 
     // Setup all the sound effects in a sound pool.
     public static void setupBackgroundMusic( Context context ) {
-        /* SharedPreferences sharedPreferences =
-            PreferenceManager.getDefaultSharedPreferences( context ); */
+        SharedPreferences sharedPreferences =
+            PreferenceManager.getDefaultSharedPreferences( context );
 
-        String musicTrackName = "mind_bender";
-        /* sharedPreferences.getString(
+        String musicTrackName = sharedPreferences.getString(
             context.getString( R.string.music_track_key ), "Mind Bender"
-        ).toLowerCase().replaceAll( "[^a-zA-Z0-9]", "_" ); */
+        ).toLowerCase().replaceAll( "[^a-zA-Z0-9]", "_" );
 
         int musicTrackID = context.getResources().getIdentifier(
             musicTrackName, "raw", context.getPackageName()
