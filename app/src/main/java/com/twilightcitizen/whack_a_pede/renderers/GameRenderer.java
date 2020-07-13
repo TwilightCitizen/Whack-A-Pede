@@ -23,6 +23,7 @@ import com.twilightcitizen.whack_a_pede.models.Lawn;
 import com.twilightcitizen.whack_a_pede.models.Segment;
 import com.twilightcitizen.whack_a_pede.shaders.TextureShader;
 import com.twilightcitizen.whack_a_pede.utilities.TextureUtil;
+import com.twilightcitizen.whack_a_pede.utilities.ThemeUtil;
 import com.twilightcitizen.whack_a_pede.utilities.TimeUtil;
 import com.twilightcitizen.whack_a_pede.viewModels.GameViewModel;
 
@@ -112,31 +113,15 @@ public class GameRenderer implements GLSurfaceView.Renderer {
         textureShader = new TextureShader( context );
 
         // Get textures from configured theme in default shared preferences.
-        SharedPreferences sharedPreferences =
-            PreferenceManager.getDefaultSharedPreferences( context );
-
-        String themeName = sharedPreferences.getString(
-            context.getString( R.string.color_theme_key ), "Sunny Day"
-        ).toLowerCase().replaceAll( "[^a-zA-Z0-9]", "_" );
-
-        TypedArray themeDrawables = context.getResources().obtainTypedArray(
-            context.getResources().getIdentifier( themeName, "array", context.getPackageName() )
-        );
-
-        int[] themeDrawableIds = new int[ themeDrawables.length() ];
-
-        for( int i = 0; i < themeDrawables.length(); i++ )
-            themeDrawableIds[ i ] = themeDrawables.getResourceId( i, 0 );
-
-        themeDrawables.recycle();
+        ThemeUtil.Theme theme = ThemeUtil.getConfiguredTheme( context );
 
         // Load textures to be used by the TextureShader program.
-        centipedeHeadAbove = TextureUtil.LoadTexture( context, themeDrawableIds[ 0 ] );
-        centipedeHeadBelow = TextureUtil.LoadTexture( context, themeDrawableIds[ 1 ] );
-        centipedeBodyAbove = TextureUtil.LoadTexture( context, themeDrawableIds[ 2 ] );
-        centipedeBodyBelow = TextureUtil.LoadTexture( context, themeDrawableIds[ 3 ] );
-        lawnTop = TextureUtil.LoadTexture( context, themeDrawableIds[ 4 ]);
-        lawnBottom = TextureUtil.LoadTexture( context, themeDrawableIds[ 5 ] );
+        centipedeHeadAbove = TextureUtil.LoadTexture( context, theme.getCentipedeHeadAbove() );
+        centipedeHeadBelow = TextureUtil.LoadTexture( context, theme.getCentipedeHeadBelow() );
+        centipedeBodyAbove = TextureUtil.LoadTexture( context, theme.getCentipedeBodyAbove() );
+        centipedeBodyBelow = TextureUtil.LoadTexture( context, theme.getCentipedeBodyBelow() );
+        lawnTop = TextureUtil.LoadTexture( context, theme.getLawnTop() );
+        lawnBottom = TextureUtil.LoadTexture( context, theme.getLawnBottom() );
     }
 
     // Called when GLSurfaceView dimensions change. Parameter gl is ignored.
