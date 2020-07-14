@@ -9,11 +9,8 @@ package com.twilightcitizen.whack_a_pede.models;
 
 import com.twilightcitizen.whack_a_pede.geometry.Point;
 import com.twilightcitizen.whack_a_pede.geometry.Vector;
-import com.twilightcitizen.whack_a_pede.viewModels.GameViewModel;
 
 import java.util.Random;
-
-import static com.twilightcitizen.whack_a_pede.viewModels.GameViewModel.CENTIPEDE_NORMAL_RADIUS;
 
 /*
 PowerUp tracks various data necessary for the proper placement of a power up  on the lawn,
@@ -31,7 +28,7 @@ public class PowerUp {
     }
 
     // Kind of power up.
-    private Kind kind;
+    private final Kind kind;
     // Current position.
     private Point position;
     // Direction of heading to be applied to speed of traversal.

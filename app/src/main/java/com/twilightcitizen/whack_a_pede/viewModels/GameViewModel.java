@@ -30,7 +30,7 @@ that can survive lifecycle events of the activity to which it belongs.
 */
 public class GameViewModel extends ViewModel {
     // Random number generator used in various routines.
-    private static Random random = new Random();
+    private static final Random random = new Random();
 
     // Tag for filtering any debug message logged.
     private static final String TAG = "GameViewModel";

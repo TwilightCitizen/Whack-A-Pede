@@ -7,7 +7,7 @@ Integrated Product Development
 MDV4910-O, C202006-01
 -->
 
-<resources>
+<resources xmlns:tools="http://schemas.android.com/tools">
     <!-- Order of components for each drawable array:
         Centipede Head Above
         Centipede Head Below
@@ -16,7 +16,7 @@ MDV4910-O, C202006-01
         Lawn Top
         Lawn Bottom -->
 
-    <array name="sunny_day">
+    <array name="sunny_day" tools:keep="@array/sunny_day">
         <item>@drawable/centipede_head_above_sunny_day</item>
         <item>@drawable/centipede_head_below_sunny_day</item>
         <item>@drawable/centipede_body_above_sunny_day</item>
@@ -25,7 +25,7 @@ MDV4910-O, C202006-01
         <item>@drawable/lawn_bottom_sunny_day</item>
     </array>
 
-    <array name="high_contrast">
+    <array name="high_contrast" tools:keep="@array/high_contrast">
         <item>@drawable/centipede_head_above_high_contrast</item>
         <item>@drawable/centipede_head_below_high_contrast</item>
         <item>@drawable/centipede_body_above_high_contrast</item>
@@ -34,7 +34,7 @@ MDV4910-O, C202006-01
         <item>@drawable/lawn_bottom_high_contrast</item>
     </array>
 
-    <array name="patriotic">
+    <array name="patriotic" tools:ignore="UnusedResources" tools:keep="@array/patriotic">
         <item>@drawable/centipede_head_above_patriotic</item>
         <item>@drawable/centipede_head_below_patriotic</item>
         <item>@drawable/centipede_body_above_patriotic</item>
@@ -43,7 +43,7 @@ MDV4910-O, C202006-01
         <item>@drawable/lawn_bottom_patriotic</item>
     </array>
 
-    <array name="camouflage">
+    <array name="camouflage" tools:keep="@array/camouflage">
         <item>@drawable/centipede_head_above_camouflage</item>
         <item>@drawable/centipede_head_below_camouflage</item>
         <item>@drawable/centipede_body_above_camouflage</item>
@@ -52,7 +52,7 @@ MDV4910-O, C202006-01
         <item>@drawable/lawn_bottom_sunny_day</item>
     </array>
 
-    <array name="zebra_stripes">
+    <array name="zebra_stripes" tools:keep="@array/zebra_stripes">
         <item>@drawable/centipede_head_above_zebra_stripes</item>
         <item>@drawable/centipede_head_below_zebra_stripes</item>
         <item>@drawable/centipede_body_above_zebra_stripes</item>
@@ -61,7 +61,7 @@ MDV4910-O, C202006-01
         <item>@drawable/lawn_bottom_sunny_day</item>
     </array>
     
-    <array name="tiger_stripes">
+    <array name="tiger_stripes" tools:keep="@array/tiger_stripes">
         <item>@drawable/centipede_head_above_tiger_stripes</item>
         <item>@drawable/centipede_head_below_tiger_stripes</item>
         <item>@drawable/centipede_body_above_tiger_stripes</item>
@@ -70,7 +70,7 @@ MDV4910-O, C202006-01
         <item>@drawable/lawn_bottom_sunny_day</item>
     </array>
 
-    <array name="leopard_spots">
+    <array name="leopard_spots" tools:keep="@array/leopard_spots">
         <item>@drawable/centipede_head_above_leopard_spots</item>
         <item>@drawable/centipede_head_below_leopard_spots</item>
         <item>@drawable/centipede_body_above_leopard_spots</item>

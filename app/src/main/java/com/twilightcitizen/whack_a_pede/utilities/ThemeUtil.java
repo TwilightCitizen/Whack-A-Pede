@@ -22,12 +22,12 @@ public class ThemeUtil {
     // Theme simply encapsulates the textures for easy passing around and access than an array.
     public static class Theme {
         // Textures to use for particular game elements.
-        private int centipedeHeadAbove;
-        private int centipedeHeadBelow;
-        private int centipedeBodyAbove;
-        private int centipedeBodyBelow;
-        private int lawnTop;
-        private int lawnBottom;
+        private final int centipedeHeadAbove;
+        private final int centipedeHeadBelow;
+        private final int centipedeBodyAbove;
+        private final int centipedeBodyBelow;
+        private final int lawnTop;
+        private final int lawnBottom;
 
         public Theme(
             int centipedeHeadAbove, int centipedeHeadBelow, int centipedeBodyAbove,
