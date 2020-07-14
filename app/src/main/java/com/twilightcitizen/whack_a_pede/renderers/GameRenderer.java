@@ -8,18 +8,17 @@ MDV4910-O, C202006-01
 package com.twilightcitizen.whack_a_pede.renderers;
 
 import android.content.Context;
-import android.content.SharedPreferences;
-import android.content.res.TypedArray;
 import android.opengl.GLSurfaceView;
 
 import androidx.lifecycle.ViewModelProvider;
 import androidx.lifecycle.ViewModelStoreOwner;
-import androidx.preference.PreferenceManager;
 
 import com.twilightcitizen.whack_a_pede.R;
 import com.twilightcitizen.whack_a_pede.geometry.Point;
 import com.twilightcitizen.whack_a_pede.models.Centipede;
 import com.twilightcitizen.whack_a_pede.models.Lawn;
+import com.twilightcitizen.whack_a_pede.models.PowerUp;
+import com.twilightcitizen.whack_a_pede.models.PowerUpRendering;
 import com.twilightcitizen.whack_a_pede.models.Segment;
 import com.twilightcitizen.whack_a_pede.shaders.TextureShader;
 import com.twilightcitizen.whack_a_pede.utilities.TextureUtil;
@@ -64,6 +63,7 @@ public class GameRenderer implements GLSurfaceView.Renderer {
     // Some game models to place in scene.
     private Lawn lawn;
     private Segment segment;
+    private PowerUpRendering powerUpRendering;
 
     // TextureShader program for drawing game models in scene with textures to screen.
     private TextureShader textureShader;
@@ -77,6 +77,12 @@ public class GameRenderer implements GLSurfaceView.Renderer {
     private int centipedeHeadBelow;
     private int centipedeBodyAbove;
     private int centipedeBodyBelow;
+
+    // Textures for power ups to be used by the TextureShader program.
+    private int powerUpPlus1kPoints;
+    private int powerUpPlus10kPoints;
+    private int powerUpPlus100kPoints;
+    private int powerUpSlowDown;
 
     // Accept and store context on creation, and fact check important dimensions
     public GameRenderer( Context context ) {
@@ -110,6 +116,7 @@ public class GameRenderer implements GLSurfaceView.Renderer {
         // Instantiate game models and shader programs for drawing them.
         lawn = new Lawn( LAWN_NORMAL_HEIGHT, LAWN_NORMAL_WIDTH );
         segment = new Segment( CENTIPEDE_NORMAL_HEIGHT, CENTIPEDE_NORMAL_WIDTH );
+        powerUpRendering = new PowerUpRendering( CENTIPEDE_NORMAL_HEIGHT, CENTIPEDE_NORMAL_WIDTH );
         textureShader = new TextureShader( context );
 
         // Get textures from configured theme in default shared preferences.
@@ -122,6 +129,11 @@ public class GameRenderer implements GLSurfaceView.Renderer {
         centipedeBodyBelow = TextureUtil.LoadTexture( context, theme.getCentipedeBodyBelow() );
         lawnTop = TextureUtil.LoadTexture( context, theme.getLawnTop() );
         lawnBottom = TextureUtil.LoadTexture( context, theme.getLawnBottom() );
+
+        powerUpPlus1kPoints = TextureUtil.LoadTexture( context, R.drawable.any_power_up );
+        powerUpPlus10kPoints = TextureUtil.LoadTexture( context, R.drawable.any_power_up );
+        powerUpPlus100kPoints = TextureUtil.LoadTexture( context, R.drawable.any_power_up );
+        powerUpSlowDown = TextureUtil.LoadTexture( context, R.drawable.any_power_up );
     }
 
     // Called when GLSurfaceView dimensions change. Parameter gl is ignored.
@@ -177,6 +189,7 @@ public class GameRenderer implements GLSurfaceView.Renderer {
         positionSegmentsInScene( false );
         positionLawnTopInScene();
         positionSegmentsInScene( true );
+        positionPowerUpsInScene();
     }
 
     /*
@@ -186,6 +199,32 @@ public class GameRenderer implements GLSurfaceView.Renderer {
     for the model is bound to the program, and the model is drawn.
     */
 
+    /*
+    Use the texture shader program to draw a power up wherever one is located in the game view model.
+    */
+    private void positionPowerUpsInScene() {
+        textureShader.use();
+
+        for( PowerUp powerUp : GameViewModel.POWER_UPS ) {
+            positionModelInScene(
+                powerUp.getPosition().x, powerUp.getPosition().y, 0.0f
+            );
+
+            // Get the right texture for the segment type and ground layer.
+            int texture = 0;
+
+            switch( powerUp.getKind() ) {
+                case plus1kPoints: texture = powerUpPlus1kPoints; break;
+                case plus10kPoints: texture = powerUpPlus10kPoints; break;
+                case plus100kPoints: texture = powerUpPlus100kPoints; break;
+                case slowDown: texture = powerUpSlowDown; break;
+            }
+
+            textureShader.setUniforms( modelViewMatrix, texture );
+            powerUpRendering.bindData( textureShader );
+            powerUpRendering.draw();
+        }
+    }
 
     /*
     Use the texture shader program to draw a segment wherever a centipede is located in the game
@@ -213,7 +252,6 @@ public class GameRenderer implements GLSurfaceView.Renderer {
             );
 
             textureShader.setUniforms( modelViewMatrix, texture );
-
             segment.bindData( textureShader );
             segment.draw();
 

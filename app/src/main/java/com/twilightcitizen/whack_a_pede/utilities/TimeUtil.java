@@ -31,6 +31,9 @@ public class TimeUtil {
     // Convert milliseconds to whole seconds.
     public static int millisToSeconds( long millis ) { return (int) millis / 60; }
 
+    // Convert whole seconds to milliseconds.
+    public static long secondsToMillis( int seconds ) { return (long) seconds * 1_000L; }
+
     // Mark current system time and return the elapsed time in milliseconds since last mark.
     public static long getTimeElapsedMillis() {
         // No elapsed time can be tracked without a first mark.

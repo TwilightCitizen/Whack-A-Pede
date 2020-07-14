@@ -15,6 +15,7 @@ import androidx.lifecycle.ViewModel;
 import com.twilightcitizen.whack_a_pede.geometry.Point;
 import com.twilightcitizen.whack_a_pede.geometry.Vector;
 import com.twilightcitizen.whack_a_pede.models.Centipede;
+import com.twilightcitizen.whack_a_pede.models.PowerUp;
 import com.twilightcitizen.whack_a_pede.utilities.LoggerUtil;
 import com.twilightcitizen.whack_a_pede.utilities.SoundUtil;
 import com.twilightcitizen.whack_a_pede.utilities.TimeUtil;
@@ -28,6 +29,9 @@ Game ViewModel abstracts the necessary details of an ongoing game of Whack-A-Ped
 that can survive lifecycle events of the activity to which it belongs.
 */
 public class GameViewModel extends ViewModel {
+    // Random number generator used in various routines.
+    private static Random random = new Random();
+
     // Tag for filtering any debug message logged.
     private static final String TAG = "GameViewModel";
 
@@ -164,10 +168,44 @@ public class GameViewModel extends ViewModel {
         ( CENTIPEDE_MAX_SPEED - CENTIPEDE_START_SPEED ) / 1_000.0f;
 
     // Edges of the lawn where centipedes can enter it.
-    private enum StartingEdge { top, bottom, left, right }
+    private enum StartingEdge {
+        top, bottom, left, right;
+
+        // Get a random starting edge using the given random number generator.
+        public static StartingEdge getRandomStartingEdge() {
+            return StartingEdge.values()[ random.nextInt( StartingEdge.values().length ) ];
+        }
+
+        // Get a point along the current starting edge using the given random number generator.
+        public Point getRandomPointAlongEdge() {
+            switch( this ) {
+                case top:
+                    return new Point( TURNS_X[ random.nextInt( TURNS_X.length ) ], 1.0f );
+                case bottom:
+                    return new Point( TURNS_X[ random.nextInt( TURNS_X.length ) ], -1.0f );
+                case left:
+                    return new Point( -LAWN_CELLS_RATIO, TURNS_Y[ random.nextInt( TURNS_Y.length ) ] );
+                default:
+                    return new Point( LAWN_CELLS_RATIO, TURNS_Y[ random.nextInt( TURNS_Y.length ) ] );
+            }
+        }
+
+        // Get the direction into the lawn from current edge.
+        public Vector getDirectionIntoEdge() {
+            switch( this ) {
+                case top: return Vector.down;
+                case bottom: return Vector.up;
+                case left: return Vector.right;
+                default: return Vector.left;
+            }
+        }
+    }
 
     // Centipedes on the lawn at any given time.
     public static final List< Centipede > CENTIPEDES = new ArrayList<>();
+
+    // Power ups on the lawn at any given time.
+    public static final List< PowerUp > POWER_UPS = new ArrayList<>();
 
     // The number of segments in a fresh centipede.
     public static final int segmentsPerCentipede = 10;
@@ -199,6 +237,9 @@ public class GameViewModel extends ViewModel {
     final ArrayList< Centipede > centipedesKilled = new ArrayList<>();
     final ArrayList< Centipede > centipedesToRemove = new ArrayList<>();
     final ArrayList< Centipede > centipedesToAdd = new ArrayList<>();
+
+    // Power ups must also be managed with concurrent list manipulation in mind.
+    final ArrayList< PowerUp > powerUpsToRemove = new ArrayList<>();
 
     /*
     Mutable live data for scoring and timing information allows external observers to update
@@ -252,6 +293,9 @@ public class GameViewModel extends ViewModel {
     public boolean getQuadrupleElimination() { return quadrupleElimination; }
     public boolean getHalfLife() { return halfLife; }
 
+    // Number of power up opportunities passed.
+    private int powerUpOpportunities = 0;
+
     /*
     The following methods allow external game observers to change the game's state as needed.  Calls
     that would move the game between states in an invalid or unexpected way with throw an exception.
@@ -298,6 +342,7 @@ public class GameViewModel extends ViewModel {
     // Reset all values to where they should be for a fresh game.
     private void setupNewGame() {
         CENTIPEDES.clear();
+        POWER_UPS.clear();
         state.setValue( State.newGame );
         centipedeSpeed.setValue( CENTIPEDE_START_SPEED );
         score.setValue( STARTING_SCORE );
@@ -314,6 +359,7 @@ public class GameViewModel extends ViewModel {
         halfLife = false;
         headsTapped = 0;
         tailsTapped = 0;
+        powerUpOpportunities = 0;
     }
 
     // Loop the game through the provided time slice.
@@ -329,11 +375,189 @@ public class GameViewModel extends ViewModel {
         this.elapsedTimeMillis.postValue( timeElapsedValue + elapsedTimeMillis );
         remainingTimeMillis.postValue( timeRemainingValue - elapsedTimeMillis );
 
-        // Check for game over or next round, then attack and animate centipedes.
+        // Add power ups, check for game over or next round, then attack and animate centipedes an power ups.
+        addPowerUps();
         checkForGameOver();
         checkForNextRound();
+        attackPowerUps();
         attackCentipedes();
+        animatePowerUps( elapsedTimeMillis );
         animateCentipedes( elapsedTimeMillis );
+    }
+
+    // Add power ups to the lawn based on elapsed time and chance.
+    private void addPowerUps() {
+        Long timeElapsedValue = getNullCoalescedValue( this.elapsedTimeMillis, 0L );
+        int powerUpOpportunities = (int) ( timeElapsedValue / TimeUtil.secondsToMillis( 10 ) );
+
+        if( this.powerUpOpportunities == powerUpOpportunities ) return;
+
+        this.powerUpOpportunities = powerUpOpportunities;
+
+        setupPowerUp();
+    }
+
+    /*
+    Process collected touch events as power up attacks.  Remove touched power ups, if any, from the
+    lawn, applying the power ups to the game according to their desired effect.
+    */
+    private void attackPowerUps() {
+        // Guard against processing attacks if there are no touch points.
+        if( touchPoints.isEmpty() ) return;
+
+        killTouchedPowerUps();
+        applyKilledPowerUps();
+
+        // Do the actual removes.
+        POWER_UPS.removeAll( powerUpsToRemove );
+
+        // Play an appropriate sound. TODO: Find Better Sound
+        if( powerUpsToRemove.isEmpty() ) SoundUtil.playMiss(); else SoundUtil.playHit();
+
+        // Clear power up attack list to avoid needless checks.
+        powerUpsToRemove.clear();
+    }
+
+    // Apply the effect of the killed power ups to the game.
+    private void applyKilledPowerUps() {
+        int scoreValue = getNullCoalescedValue( score, 0 );
+
+        for( PowerUp powerUp : powerUpsToRemove ) {
+            switch( powerUp.getKind() ) {
+                case plus1kPoints: score.postValue( scoreValue + 1_000 ); Log.wtf( "POWER UP", "1K" ); break;
+                case plus10kPoints: score.postValue( scoreValue + 10_000 ); Log.wtf( "POWER UP", "10K" ); break;
+                case plus100kPoints: score.postValue( scoreValue + 100_000 ); Log.wtf( "POWER UP", "100K" ); break;
+                case slowDown: centipedeSpeed.postValue( CENTIPEDE_START_SPEED ); Log.wtf( "POWER UP", "SLOW DOWN" );
+            }
+        }
+    }
+
+    // Check all power ups against touches, killing ones that were touched.
+    private void killTouchedPowerUps() {
+        // Process all touch points as attacks.
+        for( Point touchPoint : touchPoints ) {
+            // Cache the X and Y of the touch event.
+            float x = touchPoint.x; float y = touchPoint.y;
+
+            if( LoggerUtil.DEBUGGING ) Log.wtf( TAG, "TOUCH - " + x + ", " + y );
+
+            // Test attacks against all centipedes.
+            for( PowerUp powerUp : POWER_UPS ) {
+                // Cache the centipede position.
+                Point position = powerUp.getPosition();
+
+                if( LoggerUtil.DEBUGGING )
+                    Log.wtf( TAG, "POWER UP - " + position.x + ", " + position.y );
+
+                // Touch X falls within X bounds of centipede.
+                boolean touchedX =
+                    x >= position.x - CENTIPEDE_NORMAL_RADIUS &&
+                    x <= position.x + CENTIPEDE_NORMAL_RADIUS;
+
+                // Touch Y falls within Y bounds of centipede.
+                boolean touchedY =
+                    y >= position.y - CENTIPEDE_NORMAL_RADIUS &&
+                    y <= position.y + CENTIPEDE_NORMAL_RADIUS;
+
+                // Touch falls in bounds of centipede and centipede is above ground.
+                boolean touched = touchedX && touchedY;
+
+                // Add any touched segments to the killed segments collection.
+                if( touched ) {
+                    if( LoggerUtil.DEBUGGING ) Log.wtf( TAG, "TOUCH ON POWER UP" );
+
+                    powerUpsToRemove.add( powerUp );
+                }
+            }
+        }
+    }
+
+    // Animate power ups over the provided time slice.
+    private void animatePowerUps( long elapsedTimeMillis ) {
+        // Normalize the elapsed time as a fraction of 1 second.
+        float interval = TimeUtil.millisToIntervalOfSeconds( elapsedTimeMillis );
+
+        // Obtain centipede speed value.
+        Float powerUpSpeedValue = getNullCoalescedValue( centipedeSpeed, CENTIPEDE_START_SPEED );
+
+        // Animate each power up.
+        for( PowerUp powerUp : POWER_UPS ) {
+            // Generate a new position for it based on current position, direction, and speed.
+            Point nextPosition = new Point(
+                powerUp.getPosition().x + powerUpSpeedValue * interval * powerUp.getDirection().x,
+                powerUp.getPosition().y + powerUpSpeedValue * interval * powerUp.getDirection().y
+            );
+
+            /*
+             Get new directions from turns at approach, change trajectory through them, and
+             rotate smoothing around them.
+            */
+            // Cache previous position for speedier access.
+            Point previousPosition = powerUp.getPosition();
+            // Get the power up's direction before changing it.
+            Vector previousDirection = powerUp.getDirection();
+
+            // Check each turn to see if it was traversed.
+            for( Point turn : TURNS ) {
+                // Disregard turns that the centipede did not traverse.
+                if( !turn.intersectsPathOf( previousPosition, nextPosition ) ) continue;
+
+                powerUp.setNextDirection( getNewDirectionForTurn( turn, previousDirection ) );
+
+                // Use new direction gotten from turn at approach.
+                powerUp.setDirection( powerUp.getNextDirection() );
+
+                // Get the centipede's direction after changing it.
+                Vector nextDirection = powerUp.getDirection();
+
+                // The centipede's previous direction matches the new one, keep it on course.
+                if( nextDirection == previousDirection ) break;
+
+                // No need to bend the centipede's path around the turn if its path ends dead on it.
+                if( turn.equals( nextPosition ) ) break;
+
+                // Travel past the turn to be applied in the new direction after it.
+                float travelAfterTurn;
+
+                // Travel after turn is difference between X or Y axes depending on direction.
+                if( turn.wasPassedVertically( previousPosition, nextPosition ) ) {
+                    travelAfterTurn = Math.abs( nextPosition.y - turn.y );
+                } else  {
+                    travelAfterTurn = Math.abs( nextPosition.x - turn.x );
+                }
+
+                // Change the next position based on travel after turn in new direction.
+                if( nextDirection.equals( Vector.up ) ) {
+                    nextPosition = new Point( turn.x, nextPosition.y + travelAfterTurn );
+                } else if( nextDirection.equals( Vector.down ) ) {
+                    nextPosition = new Point( turn.x, nextPosition.y - travelAfterTurn );
+                } else if( nextDirection.equals( Vector.left ) ) {
+                    nextPosition = new Point( nextPosition.x - travelAfterTurn, turn.y );
+                } else {
+                    nextPosition = new Point( nextPosition.x + travelAfterTurn, turn.y );
+                }
+
+                break;
+            }
+
+            // Set the centipede's new position.
+            powerUp.setPosition( nextPosition );
+        }
+    }
+
+    // Setup a new power up to enter the lawn from a random location at one of its edges.
+    private void setupPowerUp() {
+        // Pick an edge of the lawn at random.
+        StartingEdge startingEdge = StartingEdge.getRandomStartingEdge();
+        // Position and direction for the new centipede.
+        Point startingPosition = startingEdge.getRandomPointAlongEdge();
+        Vector startingDirection = startingEdge.getDirectionIntoEdge();
+        // Generate the kind of power up randomly.
+        PowerUp.Kind kind = PowerUp.Kind.getRandomKind( random );
+        // Create a new power up with the random position and direction picked.
+        PowerUp powerUp = new PowerUp( startingPosition, startingDirection, kind );
+
+        POWER_UPS.add( powerUp );
     }
 
     // Setup a new centipede to enter the lawn from a random location at one of its edges.
@@ -341,42 +565,11 @@ public class GameViewModel extends ViewModel {
         // Guard against adding a new centipede when one already exists.
         if( !CENTIPEDES.isEmpty() ) return;
 
-        // Position and direction for the new centipede.
-        Point startingPosition = null;
-        Vector startingDirection = null;
-
-        // Random numbers for selecting lawn edges and positions along it.
-        Random random = new Random();
-
         // Pick an edge of the lawn at random.
-        StartingEdge startingEdge = StartingEdge.values()[
-            random.nextInt( StartingEdge.values().length )
-        ];
-
-        // Pick a random position along that edge for the centipede with an opposing direction.
-        switch( startingEdge ) {
-            case top:
-                startingPosition = new Point( TURNS_X[ random.nextInt( TURNS_X.length ) ], 1.0f );
-                startingDirection = Vector.down;
-                break;
-            case bottom:
-                startingPosition = new Point( TURNS_X[ random.nextInt( TURNS_X.length ) ], -1.0f );
-                startingDirection = Vector.up;
-                break;
-            case left:
-                startingPosition =
-                    new Point( -LAWN_CELLS_RATIO, TURNS_Y[ random.nextInt( TURNS_Y.length ) ] );
-
-                startingDirection = Vector.right;
-                break;
-            case right:
-                startingPosition =
-                    new Point( LAWN_CELLS_RATIO, TURNS_Y[ random.nextInt( TURNS_Y.length ) ] );
-
-                startingDirection = Vector.left;
-                break;
-        }
-
+        StartingEdge startingEdge = StartingEdge.getRandomStartingEdge();
+        // Position and direction for the new centipede.
+        Point startingPosition = startingEdge.getRandomPointAlongEdge();
+        Vector startingDirection = startingEdge.getDirectionIntoEdge();
         // Create a new centipede with the random position and opposing direction picked.
         Centipede centipede = new Centipede( startingPosition, startingDirection );
 
