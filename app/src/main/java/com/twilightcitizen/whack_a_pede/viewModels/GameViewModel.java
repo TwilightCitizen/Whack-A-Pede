@@ -241,6 +241,9 @@ public class GameViewModel extends ViewModel {
     // Power ups must also be managed with concurrent list manipulation in mind.
     final ArrayList< PowerUp > powerUpsToRemove = new ArrayList<>();
 
+    // Number of seconds to wait between adding power ups.
+    public static final int SECONDS_BETWEEN_POWER_UPS = 60;
+
     /*
     Mutable live data for scoring and timing information allows external observers to update
     as needed whenever these values change.
@@ -388,7 +391,10 @@ public class GameViewModel extends ViewModel {
     // Add power ups to the lawn based on elapsed time and chance.
     private void addPowerUps() {
         Long timeElapsedValue = getNullCoalescedValue( this.elapsedTimeMillis, 0L );
-        int powerUpOpportunities = (int) ( timeElapsedValue / TimeUtil.secondsToMillis( 10 ) );
+
+        int powerUpOpportunities = (int) (
+            timeElapsedValue / TimeUtil.secondsToMillis( SECONDS_BETWEEN_POWER_UPS )
+        );
 
         if( this.powerUpOpportunities == powerUpOpportunities ) return;
 

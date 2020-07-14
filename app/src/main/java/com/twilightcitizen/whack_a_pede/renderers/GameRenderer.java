@@ -84,6 +84,9 @@ public class GameRenderer implements GLSurfaceView.Renderer {
     private int powerUpPlus100kPoints;
     private int powerUpSlowDown;
 
+    // Flag to indicate that the lawn is rotated.
+    private boolean isRotated;
+
     // Accept and store context on creation, and fact check important dimensions
     public GameRenderer( Context context ) {
         this.context = context;
@@ -164,6 +167,8 @@ public class GameRenderer implements GLSurfaceView.Renderer {
             // Landscape orientation.
             orthoM( viewMatrix, 0, -1.0f, 1.0f, -aspectRatio, aspectRatio, -1.0f, 1.0f );
             rotateM( viewMatrix, 0, 90.0f, 0.0f, 0.0f, 1.0f );
+
+            isRotated = true;
         } else {
             // Portrait orientation or square device.
             orthoM( viewMatrix, 0, -aspectRatio, aspectRatio, -1.0f, 1.0f, -1.0f, 1.0f );
@@ -206,8 +211,10 @@ public class GameRenderer implements GLSurfaceView.Renderer {
         textureShader.use();
 
         for( PowerUp powerUp : GameViewModel.POWER_UPS ) {
+
+
             positionModelInScene(
-                powerUp.getPosition().x, powerUp.getPosition().y, 0.0f
+                powerUp.getPosition().x, powerUp.getPosition().y, isRotated ? -90.0f : 0.0f
             );
 
             // Get the right texture for the segment type and ground layer.

@@ -23,7 +23,11 @@ public class PowerUp {
 
         // Get a random power up kind the given random number generator.
         public static Kind getRandomKind( Random random ) {
-            return Kind.values()[ random.nextInt( Kind.values().length ) ];
+            int selection = random.nextInt( 100 );
+
+            if( selection < 50 ) return plus1kPoints; else
+            if( selection < 75 ) return plus10kPoints; else
+            if( selection < 90 ) return plus100kPoints; else return slowDown;
         }
     }
 
