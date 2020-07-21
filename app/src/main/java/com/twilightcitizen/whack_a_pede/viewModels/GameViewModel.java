@@ -840,8 +840,7 @@ public class GameViewModel extends ViewModel {
 
     // Get a new direction from the encountered turn, excluding going backwards.
     private Vector getNewDirectionForTurn( Point turn, Vector currentDirection ) {
-        // Random number generator and list for new directions.
-        Random random = new Random();
+        // ist for new directions.
         List< Vector > newDirections = new ArrayList<>();
 
         /*
