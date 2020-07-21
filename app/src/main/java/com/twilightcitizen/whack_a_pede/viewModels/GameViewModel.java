@@ -161,7 +161,7 @@ public class GameViewModel extends ViewModel {
 
     // Centipede speed constants.
     public static final float CENTIPEDE_START_SPEED = CELL_NORMAL_WIDTH * 3.0f;
-    public static final float CENTIPEDE_MAX_SPEED = CELL_NORMAL_WIDTH * 7.0f;
+    public static final float CENTIPEDE_MAX_SPEED = CELL_NORMAL_WIDTH * 10.0f;
 
     // This more or less determines the number of rounds before max speed is reached.
     private static final float CENTIPEDE_SPEED_INCREASE =
@@ -408,8 +408,8 @@ public class GameViewModel extends ViewModel {
     lawn, applying the power ups to the game according to their desired effect.
     */
     private void attackPowerUps() {
-        // Guard against processing attacks if there are no touch points.
-        if( touchPoints.isEmpty() ) return;
+        // Guard against processing attacks if there are no touch points or no power ups.
+        if( touchPoints.isEmpty() || POWER_UPS.isEmpty() ) return;
 
         killTouchedPowerUps();
         applyKilledPowerUps();
@@ -417,8 +417,11 @@ public class GameViewModel extends ViewModel {
         // Do the actual removes.
         POWER_UPS.removeAll( powerUpsToRemove );
 
-        // Play an appropriate sound. TODO: Find Better Sound
-        if( powerUpsToRemove.isEmpty() ) SoundUtil.playMiss(); else SoundUtil.playHit();
+        /*
+        Play an appropriate sound for a power up hit.  Ignore misses to prevent playing a double-miss
+        sound, one for power ups and one for centipede segments.
+        */
+        if( !powerUpsToRemove.isEmpty() ) SoundUtil.playPowerUp();
 
         // Clear power up attack list to avoid needless checks.
         powerUpsToRemove.clear();

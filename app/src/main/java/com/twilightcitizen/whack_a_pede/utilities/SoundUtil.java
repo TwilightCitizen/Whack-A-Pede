@@ -31,12 +31,16 @@ public class SoundUtil {
     // IDs for sound effects.
     private static int soundIdHit;
     private static int soundIdMiss;
+    private static int soundIdPowerUp;
     private static int soundIdNewRound;
     private static int soundIdGameOver;
 
     // Volume settings for sound effects and music.
     private static float volumeEffects;
     private static float volumeMusic;
+
+    // Cap on number of simultaneous streams/sounds.
+    private static final int MAX_STREAMS = 2;
 
     // Initialization flag.
     private static boolean isInitialized = false;
@@ -76,7 +80,7 @@ public class SoundUtil {
         // Initialize Sound Pool to play sound effects.
         SoundPool.Builder builder = new SoundPool.Builder();
 
-        builder.setMaxStreams( 1 );
+        builder.setMaxStreams( MAX_STREAMS );
         builder.setAudioAttributes( attrBuilder.build() );
 
         effectsPool = builder.build();
@@ -84,6 +88,7 @@ public class SoundUtil {
         // Load sounds effects into pool, saving IDs.
         soundIdHit = effectsPool.load( context, R.raw.hit, 1 );
         soundIdMiss = effectsPool.load( context, R.raw.miss, 1 );
+        soundIdPowerUp = effectsPool.load( context, R.raw.power_up, 1 );
         soundIdNewRound = effectsPool.load( context, R.raw.new_round, 1 );
         soundIdGameOver = effectsPool.load( context, R.raw.game_over, 1 );
     }
@@ -116,6 +121,7 @@ public class SoundUtil {
 
     public static void playHit() { if( isInitialized ) playEffect( soundIdHit ); }
     public static void playMiss() { if( isInitialized ) playEffect( soundIdMiss ); }
+    public static void playPowerUp() { if( isInitialized ) playEffect( soundIdPowerUp ); }
     public static void playNewRound() { if( isInitialized ) playEffect( soundIdNewRound ); }
     public static void playGameOver() { if( isInitialized ) playEffect( soundIdGameOver ); }
 

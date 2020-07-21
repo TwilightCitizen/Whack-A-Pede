@@ -23,7 +23,6 @@ import com.twilightcitizen.whack_a_pede.models.Segment;
 import com.twilightcitizen.whack_a_pede.shaders.TextureShader;
 import com.twilightcitizen.whack_a_pede.utilities.TextureUtil;
 import com.twilightcitizen.whack_a_pede.utilities.ThemeUtil;
-import com.twilightcitizen.whack_a_pede.utilities.TimeUtil;
 import com.twilightcitizen.whack_a_pede.viewModels.GameViewModel;
 
 import javax.microedition.khronos.egl.EGLConfig;
@@ -133,10 +132,10 @@ public class GameRenderer implements GLSurfaceView.Renderer {
         lawnTop = TextureUtil.LoadTexture( context, theme.getLawnTop() );
         lawnBottom = TextureUtil.LoadTexture( context, theme.getLawnBottom() );
 
-        powerUpPlus1kPoints = TextureUtil.LoadTexture( context, R.drawable.any_power_up );
-        powerUpPlus10kPoints = TextureUtil.LoadTexture( context, R.drawable.any_power_up );
-        powerUpPlus100kPoints = TextureUtil.LoadTexture( context, R.drawable.any_power_up );
-        powerUpSlowDown = TextureUtil.LoadTexture( context, R.drawable.any_power_up );
+        powerUpPlus1kPoints = TextureUtil.LoadTexture( context, R.drawable.plus_1k_points );
+        powerUpPlus10kPoints = TextureUtil.LoadTexture( context, R.drawable.plus_10k_points );
+        powerUpPlus100kPoints = TextureUtil.LoadTexture( context, R.drawable.plus_100k_points );
+        powerUpSlowDown = TextureUtil.LoadTexture( context, R.drawable.slow_down );
     }
 
     // Called when GLSurfaceView dimensions change. Parameter gl is ignored.
@@ -183,8 +182,17 @@ public class GameRenderer implements GLSurfaceView.Renderer {
         // Clear the whole screen with the clear color.
         glClear( GL_COLOR_BUFFER_BIT );
 
+        /*
+        On average, each game loop transpires over the course of about 20 milliseconds, give or take.
+        However, when GC occurs, timings of 130+ milliseconds can be observed.  This causes animations
+        to occur over larger distances than the game model can accommodate while still keeping the
+        centipede coherent and--importantly--keeping segments on screen where players can tap them.  To
+        avoid this issue, we simply cheat and pretend every loop is 20 milliseconds.
+        */
+        long LOOP_TIME_ELAPSED_MILLIS = 20;
+
         // Loop the game for the time slice elapsed.
-        gameViewModel.loop( TimeUtil.getTimeElapsedMillis() );
+        gameViewModel.loop( LOOP_TIME_ELAPSED_MILLIS );
 
         /*
         Position some models in the scene, setting the ColorShader's uniforms to the entire
@@ -211,8 +219,6 @@ public class GameRenderer implements GLSurfaceView.Renderer {
         textureShader.use();
 
         for( PowerUp powerUp : GameViewModel.POWER_UPS ) {
-
-
             positionModelInScene(
                 powerUp.getPosition().x, powerUp.getPosition().y, isRotated ? -90.0f : 0.0f
             );

@@ -39,8 +39,8 @@ MDV4910-O, C202006-01
         <item>@drawable/centipede_head_below_patriotic</item>
         <item>@drawable/centipede_body_above_patriotic</item>
         <item>@drawable/centipede_body_below_patriotic</item>
-        <item>@drawable/lawn_top_patriotic</item>
-        <item>@drawable/lawn_bottom_patriotic</item>
+        <item>@drawable/lawn_top_sunny_day</item>
+        <item>@drawable/lawn_bottom_sunny_day</item>
     </array>
 
     <array name="camouflage" tools:keep="@array/camouflage">
