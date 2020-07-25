@@ -71,7 +71,8 @@ MDV4910-O, C202006-01
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:text="@string/credits_music"
-            android:textSize="@dimen/text_large" />
+            android:textSize="@dimen/text_large"
+            android:autoLink="web" />
     </LinearLayout>
 
     <LinearLayout
@@ -90,6 +91,7 @@ MDV4910-O, C202006-01
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:text="@string/credits_sound_effects"
-            android:textSize="@dimen/text_large" />
+            android:textSize="@dimen/text_large"
+            android:autoLink="web" />
     </LinearLayout>
 </LinearLayout>

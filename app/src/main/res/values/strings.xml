@@ -152,8 +152,8 @@ MDV4910-O, C202006-01
     <!-- Credits screen. -->
     <string name="credits_game_design">Game Design by David Clark</string>
     <string name="credits_graphics">Graphics by David Clark</string>
-    <string name="credits_music">Music by Eric Matyas\nat www.soundimage.org</string>
-    <string name="credits_sound_effects">Sound Effects courtesy of ZapSplat\nat www.zapsplat.com</string>
+    <string name="credits_music">Music by Eric Matyas\nat <a href="www.soundimage.org">www.soundimage.org</a></string>
+    <string name="credits_sound_effects">Sound Effects by ZapSplat\nat <a href="www.zapsplat.com">www.zapsplat.com</a></string>
     <string name="sound_effects_credit">Sound Effects Credit</string>
     <string name="music_credit">Music Credit</string>
     <string name="graphics_credit">Graphics Credit</string>
