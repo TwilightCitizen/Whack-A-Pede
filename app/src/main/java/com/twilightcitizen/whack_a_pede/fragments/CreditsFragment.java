@@ -21,9 +21,6 @@ import com.twilightcitizen.whack_a_pede.R;
 import com.twilightcitizen.whack_a_pede.activities.GameActivity;
 
 public class CreditsFragment extends Fragment {
-    // Context needed for some actions.
-    private GameActivity gameActivity;
-
     // Check the host context on attachment.
     @Override public void onAttach( @NonNull Context context ) {
         super.onAttach( context );
@@ -34,8 +31,6 @@ public class CreditsFragment extends Fragment {
     private void checkGameActivityHost( Context context ) {
         if( ! ( context instanceof GameActivity ) )
             throw new ClassCastException( "GameActivity must host CreditsFragment" );
-
-        gameActivity = (GameActivity) context;
     }
 
     @Nullable @Override public View onCreateView(

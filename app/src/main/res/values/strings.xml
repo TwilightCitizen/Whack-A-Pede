@@ -147,4 +147,15 @@ MDV4910-O, C202006-01
     <string name="bad_account_title">Something went wrong.</string>
     <string name="bad_account_body">Please try again after logging out and back in again.</string>
     <string name="bad_account_okay">Okay</string>
+    <string name="whack_a_pede_logo">Whack-A-Pede Logo</string>
+
+    <!-- Credits screen. -->
+    <string name="credits_game_design">Game Design by David Clark</string>
+    <string name="credits_graphics">Graphics by David Clark</string>
+    <string name="credits_music">Music by Eric Matyas\nat www.soundimage.org</string>
+    <string name="credits_sound_effects">Sound Effects courtesy of ZapSplat\nat www.zapsplat.com</string>
+    <string name="sound_effects_credit">Sound Effects Credit</string>
+    <string name="music_credit">Music Credit</string>
+    <string name="graphics_credit">Graphics Credit</string>
+    <string name="game_design_credit">Game Design Credit</string>
 </resources>

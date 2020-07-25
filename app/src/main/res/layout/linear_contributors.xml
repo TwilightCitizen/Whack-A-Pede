@@ -1,0 +1,95 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<!--
+Whack-A-Pede
+David A. Clark, Jr.
+Integrated Product Development
+MDV4910-O, C202006-01
+-->
+
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    tools:ignore="UseCompoundDrawables">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:layout_marginBottom="@dimen/default_margin">
+
+        <ImageView
+            android:layout_width="@dimen/credit_icon_size"
+            android:layout_height="@dimen/credit_icon_size"
+            android:src="@drawable/icon_game_design"
+            android:layout_marginEnd="@dimen/default_margin"
+            android:contentDescription="@string/game_design_credit" />
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/credits_game_design"
+            android:textSize="@dimen/text_large" />
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:layout_marginBottom="@dimen/default_margin">
+
+        <ImageView
+            android:layout_width="@dimen/credit_icon_size"
+            android:layout_height="@dimen/credit_icon_size"
+            android:src="@drawable/icon_graphics"
+            android:layout_marginEnd="@dimen/default_margin"
+            android:contentDescription="@string/graphics_credit" />
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/credits_graphics"
+            android:textSize="@dimen/text_large" />
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="@dimen/default_margin">
+
+        <ImageView
+            android:layout_width="@dimen/credit_icon_size"
+            android:layout_height="@dimen/credit_icon_size"
+            android:src="@drawable/icon_music"
+            android:layout_marginEnd="@dimen/default_margin"
+            android:contentDescription="@string/music_credit" />
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/credits_music"
+            android:textSize="@dimen/text_large" />
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal">
+
+        <ImageView
+            android:layout_width="@dimen/credit_icon_size"
+            android:layout_height="@dimen/credit_icon_size"
+            android:src="@drawable/icon_sound_effects"
+            android:layout_marginEnd="@dimen/default_margin"
+            android:contentDescription="@string/sound_effects_credit" />
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/credits_sound_effects"
+            android:textSize="@dimen/text_large" />
+    </LinearLayout>
+</LinearLayout>
