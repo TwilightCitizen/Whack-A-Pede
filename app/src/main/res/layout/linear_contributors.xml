@@ -58,6 +58,46 @@ MDV4910-O, C202006-01
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:layout_marginBottom="@dimen/default_margin">
+
+        <ImageView
+            android:layout_width="@dimen/credit_icon_size"
+            android:layout_height="@dimen/credit_icon_size"
+            android:src="@drawable/icon_graphics"
+            android:layout_marginEnd="@dimen/default_margin"
+            android:contentDescription="@string/graphics_credit" />
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/camo_texture"
+            android:textSize="@dimen/text_large" />
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:layout_marginBottom="@dimen/default_margin">
+
+        <ImageView
+            android:layout_width="@dimen/credit_icon_size"
+            android:layout_height="@dimen/credit_icon_size"
+            android:src="@drawable/icon_graphics"
+            android:layout_marginEnd="@dimen/default_margin"
+            android:contentDescription="@string/graphics_credit" />
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/animal_texture"
+            android:textSize="@dimen/text_large" />
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
         android:layout_marginBottom="@dimen/default_margin">
 
         <ImageView

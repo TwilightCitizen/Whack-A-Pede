@@ -150,12 +150,14 @@ MDV4910-O, C202006-01
     <string name="whack_a_pede_logo">Whack-A-Pede Logo</string>
 
     <!-- Credits screen. -->
-    <string name="credits_game_design">Game Design by David Clark</string>
-    <string name="credits_graphics">Graphics by David Clark</string>
-    <string name="credits_music">Music by Eric Matyas\nat <a href="www.soundimage.org">www.soundimage.org</a></string>
-    <string name="credits_sound_effects">Sound Effects by ZapSplat\nat <a href="www.zapsplat.com">www.zapsplat.com</a></string>
+    <string name="credits_game_design">Game Design by David Clark at <a href="profile.fullsail.edu">profile.fullsail.edu</a></string>
+    <string name="credits_graphics">Basic Graphics by David Clark at <a href="profile.fullsail.edu">profile.fullsail.edu</a></string>
+    <string name="credits_music">Music by Eric Matyas at <a href="www.soundimage.org">www.soundimage.org</a></string>
+    <string name="credits_sound_effects">Sound Effects by ZapSplat at <a href="www.zapsplat.com">www.zapsplat.com</a></string>
     <string name="sound_effects_credit">Sound Effects Credit</string>
     <string name="music_credit">Music Credit</string>
     <string name="graphics_credit">Graphics Credit</string>
     <string name="game_design_credit">Game Design Credit</string>
+    <string name="camo_texture">Camouflage Texture by Lupasco Roman at <a href="www.istockphoto.com/portfolio/lupascoroman">www.istockphoto.com</a></string>
+    <string name="animal_texture">Animal Textures by Natalia Darmoroz at <a href="www.istockphoto.com/portfolio/nataliadar">www.istockphoto.com</a></string>
 </resources>
