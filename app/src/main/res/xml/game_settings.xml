@@ -47,5 +47,9 @@ MDV4910-O, C202006-01
             android:key="@string/color_theme_key"
             android:title="@string/color_theme"
             android:summary="@string/color_theme_summary" />
+
+        <com.twilightcitizen.whack_a_pede.preferences.ThemePreviewPreference
+            android:key="@string/color_theme_preview_key"
+            app:layout="@layout/constraint_theme_preview" />
     </PreferenceCategory>
 </PreferenceScreen>

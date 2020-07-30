@@ -1,0 +1,125 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<!--
+Whack-A-Pede
+David A. Clark, Jr.
+Integrated Product Development
+MDV4910-O, C202006-01
+-->
+
+<androidx.constraintlayout.widget.ConstraintLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/constraint_theme_preview"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:paddingBottom="32dp">
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/constraint_lawn_container"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:layout_marginStart="72dp"
+        android:layout_marginEnd="24dp"
+        app:layout_constraintDimensionRatio="7:11"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent">
+
+        <androidx.constraintlayout.widget.Guideline
+            android:id="@+id/guide_h"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            android:orientation="horizontal"
+            app:layout_constraintGuide_percent=".5" />
+
+        <androidx.constraintlayout.widget.Guideline
+            android:id="@+id/guide_vl"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            android:orientation="vertical"
+            app:layout_constraintGuide_percent="0.07"/>
+
+        <androidx.constraintlayout.widget.Guideline
+            android:id="@+id/guide_vr"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            android:orientation="vertical"
+            app:layout_constraintGuide_percent="0.91"/>
+
+        <ImageView
+            android:id="@+id/image_lawn_bottom"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            android:contentDescription="@string/lawn_bottom"
+            android:scaleType="fitXY"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:srcCompat="@drawable/lawn_bottom_sunny_day" />
+
+        <ImageView
+            android:id="@+id/image_head_below"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            app:layout_constraintHeight_percent="0.08"
+            app:layout_constraintDimensionRatio="1:1"
+            app:layout_constraintStart_toEndOf="@id/guide_vl"
+            android:contentDescription="@string/centipede_head_below_ground"
+            app:layout_constraintBottom_toBottomOf="@+id/image_lawn_bottom"
+            app:layout_constraintTop_toTopOf="@+id/image_lawn_bottom"
+            app:srcCompat="@drawable/centipede_head_below_sunny_day" />
+
+        <ImageView
+            android:id="@+id/image_body_below"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            app:layout_constraintHeight_percent="0.08"
+            app:layout_constraintDimensionRatio="1:1"
+            android:contentDescription="@string/centipede_body_below_ground"
+            app:layout_constraintEnd_toEndOf="@+id/image_head_below"
+            app:layout_constraintStart_toStartOf="@+id/image_head_below"
+            app:layout_constraintTop_toBottomOf="@+id/image_head_below"
+            app:srcCompat="@drawable/centipede_body_below_sunny_day" />
+
+        <ImageView
+            android:id="@+id/image_lawn_top"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            android:contentDescription="@string/lawn_top"
+            android:scaleType="fitXY"
+            app:layout_constraintBottom_toBottomOf="@+id/image_lawn_bottom"
+            app:layout_constraintDimensionRatio="7:11"
+            app:layout_constraintEnd_toEndOf="@+id/image_lawn_bottom"
+            app:layout_constraintStart_toStartOf="@+id/image_lawn_bottom"
+            app:layout_constraintTop_toTopOf="@+id/image_lawn_bottom"
+            app:srcCompat="@drawable/lawn_top_sunny_day" />
+
+        <ImageView
+            android:id="@+id/image_head_above"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            app:layout_constraintHeight_percent="0.08"
+            app:layout_constraintDimensionRatio="1:1"
+            android:contentDescription="@string/centipede_head_above_ground"
+            android:rotation="180"
+            app:layout_constraintBottom_toBottomOf="@+id/image_lawn_top"
+            app:layout_constraintEnd_toStartOf="@id/guide_vr"
+            app:layout_constraintTop_toTopOf="@+id/image_lawn_top"
+            app:srcCompat="@drawable/centipede_head_above_sunny_day" />
+
+        <ImageView
+            android:id="@+id/image_body_above"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            app:layout_constraintHeight_percent="0.08"
+            app:layout_constraintDimensionRatio="1:1"
+            android:contentDescription="@string/centipede_body_above_ground"
+            app:layout_constraintBottom_toTopOf="@+id/image_head_above"
+            app:layout_constraintEnd_toEndOf="@+id/image_head_above"
+            app:layout_constraintStart_toStartOf="@+id/image_head_above"
+            app:srcCompat="@drawable/centipede_body_above_sunny_day" />
+    </androidx.constraintlayout.widget.ConstraintLayout>
+</androidx.constraintlayout.widget.ConstraintLayout>

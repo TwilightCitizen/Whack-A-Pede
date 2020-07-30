@@ -20,6 +20,10 @@ import androidx.fragment.app.Fragment;
 import com.twilightcitizen.whack_a_pede.R;
 import com.twilightcitizen.whack_a_pede.activities.GameActivity;
 
+/*
+Credits Fragment displays attributions for contributors of music, sound, effect, artwork, and other
+intellectual property used in making Whack-A-Pede.
+*/
 public class CreditsFragment extends Fragment {
     // Check the host context on attachment.
     @Override public void onAttach( @NonNull Context context ) {

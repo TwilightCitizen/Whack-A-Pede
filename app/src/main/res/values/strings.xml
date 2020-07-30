@@ -119,6 +119,7 @@ MDV4910-O, C202006-01
     <string name="color_theme">Color Theme</string>
     <string name="color_theme_summary">&#8220;%s&#8221; is the color theme for the lawn and centipedes.</string>
     <string name="color_theme_key">color_theme_key</string>
+    <string name="color_theme_preview_key">color_theme_preview_key</string>
 
     <!-- Music track selection. -->
     <string-array name="music_tracks">
@@ -160,4 +161,12 @@ MDV4910-O, C202006-01
     <string name="game_design_credit">Game Design Credit</string>
     <string name="camo_texture">Camouflage Texture by Lupasco Roman at <a href="www.istockphoto.com/portfolio/lupascoroman">www.istockphoto.com</a></string>
     <string name="animal_texture">Animal Textures by Natalia Darmoroz at <a href="www.istockphoto.com/portfolio/nataliadar">www.istockphoto.com</a></string>
+
+    <!-- Theme preview image descriptions -->
+    <string name="centipede_body_above_ground">Centipede Body Above Ground</string>
+    <string name="centipede_head_above_ground">Centipede Head Above Ground</string>
+    <string name="lawn_top">Lawn Top</string>
+    <string name="centipede_body_below_ground">Centipede Body Below Ground</string>
+    <string name="centipede_head_below_ground">Centipede Head Below Ground</string>
+    <string name="lawn_bottom">Lawn Bottom</string>
 </resources>

@@ -75,4 +75,25 @@ public class ThemeUtil {
             themeDrawableIds[ 3 ], themeDrawableIds[ 4 ], themeDrawableIds[ 5 ]
         );
     }
+
+    // Get the named theme.
+    public static Theme getNamedTheme( Context context, String themeName ) {
+        themeName = themeName.toLowerCase().replaceAll( "[^a-zA-Z0-9]", "_" );
+
+        TypedArray themeDrawables = context.getResources().obtainTypedArray(
+            context.getResources().getIdentifier( themeName, "array", context.getPackageName() )
+        );
+
+        int[] themeDrawableIds = new int[ themeDrawables.length() ];
+
+        for( int i = 0; i < themeDrawables.length(); i++ )
+            themeDrawableIds[ i ] = themeDrawables.getResourceId( i, 0 );
+
+        themeDrawables.recycle();
+
+        return new Theme(
+            themeDrawableIds[ 0 ], themeDrawableIds[ 1 ], themeDrawableIds[ 2 ],
+            themeDrawableIds[ 3 ], themeDrawableIds[ 4 ], themeDrawableIds[ 5 ]
+        );
+    }
 }
