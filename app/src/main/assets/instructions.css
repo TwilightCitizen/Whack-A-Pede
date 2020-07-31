@@ -1,0 +1,17 @@
+/*
+Whack-A-Pede
+David A. Clark, Jr.
+Integrated Product Development
+MDV4910-O, C202006-01
+*/
+
+body {
+    background: #FFD946;
+}
+
+.screenshot {
+    display: block;
+    width: 75%;
+    margin-left: 12.5%;
+    border: 1px solid #524100;
+}

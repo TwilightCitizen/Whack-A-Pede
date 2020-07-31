@@ -21,6 +21,10 @@ MDV4910-O, C202006-01
         tools:layout="@layout/fragment_game">
 
         <action
+            android:id="@+id/action_game_to_instructions"
+            app:destination="@id/instructions_fragment" />
+
+        <action
             android:id="@+id/action_game_to_credits"
             app:destination="@id/credits_fragment" />
 
@@ -35,6 +39,13 @@ MDV4910-O, C202006-01
         <action
             android:id="@+id/action_game_to_game_over"
             app:destination="@id/game_over_fragment" />
+    </fragment>
+
+    <fragment
+        android:id="@+id/instructions_fragment"
+        android:name="com.twilightcitizen.whack_a_pede.fragments.InstructionsFragment"
+        android:label="@string/instructions"
+        tools:layout="@layout/fragment_instructions">
     </fragment>
 
     <fragment

@@ -309,6 +309,8 @@ public class GameFragment extends Fragment {
                 gameActivity.getNavController().navigate( R.id.action_game_to_settings ); break;
             case R.id.action_view_credits:
                 gameActivity.getNavController().navigate( R.id.action_game_to_credits ); break;
+            case R.id.action_view_instructions:
+                gameActivity.getNavController().navigate( R.id.action_game_to_instructions ); break;
             case R.id.action_view_leaderboard:
                 gameActivity.getNavController().navigate( R.id.action_game_to_leaderboard ); break;
             default: return super.onOptionsItemSelected( item );

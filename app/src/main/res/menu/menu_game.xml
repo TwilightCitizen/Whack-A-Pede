@@ -66,4 +66,10 @@ MDV4910-O, C202006-01
         android:title="@string/view_credits"
         android:icon="@drawable/icon_credits"
         app:showAsAction="never" />
+
+    <item
+        android:id="@+id/action_view_instructions"
+        android:title="@string/view_instructions"
+        android:icon="@drawable/icon_instructions"
+        app:showAsAction="never" />
 </menu>
